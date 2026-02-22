@@ -1,0 +1,479 @@
+# Metric Fastener Library
+#
+# Generates ISO metric fasteners: hex nuts, hex bolts, socket head cap screws,
+# button head cap screws, countersunk screws, set screws, thumbscrews,
+# flat head (slotted) screws, Phillips screws, and standoffs.
+#
+# Uses `facet/threads` for thread geometry and `facet/knurling` for thumbscrew grip.
+#
+# Usage:
+#   var F = lib "github.com/firstlayer-xyz/facetlibs/fasteners@main";
+#   var f = F.New("m8");
+#   return f.HexBolt(30 mm);
+
+var T = lib "facet/threads";
+var K = lib "facet/knurling";
+
+# ---------------------------------------------------------------------------
+# Re-export Knurl constructor so users can create knurl specs without
+# importing facet/knurling separately.
+#
+# Example: `F.NewKnurl(40, 0.5 mm, 30 deg)`
+# ---------------------------------------------------------------------------
+
+Knurl NewKnurl(Number count, Length depth, Angle pitch_angle) {
+    return K.NewKnurl(count, depth, pitch_angle);
+}
+
+# ---------------------------------------------------------------------------
+# Fastener Struct — holds ISO dimensions for one metric size
+# ---------------------------------------------------------------------------
+
+struct Fastener {
+    String size;
+    Length major_d;
+    Length hex_af;
+    Length nut_h;
+    Length bolt_head_h;
+    Length shcs_head_d;
+    Length shcs_head_h;
+    Length shcs_socket;
+    Length bhcs_head_d;
+    Length bhcs_head_h;
+    Length bhcs_socket;
+    Length fhcs_head_d;
+    Length fhcs_head_h;
+    Length fhcs_socket;
+    Length set_socket;
+    Length pan_head_d;
+    Length pan_head_h;
+    Length slot_w;
+    Length phillips_w;
+}
+
+# ---------------------------------------------------------------------------
+# Constructor — returns a Fastener with ISO dimensions for the given size.
+#
+# Supported sizes: `"m2"`, `"m2.5"`, `"m3"`, `"m4"`, `"m5"`, `"m6"`, `"m8"`,
+# `"m10"`, `"m12"`, `"m16"`, `"m20"`
+# ---------------------------------------------------------------------------
+
+Fastener New(String size) {
+    return if size == "m2" {
+        return Fastener {
+            size: "m2", major_d: 2 mm, hex_af: 4.0 mm,
+            nut_h: 1.6 mm, bolt_head_h: 1.4 mm,
+            shcs_head_d: 3.8 mm, shcs_head_h: 2.0 mm, shcs_socket: 1.5 mm,
+            bhcs_head_d: 3.8 mm, bhcs_head_h: 1.3 mm, bhcs_socket: 1.3 mm,
+            fhcs_head_d: 3.8 mm, fhcs_head_h: 1.2 mm, fhcs_socket: 1.3 mm,
+            set_socket: 0.9 mm,
+            pan_head_d: 4.0 mm, pan_head_h: 1.3 mm,
+            slot_w: 0.5 mm, phillips_w: 1.4 mm
+        };
+    } else if size == "m2.5" {
+        return Fastener {
+            size: "m2.5", major_d: 2.5 mm, hex_af: 5.0 mm,
+            nut_h: 2.0 mm, bolt_head_h: 1.7 mm,
+            shcs_head_d: 4.5 mm, shcs_head_h: 2.5 mm, shcs_socket: 2.0 mm,
+            bhcs_head_d: 4.7 mm, bhcs_head_h: 1.5 mm, bhcs_socket: 1.5 mm,
+            fhcs_head_d: 4.7 mm, fhcs_head_h: 1.5 mm, fhcs_socket: 1.5 mm,
+            set_socket: 1.3 mm,
+            pan_head_d: 5.0 mm, pan_head_h: 1.7 mm,
+            slot_w: 0.6 mm, phillips_w: 1.8 mm
+        };
+    } else if size == "m3" {
+        return Fastener {
+            size: "m3", major_d: 3 mm, hex_af: 5.5 mm,
+            nut_h: 2.4 mm, bolt_head_h: 2.0 mm,
+            shcs_head_d: 5.5 mm, shcs_head_h: 3.0 mm, shcs_socket: 2.5 mm,
+            bhcs_head_d: 5.7 mm, bhcs_head_h: 1.65 mm, bhcs_socket: 2.0 mm,
+            fhcs_head_d: 5.54 mm, fhcs_head_h: 1.86 mm, fhcs_socket: 2.0 mm,
+            set_socket: 1.5 mm,
+            pan_head_d: 6.0 mm, pan_head_h: 2.0 mm,
+            slot_w: 0.8 mm, phillips_w: 2.1 mm
+        };
+    } else if size == "m4" {
+        return Fastener {
+            size: "m4", major_d: 4 mm, hex_af: 7.0 mm,
+            nut_h: 3.2 mm, bolt_head_h: 2.8 mm,
+            shcs_head_d: 7.0 mm, shcs_head_h: 4.0 mm, shcs_socket: 3.0 mm,
+            bhcs_head_d: 7.6 mm, bhcs_head_h: 2.2 mm, bhcs_socket: 2.5 mm,
+            fhcs_head_d: 7.53 mm, fhcs_head_h: 2.48 mm, fhcs_socket: 2.5 mm,
+            set_socket: 2.0 mm,
+            pan_head_d: 8.0 mm, pan_head_h: 2.6 mm,
+            slot_w: 1.0 mm, phillips_w: 2.6 mm
+        };
+    } else if size == "m5" {
+        return Fastener {
+            size: "m5", major_d: 5 mm, hex_af: 8.0 mm,
+            nut_h: 4.7 mm, bolt_head_h: 3.5 mm,
+            shcs_head_d: 8.5 mm, shcs_head_h: 5.0 mm, shcs_socket: 4.0 mm,
+            bhcs_head_d: 9.5 mm, bhcs_head_h: 2.75 mm, bhcs_socket: 3.0 mm,
+            fhcs_head_d: 9.43 mm, fhcs_head_h: 3.1 mm, fhcs_socket: 3.0 mm,
+            set_socket: 2.5 mm,
+            pan_head_d: 10.0 mm, pan_head_h: 3.3 mm,
+            slot_w: 1.2 mm, phillips_w: 3.3 mm
+        };
+    } else if size == "m6" {
+        return Fastener {
+            size: "m6", major_d: 6 mm, hex_af: 10.0 mm,
+            nut_h: 5.2 mm, bolt_head_h: 4.0 mm,
+            shcs_head_d: 10.0 mm, shcs_head_h: 6.0 mm, shcs_socket: 5.0 mm,
+            bhcs_head_d: 10.5 mm, bhcs_head_h: 3.3 mm, bhcs_socket: 4.0 mm,
+            fhcs_head_d: 11.34 mm, fhcs_head_h: 3.72 mm, fhcs_socket: 4.0 mm,
+            set_socket: 3.0 mm,
+            pan_head_d: 12.0 mm, pan_head_h: 3.9 mm,
+            slot_w: 1.6 mm, phillips_w: 4.1 mm
+        };
+    } else if size == "m8" {
+        return Fastener {
+            size: "m8", major_d: 8 mm, hex_af: 13.0 mm,
+            nut_h: 6.8 mm, bolt_head_h: 5.3 mm,
+            shcs_head_d: 13.0 mm, shcs_head_h: 8.0 mm, shcs_socket: 6.0 mm,
+            bhcs_head_d: 14.0 mm, bhcs_head_h: 4.4 mm, bhcs_socket: 5.0 mm,
+            fhcs_head_d: 15.24 mm, fhcs_head_h: 4.96 mm, fhcs_socket: 5.0 mm,
+            set_socket: 4.0 mm,
+            pan_head_d: 16.0 mm, pan_head_h: 5.0 mm,
+            slot_w: 2.0 mm, phillips_w: 5.1 mm
+        };
+    } else if size == "m10" {
+        return Fastener {
+            size: "m10", major_d: 10 mm, hex_af: 16.0 mm,
+            nut_h: 8.4 mm, bolt_head_h: 6.4 mm,
+            shcs_head_d: 16.0 mm, shcs_head_h: 10.0 mm, shcs_socket: 8.0 mm,
+            bhcs_head_d: 17.5 mm, bhcs_head_h: 5.5 mm, bhcs_socket: 6.0 mm,
+            fhcs_head_d: 19.22 mm, fhcs_head_h: 6.2 mm, fhcs_socket: 6.0 mm,
+            set_socket: 5.0 mm,
+            pan_head_d: 20.0 mm, pan_head_h: 6.0 mm,
+            slot_w: 2.5 mm, phillips_w: 6.1 mm
+        };
+    } else if size == "m12" {
+        return Fastener {
+            size: "m12", major_d: 12 mm, hex_af: 18.0 mm,
+            nut_h: 10.8 mm, bolt_head_h: 7.5 mm,
+            shcs_head_d: 18.0 mm, shcs_head_h: 12.0 mm, shcs_socket: 10.0 mm,
+            bhcs_head_d: 21.0 mm, bhcs_head_h: 6.6 mm, bhcs_socket: 8.0 mm,
+            fhcs_head_d: 23.12 mm, fhcs_head_h: 7.44 mm, fhcs_socket: 8.0 mm,
+            set_socket: 6.0 mm,
+            pan_head_d: 24.0 mm, pan_head_h: 7.0 mm,
+            slot_w: 3.0 mm, phillips_w: 7.1 mm
+        };
+    } else if size == "m16" {
+        return Fastener {
+            size: "m16", major_d: 16 mm, hex_af: 24.0 mm,
+            nut_h: 14.8 mm, bolt_head_h: 10.0 mm,
+            shcs_head_d: 24.0 mm, shcs_head_h: 16.0 mm, shcs_socket: 14.0 mm,
+            bhcs_head_d: 28.0 mm, bhcs_head_h: 8.8 mm, bhcs_socket: 10.0 mm,
+            fhcs_head_d: 29.01 mm, fhcs_head_h: 8.8 mm, fhcs_socket: 10.0 mm,
+            set_socket: 8.0 mm,
+            pan_head_d: 30.0 mm, pan_head_h: 8.8 mm,
+            slot_w: 4.0 mm, phillips_w: 0 mm
+        };
+    } else if size == "m20" {
+        return Fastener {
+            size: "m20", major_d: 20 mm, hex_af: 30.0 mm,
+            nut_h: 18.0 mm, bolt_head_h: 12.5 mm,
+            shcs_head_d: 30.0 mm, shcs_head_h: 20.0 mm, shcs_socket: 17.0 mm,
+            bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
+            fhcs_head_d: 36.05 mm, fhcs_head_h: 10.16 mm, fhcs_socket: 12.0 mm,
+            set_socket: 10.0 mm,
+            pan_head_d: 36.0 mm, pan_head_h: 10.0 mm,
+            slot_w: 5.0 mm, phillips_w: 0 mm
+        };
+    } else {
+        # Default to M8
+        return Fastener {
+            size: "m8", major_d: 8 mm, hex_af: 13.0 mm,
+            nut_h: 6.8 mm, bolt_head_h: 5.3 mm,
+            shcs_head_d: 13.0 mm, shcs_head_h: 8.0 mm, shcs_socket: 6.0 mm,
+            bhcs_head_d: 14.0 mm, bhcs_head_h: 4.4 mm, bhcs_socket: 5.0 mm,
+            fhcs_head_d: 15.24 mm, fhcs_head_h: 4.96 mm, fhcs_socket: 5.0 mm,
+            set_socket: 4.0 mm,
+            pan_head_d: 16.0 mm, pan_head_h: 5.0 mm,
+            slot_w: 2.0 mm, phillips_w: 5.1 mm
+        };
+    };
+}
+
+# ---------------------------------------------------------------------------
+# HexNut — ISO 4032 hex nut
+#
+# Hex prism body minus internal thread. Centered at origin, body from Z=0
+# upward (+Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.HexNut() {
+    var cr = self.hex_af / (2 * Cos(30 deg));
+    var hex = NewPolygon(for i [0:<6] {
+        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    }).Extrude(self.nut_h);
+
+    var internal = T.New(self.size).Inside(self.nut_h);
+
+    return hex - internal;
+}
+
+# ---------------------------------------------------------------------------
+# HexBolt — ISO 4014 hex bolt
+#
+# Head bottom at Z=0, head extends upward (+Z), shaft extends downward (-Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.HexBolt(Length length) {
+    var hh = self.bolt_head_h;
+
+    # Hex head
+    var cr = self.hex_af / (2 * Cos(30 deg));
+    var head = NewPolygon(for i [0:<6] {
+        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    }).Extrude(hh);
+
+    # Threaded shaft
+    var shaft = T.New(self.size).Outside(length)
+        .Translate(0 mm, 0 mm, hh);
+
+    return head + shaft;
+}
+
+# ---------------------------------------------------------------------------
+# SocketHeadCapScrew — ISO 4762
+#
+# Cylindrical head with hex socket recess, threaded shaft above.
+# Head at Z=0, shaft extends upward (+Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.SocketHeadCapScrew(Length length) {
+    var hh = self.shcs_head_h;
+
+    # Head
+    var head = NewCylinder(hh, self.shcs_head_d / 2, self.shcs_head_d / 2);
+
+    # Socket recess (hex prism) — cuts from top into head
+    var sock_depth = hh * 0.8;
+    var sock_cr = self.shcs_socket / (2 * Cos(30 deg));
+    var socket = NewPolygon(for i [0:<6] {
+        yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
+    }).Extrude(sock_depth + 1 mm)
+        .Translate(0 mm, 0 mm, hh - sock_depth);
+
+    # Threaded shaft
+    var shaft = T.New(self.size).Outside(length)
+        .Translate(0 mm, 0 mm, hh);
+
+    return (head - socket) + shaft;
+}
+
+# ---------------------------------------------------------------------------
+# ButtonHeadCapScrew — ISO 7380
+#
+# Low-profile dome head with hex socket, threaded shaft above.
+# Head at Z=0, shaft extends upward (+Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.ButtonHeadCapScrew(Length length) {
+    var d = self.bhcs_head_d;
+    var h = self.bhcs_head_h;
+
+    # Sphere radius: R = (d²/4 + h²) / (2h)
+    var d_num = d / (1 mm);
+    var h_num = h / (1 mm);
+    var R_num = (d_num * d_num / 4 + h_num * h_num) / (2 * h_num);
+    var R = R_num * 1 mm;
+
+    # Dome = sphere intersected with cylinder, bottom at Z=0
+    var sphere = NewSphere(R).Translate(0 mm, 0 mm, h - R);
+    var clip = NewCylinder(h, d / 2, d / 2);
+    var dome = sphere ^ clip;
+
+    # Socket recess — cuts from top into dome
+    var sock_depth = h * 0.7;
+    var sock_cr = self.bhcs_socket / (2 * Cos(30 deg));
+    var socket = NewPolygon(for i [0:<6] {
+        yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
+    }).Extrude(sock_depth + 1 mm)
+        .Translate(0 mm, 0 mm, h - sock_depth);
+
+    # Threaded shaft
+    var shaft = T.New(self.size).Outside(length)
+        .Translate(0 mm, 0 mm, h);
+
+    return (dome - socket) + shaft;
+}
+
+# ---------------------------------------------------------------------------
+# CountersunkScrew — ISO 10642
+#
+# Conical head (flat top flush with surface) with hex socket, threaded shaft.
+# Head at Z=0, cone widens upward (+Z), shaft extends upward (+Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.CountersunkScrew(Length length) {
+    # Conical head: bottom is shaft diameter (Z=0), top is wide end
+    var head = NewCylinder(self.fhcs_head_h, self.major_d / 2, self.fhcs_head_d / 2);
+
+    # Socket recess — cuts from top into cone
+    var sock_depth = self.fhcs_head_h * 0.7;
+    var sock_cr = self.fhcs_socket / (2 * Cos(30 deg));
+    var socket = NewPolygon(for i [0:<6] {
+        yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
+    }).Extrude(sock_depth + 1 mm)
+        .Translate(0 mm, 0 mm, self.fhcs_head_h - sock_depth);
+
+    # Threaded shaft
+    var shaft = T.New(self.size).Outside(length)
+        .Translate(0 mm, 0 mm, self.fhcs_head_h);
+
+    return (head - socket) + shaft;
+}
+
+# ---------------------------------------------------------------------------
+# SetScrew — ISO 4026 (flat point)
+#
+# Fully threaded cylinder with hex socket recess on top.
+# Bottom at Z=0, body extends upward (+Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.SetScrew(Length length) {
+    # Threaded body
+    var body = T.New(self.size).Outside(length);
+
+    # Socket recess from top
+    var sock_depth = self.major_d * 0.6;
+    var sock_cr = self.set_socket / (2 * Cos(30 deg));
+    var socket = NewPolygon(for i [0:<6] {
+        yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
+    }).Extrude(sock_depth + 1 mm)
+        .Translate(0 mm, 0 mm, length - sock_depth);
+
+    return body - socket;
+}
+
+# ---------------------------------------------------------------------------
+# Thumbscrew — knurled head + threaded shaft
+#
+# Head at Z=0, shaft extends upward (+Z).
+# Simple form uses default head dimensions and knurling.
+# ---------------------------------------------------------------------------
+
+Solid Fastener.Thumbscrew(Length length) {
+    var knurl_count = self.major_d / (1 mm) * 6;
+    var knurl = K.NewKnurl(knurl_count, 0.3 mm, 30 deg);
+    return self.Thumbscrew(length, self.major_d * 0.8, self.major_d * 1.2, knurl);
+}
+
+# Full form: specify head height, head radius, and a Knurl struct.
+Solid Fastener.Thumbscrew(Length length, Length head_h, Length head_r, Knurl knurl) {
+    var head = knurl.ApplyZ(NewCylinder(head_h, head_r, head_r));
+
+    # Threaded shaft
+    var shaft = T.New(self.size).Outside(length)
+        .Translate(0 mm, 0 mm, head_h);
+
+    return head + shaft;
+}
+
+# ---------------------------------------------------------------------------
+# FlatHeadScrew — ISO 1580 slotted pan head
+#
+# Pan head with a single straight slot across the top, threaded shaft above.
+# Head at Z=0, shaft extends upward (+Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.FlatHeadScrew(Length length) {
+    var hd = self.pan_head_d;
+    var hh = self.pan_head_h;
+
+    # Pan head
+    var head = NewCylinder(hh, hd / 2, hd / 2);
+
+    # Slot: rectangular cut across the full head diameter, from the top
+    var slot_depth = hh * 0.8;
+    var slot = NewCube(hd + 1 mm, self.slot_w, slot_depth + 1 mm)
+        .Translate(0 mm, 0 mm, hh - slot_depth / 2 + 0.5 mm);
+
+    # Threaded shaft
+    var shaft = T.New(self.size).Outside(length)
+        .Translate(0 mm, 0 mm, hh);
+
+    return (head - slot) + shaft;
+}
+
+# ---------------------------------------------------------------------------
+# PhillipsScrew — ISO 7045 Phillips pan head
+#
+# Pan head with a cross-shaped (Phillips) recess, threaded shaft above.
+# Head at Z=0, shaft extends upward (+Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.PhillipsScrew(Length length) {
+    var hd = self.pan_head_d;
+    var hh = self.pan_head_h;
+    var pw = self.phillips_w;
+
+    # Pan head
+    var head = NewCylinder(hh, hd / 2, hd / 2);
+
+    # Phillips recess: two crossed slots, cutting from the top
+    var recess_depth = hh * 0.8;
+    var arm_len = pw * 1.2;
+    var arm_w = pw * 0.25;
+    var slot_a = NewCube(arm_len, arm_w, recess_depth + 1 mm)
+        .Translate(0 mm, 0 mm, hh - recess_depth / 2 + 0.5 mm);
+    var slot_b = NewCube(arm_w, arm_len, recess_depth + 1 mm)
+        .Translate(0 mm, 0 mm, hh - recess_depth / 2 + 0.5 mm);
+    var recess = slot_a + slot_b;
+
+    # Threaded shaft
+    var shaft = T.New(self.size).Outside(length)
+        .Translate(0 mm, 0 mm, hh);
+
+    return (head - recess) + shaft;
+}
+
+# ---------------------------------------------------------------------------
+# Standoff — female-female hex standoff
+#
+# Hex body with internal threads on both ends.
+# Body spans Z=0 upward (+Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.Standoff(Length length) {
+    # Hex body
+    var cr = self.hex_af / (2 * Cos(30 deg));
+    var body = NewPolygon(for i [0:<6] {
+        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    }).Extrude(length);
+
+    # Internal threads at both ends
+    var thread_depth = Min(self.major_d, length / 2);
+    var top_thread = T.New(self.size).Inside(thread_depth)
+        .Translate(0 mm, 0 mm, length - thread_depth);
+    var bot_thread = T.New(self.size).Inside(thread_depth);
+
+    return body - top_thread - bot_thread;
+}
+
+# ---------------------------------------------------------------------------
+# MaleStandoff — male-female hex standoff
+#
+# Hex body with internal thread at bottom and external thread protruding above.
+# Hex body spans Z=0 upward (+Z). Male thread extends above the body (+Z).
+# ---------------------------------------------------------------------------
+
+Solid Fastener.MaleStandoff(Length length, Length thread_len) {
+    # Hex body
+    var cr = self.hex_af / (2 * Cos(30 deg));
+    var body = NewPolygon(for i [0:<6] {
+        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    }).Extrude(length);
+
+    # Internal thread at bottom
+    var thread_depth = Min(self.major_d, length / 2);
+    var bot_thread = T.New(self.size).Inside(thread_depth);
+
+    # External thread protruding above
+    var male_thread = T.New(self.size).Outside(thread_len)
+        .Translate(0 mm, 0 mm, length);
+
+    return (body - bot_thread) + male_thread;
+}
