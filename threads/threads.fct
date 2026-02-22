@@ -1,0 +1,280 @@
+# Thread specification for ISO metric, UTS/SAE, and NPT pipe threads.
+#
+# All standards use the same 60° V-profile. The `taper` field controls
+# diameter growth per unit length (`0` for straight, `1/16` for NPT).
+# The `tolerance` field is a radial clearance applied to both inside and
+# outside threads — 0.2 mm by default, suitable for FDM 3D printing.
+struct Thread {
+    Length pitch;
+    Length major_diameter;
+    Number taper;
+    Length tolerance;
+}
+
+# Creates a `Thread` from a standard size name.
+#
+# **Metric coarse (ISO):** `"m2"`, `"m2.5"`, `"m3"`, `"m4"`, `"m5"`, `"m6"`, `"m8"`, `"m10"`, `"m12"`, `"m16"`, `"m20"`
+#
+# **Metric fine (ISO):** `"m8x1"`, `"m10x1"`, `"m10x1.25"`, `"m12x1.25"`, `"m12x1.5"`,
+# `"m16x1.5"`, `"m20x1.5"`, `"m20x2"`
+#
+# **SAE UNC (coarse):** `"#4-40"`, `"#6-32"`, `"#8-32"`, `"#10-24"`,
+# `"1/4-20"`, `"5/16-18"`, `"3/8-16"`, `"7/16-14"`, `"1/2-13"`, `"5/8-11"`, `"3/4-10"`
+#
+# **SAE UNF (fine):** `"#4-48"`, `"#6-40"`, `"#8-36"`, `"#10-32"`,
+# `"1/4-28"`, `"5/16-24"`, `"3/8-24"`, `"7/16-20"`, `"1/2-20"`, `"5/8-18"`, `"3/4-16"`
+#
+# **NPT:** `"1/8-npt"`, `"1/4-npt"`, `"3/8-npt"`, `"1/2-npt"`, `"3/4-npt"`, `"1-npt"`
+Thread New(String size) {
+    # --- Metric ISO ---
+    return if size == "m2" {
+        return Thread { pitch: 0.4 mm, major_diameter: 2 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m2.5" {
+        return Thread { pitch: 0.45 mm, major_diameter: 2.5 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m3" {
+        return Thread { pitch: 0.5 mm, major_diameter: 3 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m4" {
+        return Thread { pitch: 0.7 mm, major_diameter: 4 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m5" {
+        return Thread { pitch: 0.8 mm, major_diameter: 5 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m6" {
+        return Thread { pitch: 1.0 mm, major_diameter: 6 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m8" {
+        return Thread { pitch: 1.25 mm, major_diameter: 8 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m10" {
+        return Thread { pitch: 1.5 mm, major_diameter: 10 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m12" {
+        return Thread { pitch: 1.75 mm, major_diameter: 12 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m16" {
+        return Thread { pitch: 2.0 mm, major_diameter: 16 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m20" {
+        return Thread { pitch: 2.5 mm, major_diameter: 20 mm, taper: 0, tolerance: 0.1 mm };
+    # --- Metric ISO fine ---
+    } else if size == "m8x1" {
+        return Thread { pitch: 1.0 mm, major_diameter: 8 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m10x1" {
+        return Thread { pitch: 1.0 mm, major_diameter: 10 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m10x1.25" {
+        return Thread { pitch: 1.25 mm, major_diameter: 10 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m12x1.25" {
+        return Thread { pitch: 1.25 mm, major_diameter: 12 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m12x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 12 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m16x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 16 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m20x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 20 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m20x2" {
+        return Thread { pitch: 2.0 mm, major_diameter: 20 mm, taper: 0, tolerance: 0.1 mm };
+    # --- SAE UNC (coarse, numbered) ---
+    } else if size == "#4-40" {
+        return Thread { pitch: 1/40 in, major_diameter: 0.112 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "#6-32" {
+        return Thread { pitch: 1/32 in, major_diameter: 0.138 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "#8-32" {
+        return Thread { pitch: 1/32 in, major_diameter: 0.164 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "#10-24" {
+        return Thread { pitch: 1/24 in, major_diameter: 0.190 in, taper: 0, tolerance: 0.1 mm };
+    # --- SAE UNC (coarse, fractional) ---
+    } else if size == "1/4-20" {
+        return Thread { pitch: 1/20 in, major_diameter: 1/4 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "5/16-18" {
+        return Thread { pitch: 1/18 in, major_diameter: 5/16 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "3/8-16" {
+        return Thread { pitch: 1/16 in, major_diameter: 3/8 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "7/16-14" {
+        return Thread { pitch: 1/14 in, major_diameter: 7/16 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "1/2-13" {
+        return Thread { pitch: 1/13 in, major_diameter: 1/2 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "5/8-11" {
+        return Thread { pitch: 1/11 in, major_diameter: 5/8 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "3/4-10" {
+        return Thread { pitch: 1/10 in, major_diameter: 3/4 in, taper: 0, tolerance: 0.1 mm };
+    # --- SAE UNF (fine, numbered) ---
+    } else if size == "#4-48" {
+        return Thread { pitch: 1/48 in, major_diameter: 0.112 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "#6-40" {
+        return Thread { pitch: 1/40 in, major_diameter: 0.138 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "#8-36" {
+        return Thread { pitch: 1/36 in, major_diameter: 0.164 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "#10-32" {
+        return Thread { pitch: 1/32 in, major_diameter: 0.190 in, taper: 0, tolerance: 0.1 mm };
+    # --- SAE UNF (fine, fractional) ---
+    } else if size == "1/4-28" {
+        return Thread { pitch: 1/28 in, major_diameter: 1/4 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "5/16-24" {
+        return Thread { pitch: 1/24 in, major_diameter: 5/16 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "3/8-24" {
+        return Thread { pitch: 1/24 in, major_diameter: 3/8 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "7/16-20" {
+        return Thread { pitch: 1/20 in, major_diameter: 7/16 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "1/2-20" {
+        return Thread { pitch: 1/20 in, major_diameter: 1/2 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "5/8-18" {
+        return Thread { pitch: 1/18 in, major_diameter: 5/8 in, taper: 0, tolerance: 0.1 mm };
+    } else if size == "3/4-16" {
+        return Thread { pitch: 1/16 in, major_diameter: 3/4 in, taper: 0, tolerance: 0.1 mm };
+    # --- NPT (diameter is pipe OD, not nominal pipe size) ---
+    } else if size == "1/8-npt" {
+        return Thread { pitch: 1/27 in, major_diameter: 0.405 in, taper: 1/16, tolerance: 0.1 mm };
+    } else if size == "1/4-npt" {
+        return Thread { pitch: 1/18 in, major_diameter: 0.540 in, taper: 1/16, tolerance: 0.1 mm };
+    } else if size == "3/8-npt" {
+        return Thread { pitch: 1/18 in, major_diameter: 0.675 in, taper: 1/16, tolerance: 0.1 mm };
+    } else if size == "1/2-npt" {
+        return Thread { pitch: 1/14 in, major_diameter: 0.840 in, taper: 1/16, tolerance: 0.1 mm };
+    } else if size == "3/4-npt" {
+        return Thread { pitch: 1/14 in, major_diameter: 1.050 in, taper: 1/16, tolerance: 0.1 mm };
+    } else if size == "1-npt" {
+        return Thread { pitch: 2/23 in, major_diameter: 1.315 in, taper: 1/16, tolerance: 0.1 mm };
+    } else {
+        return Thread { pitch: 0.5 mm, major_diameter: 3 mm, taper: 0, tolerance: 0.1 mm };
+    };
+}
+
+# Generates an external (outside) thread `Solid`.
+#
+# Uses a 60° V-profile with H/8 crest truncation and H/4 root truncation.
+# When `taper > 0` (NPT), the polygon is built at the small-end radius and
+# the extrusion scales to the large-end radius.
+#
+# Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
+Solid Thread.Outside(Length length) {
+    var pitch = self.pitch;
+    var major_d = self.major_diameter;
+    var taper = self.taper;
+    var tol = self.tolerance;
+    var turns = length / pitch;
+
+    # Taper: diameter changes by length * taper over the full length
+    var taper_d = length * taper;
+    var d_small = major_d - taper_d / 2;
+    var d_large = major_d + taper_d / 2;
+    var taper_scale = if taper > 0 { return d_large / d_small; } else { return 1; };
+
+    var H = pitch * Sqrt(3) / 2;
+    # Shrink outside thread by tolerance so printed bolt fits
+    var r_maj = d_small / 2 - tol;
+    var r_min = r_maj - H * 0.625;
+
+    # ISO angular half-widths (constant for all 60-deg threads):
+    #   crest: (P/16) * 2π/P = π/8 = 22.5 deg
+    #   root:  (3P/8) * 2π/P = 3π/4 = 135 deg
+    var crest_half = 22.5 deg;
+    var root_half = 135 deg;
+    var gap = 360 deg - 2 * root_half;
+
+    # Sample counts per polygon segment
+    var n_flank = 10;
+    var n_crest = 4;
+    var n_root = 8;
+    var n_total = n_flank * 2 + n_crest + n_root;
+
+    # Build tooth polygon in polar coordinates: (r*cos(theta), r*sin(theta))
+    # Segments: leading flank, crest arc, trailing flank, root arc
+    var points = for i[0:<n_total] {
+        var pt = if i < n_flank {
+            # Leading flank: (r_min, -root_half) to (r_maj, -crest_half)
+            var t = i / (n_flank - 1);
+            var r = r_min + (r_maj - r_min) * t;
+            var theta = (0 deg - root_half) + (root_half - crest_half) * t;
+            return NewPoint2d(r * Cos(theta), r * Sin(theta));
+        } else if i < n_flank + n_crest {
+            # Crest arc at r_maj: from -crest_half to +crest_half
+            var j = i - n_flank;
+            var t = j / (n_crest - 1);
+            var theta = (0 deg - crest_half) + 2 * crest_half * t;
+            return NewPoint2d(r_maj * Cos(theta), r_maj * Sin(theta));
+        } else if i < n_flank * 2 + n_crest {
+            # Trailing flank: (r_maj, +crest_half) to (r_min, +root_half)
+            var j = i - n_flank - n_crest;
+            var t = j / (n_flank - 1);
+            var r = r_maj + (r_min - r_maj) * t;
+            var theta = crest_half + (root_half - crest_half) * t;
+            return NewPoint2d(r * Cos(theta), r * Sin(theta));
+        } else {
+            # Root arc at r_min: from +root_half through 180 deg to -root_half (90 deg span)
+            var j = i - n_flank * 2 - n_crest;
+            var t = j / (n_root - 1);
+            var theta = root_half + gap * t;
+            return NewPoint2d(r_min * Cos(theta), r_min * Sin(theta));
+        };
+        yield pt;
+    };
+
+    var tooth = NewPolygon(points);
+    return tooth.Extrude(length, turns * 80, turns * 360 deg, taper_scale, taper_scale);
+}
+
+# Generates an internal (inside) thread `Solid`.
+#
+# Adds clearance tolerance and uses a sharp V-profile. The radii are shifted
+# outward so a bolt fits with clearance. When `taper > 0` (NPT), applies
+# taper scaling during extrusion.
+#
+# Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
+# Subtract this from a nut body to create internal threads.
+Solid Thread.Inside(Length length) {
+    var pitch = self.pitch;
+    var major_d = self.major_diameter;
+    var taper = self.taper;
+    var turns = length / pitch;
+
+    # Taper: diameter changes by length * taper over the full length
+    var taper_d = length * taper;
+    var d_small = major_d - taper_d / 2;
+    var d_large = major_d + taper_d / 2;
+    var taper_scale = if taper > 0 { return d_large / d_small; } else { return 1; };
+
+    var H = pitch * Sqrt(3) / 2;
+    # Expand inside thread by tolerance so printed nut fits
+    var tol = self.tolerance;
+    var r_maj = d_small / 2 + tol;
+    var r_min = d_small / 2 - H * 0.625 + tol;
+
+    # Sharp V-profile: minimal crest/root flats
+    var crest_half = 5 deg;
+    var root_half = 170 deg;
+    var gap = 360 deg - 2 * root_half;
+
+    # Sample counts per polygon segment
+    var n_flank = 10;
+    var n_crest = 2;
+    var n_root = 2;
+    var n_total = n_flank * 2 + n_crest + n_root;
+
+    # Build tooth polygon in polar coordinates
+    # Segments: leading flank, crest arc, trailing flank, root arc
+    var points = for i[0:<n_total] {
+        var pt = if i < n_flank {
+            # Leading flank: (r_min, -root_half) to (r_maj, -crest_half)
+            var t = i / (n_flank - 1);
+            var r = r_min + (r_maj - r_min) * t;
+            var theta = (0 deg - root_half) + (root_half - crest_half) * t;
+            return NewPoint2d(r * Cos(theta), r * Sin(theta));
+        } else if i < n_flank + n_crest {
+            # Crest at r_maj: from -crest_half to +crest_half
+            var j = i - n_flank;
+            var t = j / (n_crest - 1);
+            var theta = (0 deg - crest_half) + 2 * crest_half * t;
+            return NewPoint2d(r_maj * Cos(theta), r_maj * Sin(theta));
+        } else if i < n_flank * 2 + n_crest {
+            # Trailing flank: (r_maj, +crest_half) to (r_min, +root_half)
+            var j = i - n_flank - n_crest;
+            var t = j / (n_flank - 1);
+            var r = r_maj + (r_min - r_maj) * t;
+            var theta = crest_half + (root_half - crest_half) * t;
+            return NewPoint2d(r * Cos(theta), r * Sin(theta));
+        } else {
+            # Root at r_min: from +root_half to -root_half
+            var j = i - n_flank * 2 - n_crest;
+            var t = j / (n_root - 1);
+            var theta = root_half + gap * t;
+            return NewPoint2d(r_min * Cos(theta), r_min * Sin(theta));
+        };
+        yield pt;
+    };
+
+    var tooth = NewPolygon(points);
+    return tooth.Extrude(length, turns * 80, turns * 360 deg, taper_scale, taper_scale);
+}

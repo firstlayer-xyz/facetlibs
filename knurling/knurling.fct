@@ -1,0 +1,100 @@
+# Knurling Library
+# Adds crosshatch diamond grip texture to 3D solids.
+#
+# Usage:
+#   var K = lib "facet/knurling";
+#   var knurl = K.NewKnurl(40, 0.5 mm, 30 deg);
+#   return knurl.Apply(cylinder);
+
+# ---------------------------------------------------------------------------
+# Knurl Type
+# ---------------------------------------------------------------------------
+
+struct Knurl {
+    Number count;
+    Length depth;
+    Angle pitch_angle;
+}
+
+# Creates a knurl pattern with the given groove `count`, `depth`, and `pitch_angle`.
+Knurl NewKnurl(Number count, Length depth, Angle pitch_angle) {
+    return Knurl { count: count, depth: depth, pitch_angle: pitch_angle };
+}
+
+# ---------------------------------------------------------------------------
+# Core: Apply knurl around Z axis
+# ---------------------------------------------------------------------------
+
+Solid Knurl.ApplyZ(Solid target) {
+    # 1. Get bounding box
+    var box = target.BoundingBox();
+    var rx = Max(Abs(box.min.x), Abs(box.max.x));
+    var ry = Max(Abs(box.min.y), Abs(box.max.y));
+    var r_max = Max(rx, ry);
+    var z_lo = box.min.z;
+    var z_hi = box.max.z;
+    var margin = self.depth;
+    var h = z_hi - z_lo + margin * 2;
+
+    # 2. Star polygon radii
+    var r_crest = r_max + self.depth;
+    var r_valley = r_max - self.depth;
+
+    # 3. Build star polygon (2*count vertices, alternating crest/valley)
+    var n = self.count;
+    var angle_step = 360 deg / n;
+    var half_step = angle_step / 2;
+    var n_pts = n * 2;
+
+    var points = for idx [0:<n_pts] {
+        var i = Floor(idx / 2);
+        var base_angle = i * angle_step;
+        yield if Floor(idx / 2) * 2 == idx {
+            # Even index: crest point
+            return NewPoint2d(r_crest * Cos(base_angle), r_crest * Sin(base_angle));
+        } else {
+            # Odd index: valley point (offset by half step)
+            return NewPoint2d(r_valley * Cos(base_angle + half_step),
+                       r_valley * Sin(base_angle + half_step));
+        };
+    };
+    var star = NewPolygon(points);
+
+    # 4. Calculate helical twist
+    var r_num = r_max / (1 mm);
+    var h_num = h / (1 mm);
+    var turns = h_num * Tan(self.pitch_angle) / (TAU * r_num);
+    var total_twist = turns * 360 deg;
+    var slices = Max(Floor(Abs(turns) * self.count * 4), 20);
+
+    # 5. Two crossed helixes, positioned at target Z
+    var z_offset = z_lo - margin;
+    var helix_a = star.Extrude(h, slices, total_twist, 1, 1)
+        .Translate(0 mm, 0 mm, z_offset);
+    var helix_b = star.Extrude(h, slices, -total_twist, 1, 1)
+        .Translate(0 mm, 0 mm, z_offset);
+
+    # 6. Diamond pattern via double intersection
+    return (target ^ helix_a) ^ helix_b;
+}
+
+# ---------------------------------------------------------------------------
+# Axis Variants
+# ---------------------------------------------------------------------------
+
+# Applies knurl around the Z axis (default).
+Solid Knurl.Apply(Solid target) {
+    return self.ApplyZ(target);
+}
+
+# Applies knurl around the X axis.
+Solid Knurl.ApplyX(Solid target) {
+    return self.ApplyZ(target.Rotate(0 deg, 90 deg, 0 deg))
+              .Rotate(0 deg, -90 deg, 0 deg);
+}
+
+# Applies knurl around the Y axis.
+Solid Knurl.ApplyY(Solid target) {
+    return self.ApplyZ(target.Rotate(90 deg, 0 deg, 0 deg))
+              .Rotate(-90 deg, 0 deg, 0 deg);
+}

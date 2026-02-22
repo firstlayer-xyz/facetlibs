@@ -4,19 +4,19 @@
 # button head cap screws, countersunk screws, set screws, thumbscrews,
 # flat head (slotted) screws, Phillips screws, and standoffs.
 #
-# Uses `facet/threads` for thread geometry and `facet/knurling` for thumbscrew grip.
+# Uses threads for thread geometry and knurling for thumbscrew grip.
 #
 # Usage:
 #   var F = lib "github.com/firstlayer-xyz/facetlibs/fasteners@main";
 #   var f = F.New("m8");
 #   return f.HexBolt(30 mm);
 
-var T = lib "facet/threads";
-var K = lib "facet/knurling";
+var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main";
+var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main";
 
 # ---------------------------------------------------------------------------
 # Re-export Knurl constructor so users can create knurl specs without
-# importing facet/knurling separately.
+# importing knurling separately.
 #
 # Example: `F.NewKnurl(40, 0.5 mm, 30 deg)`
 # ---------------------------------------------------------------------------
