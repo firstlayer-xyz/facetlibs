@@ -248,13 +248,13 @@ Solid Fastener.SocketHeadCapScrew(Length length) {
     # Head
     var head = NewCylinder(hh, self.shcs_head_d / 2, self.shcs_head_d / 2);
 
-    # Socket recess (hex prism) — cuts from top into head
+    # Socket recess (hex prism) — cuts from the visible face (Z=0)
     var sock_depth = hh * 0.8;
     var sock_cr = self.shcs_socket / (2 * Cos(30 deg));
     var socket = NewPolygon(for i [0:<6] {
         yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
     }).Extrude(sock_depth + 1 mm)
-        .Translate(0 mm, 0 mm, hh - sock_depth);
+        .Translate(0 mm, 0 mm, -1 mm);
 
     # Threaded shaft
     var shaft = T.New(self.size).Outside(length)
@@ -274,24 +274,27 @@ Solid Fastener.ButtonHeadCapScrew(Length length) {
     var d = self.bhcs_head_d;
     var h = self.bhcs_head_h;
 
-    # Sphere radius: R = (d²/4 + h²) / (2h)
+    # Sphere sized so dome is d/2 wide at Z=0 and major_d/2 wide at Z=h
     var d_num = d / (1 mm);
     var h_num = h / (1 mm);
-    var R_num = (d_num * d_num / 4 + h_num * h_num) / (2 * h_num);
+    var md_num = self.major_d / (1 mm);
+    var c_num = (h_num * h_num + md_num * md_num / 4 - d_num * d_num / 4) / (2 * h_num);
+    var R_num = Sqrt(c_num * c_num + d_num * d_num / 4);
     var R = R_num * 1 mm;
+    var c = c_num * 1 mm;
 
     # Dome = sphere intersected with cylinder, bottom at Z=0
-    var sphere = NewSphere(R).Translate(0 mm, 0 mm, h - R);
+    var sphere = NewSphere(R).Translate(0 mm, 0 mm, c);
     var clip = NewCylinder(h, d / 2, d / 2);
     var dome = sphere ^ clip;
 
-    # Socket recess — cuts from top into dome
+    # Socket recess — cuts from the visible face (Z=0)
     var sock_depth = h * 0.7;
     var sock_cr = self.bhcs_socket / (2 * Cos(30 deg));
     var socket = NewPolygon(for i [0:<6] {
         yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
     }).Extrude(sock_depth + 1 mm)
-        .Translate(0 mm, 0 mm, h - sock_depth);
+        .Translate(0 mm, 0 mm, -1 mm);
 
     # Threaded shaft
     var shaft = T.New(self.size).Outside(length)
@@ -304,20 +307,20 @@ Solid Fastener.ButtonHeadCapScrew(Length length) {
 # CountersunkScrew — ISO 10642
 #
 # Conical head (flat top flush with surface) with hex socket, threaded shaft.
-# Head at Z=0, cone widens upward (+Z), shaft extends upward (+Z).
+# Wide base at Z=0, narrows to shaft diameter at Z=head_h, shaft extends upward (+Z).
 # ---------------------------------------------------------------------------
 
 Solid Fastener.CountersunkScrew(Length length) {
-    # Conical head: bottom is shaft diameter (Z=0), top is wide end
-    var head = NewCylinder(self.fhcs_head_h, self.major_d / 2, self.fhcs_head_d / 2);
+    # Conical head: wide base at Z=0, narrows to shaft diameter at top
+    var head = NewCylinder(self.fhcs_head_h, self.fhcs_head_d / 2, self.major_d / 2);
 
-    # Socket recess — cuts from top into cone
+    # Socket recess — cuts from the visible face (Z=0)
     var sock_depth = self.fhcs_head_h * 0.7;
     var sock_cr = self.fhcs_socket / (2 * Cos(30 deg));
     var socket = NewPolygon(for i [0:<6] {
         yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
     }).Extrude(sock_depth + 1 mm)
-        .Translate(0 mm, 0 mm, self.fhcs_head_h - sock_depth);
+        .Translate(0 mm, 0 mm, -1 mm);
 
     # Threaded shaft
     var shaft = T.New(self.size).Outside(length)
@@ -386,10 +389,10 @@ Solid Fastener.FlatHeadScrew(Length length) {
     # Pan head
     var head = NewCylinder(hh, hd / 2, hd / 2);
 
-    # Slot: rectangular cut across the full head diameter, from the top
+    # Slot: rectangular cut across the full head diameter, from the bottom face
     var slot_depth = hh * 0.8;
     var slot = NewCube(hd + 1 mm, self.slot_w, slot_depth + 1 mm)
-        .Translate(0 mm, 0 mm, hh - slot_depth / 2 + 0.5 mm);
+        .Translate(0 mm, 0 mm, slot_depth / 2 - 0.5 mm);
 
     # Threaded shaft
     var shaft = T.New(self.size).Outside(length)
@@ -413,14 +416,14 @@ Solid Fastener.PhillipsScrew(Length length) {
     # Pan head
     var head = NewCylinder(hh, hd / 2, hd / 2);
 
-    # Phillips recess: two crossed slots, cutting from the top
+    # Phillips recess: two crossed slots, cutting from the bottom face
     var recess_depth = hh * 0.8;
     var arm_len = pw * 1.2;
     var arm_w = pw * 0.25;
     var slot_a = NewCube(arm_len, arm_w, recess_depth + 1 mm)
-        .Translate(0 mm, 0 mm, hh - recess_depth / 2 + 0.5 mm);
+        .Translate(0 mm, 0 mm, recess_depth / 2 - 0.5 mm);
     var slot_b = NewCube(arm_w, arm_len, recess_depth + 1 mm)
-        .Translate(0 mm, 0 mm, hh - recess_depth / 2 + 0.5 mm);
+        .Translate(0 mm, 0 mm, recess_depth / 2 - 0.5 mm);
     var recess = slot_a + slot_b;
 
     # Threaded shaft
