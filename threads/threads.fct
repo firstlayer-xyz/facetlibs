@@ -17,7 +17,10 @@ struct Thread {
 # `"m24"`, `"m30"`, `"m36"`, `"m42"`, `"m48"`, `"m56"`, `"m64"`
 #
 # **Metric fine (ISO):** `"m8x1"`, `"m10x1"`, `"m10x1.25"`, `"m12x1.25"`, `"m12x1.5"`,
-# `"m16x1.5"`, `"m20x1.5"`, `"m20x2"`
+# `"m16x1.5"`, `"m20x1.5"`, `"m20x2"`, `"m24x1.5"`, `"m24x2"`, `"m30x1.5"`, `"m30x2"`,
+# `"m36x1.5"`, `"m36x2"`, `"m36x3"`, `"m42x1.5"`, `"m42x2"`, `"m42x3"`,
+# `"m48x1.5"`, `"m48x2"`, `"m48x3"`, `"m56x1.5"`, `"m56x2"`, `"m56x4"`,
+# `"m64x1.5"`, `"m64x2"`, `"m64x4"`
 #
 # **SAE UNC (coarse):** `"#4-40"`, `"#6-32"`, `"#8-32"`, `"#10-24"`,
 # `"1/4-20"`, `"5/16-18"`, `"3/8-16"`, `"7/16-14"`, `"1/2-13"`, `"5/8-11"`, `"3/4-10"`
@@ -81,6 +84,44 @@ Thread New(String size) {
         return Thread { pitch: 1.5 mm, major_diameter: 20 mm, taper: 0, tolerance: 0.1 mm };
     } else if size == "m20x2" {
         return Thread { pitch: 2.0 mm, major_diameter: 20 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m24x2" {
+        return Thread { pitch: 2.0 mm, major_diameter: 24 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m24x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 24 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m30x2" {
+        return Thread { pitch: 2.0 mm, major_diameter: 30 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m30x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 30 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m36x3" {
+        return Thread { pitch: 3.0 mm, major_diameter: 36 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m36x2" {
+        return Thread { pitch: 2.0 mm, major_diameter: 36 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m36x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 36 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m42x3" {
+        return Thread { pitch: 3.0 mm, major_diameter: 42 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m42x2" {
+        return Thread { pitch: 2.0 mm, major_diameter: 42 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m42x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 42 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m48x3" {
+        return Thread { pitch: 3.0 mm, major_diameter: 48 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m48x2" {
+        return Thread { pitch: 2.0 mm, major_diameter: 48 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m48x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 48 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m56x4" {
+        return Thread { pitch: 4.0 mm, major_diameter: 56 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m56x2" {
+        return Thread { pitch: 2.0 mm, major_diameter: 56 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m56x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 56 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m64x4" {
+        return Thread { pitch: 4.0 mm, major_diameter: 64 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m64x2" {
+        return Thread { pitch: 2.0 mm, major_diameter: 64 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m64x1.5" {
+        return Thread { pitch: 1.5 mm, major_diameter: 64 mm, taper: 0, tolerance: 0.1 mm };
     # --- SAE UNC (coarse, numbered) ---
     } else if size == "#4-40" {
         return Thread { pitch: 1/40 in, major_diameter: 0.112 in, taper: 0, tolerance: 0.1 mm };
