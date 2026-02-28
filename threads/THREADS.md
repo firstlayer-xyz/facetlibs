@@ -4,9 +4,9 @@
 
 ```chisel
 var T = lib "chisel/threads";
-var thread = T.New("m10");                 # Metric
-var thread = T.New("1/4-20");              # SAE UNC
-var thread = T.New("1/4-npt");             # NPT
+var thread = T.Thread("m10");                 # Metric
+var thread = T.Thread("1/4-20");              # SAE UNC
+var thread = T.Thread("1/4-npt");             # NPT
 ```
 
 ## Thread Struct

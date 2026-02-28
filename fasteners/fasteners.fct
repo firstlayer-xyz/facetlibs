@@ -36,6 +36,7 @@ Knurl Knurl(Number count, Length depth, Angle pitch_angle) {
 # ---------------------------------------------------------------------------
 
 var METRIC = [
+    #  dia   hex_af nut_h  bolt_h shcs_d shcs_h shcs_s bhcs_d bhcs_h bhcs_s fhcs_d  fhcs_h fhcs_s set_s  pan_d  pan_h  slot_w phil_w
     [ 2,    4.0,  1.6,  1.4,  3.8,   2.0,   1.5,  3.8,   1.3,   1.3,  3.8,    1.2,   1.3,  0.9,   4.0,   1.3,  0.5,  1.4  ],
     [ 2.5,  5.0,  2.0,  1.7,  4.5,   2.5,   2.0,  4.7,   1.5,   1.5,  4.7,    1.5,   1.5,  1.3,   5.0,   1.7,  0.6,  1.8  ],
     [ 3,    5.5,  2.4,  2.0,  5.5,   3.0,   2.5,  5.7,   1.65,  2.0,  5.54,   1.86,  2.0,  1.5,   6.0,   2.0,  0.8,  2.1  ],
@@ -48,53 +49,64 @@ var METRIC = [
     [12,   18.0, 10.8,  7.5, 18.0,  12.0,  10.0, 21.0,   6.6,   8.0, 23.12,   7.44,  8.0,  6.0,  24.0,   7.0,  3.0,  7.1  ],
     [14,   21.0, 12.8,  8.8, 21.0,  14.0,  12.0,  0,     0,     0,   27.0,    7.0,  10.0,  6.0,   0,     0,    0,    0    ],
     [16,   24.0, 14.8, 10.0, 24.0,  16.0,  14.0, 28.0,   8.8,  10.0, 29.01,   8.8,  10.0,  8.0,  30.0,   8.8,  4.0,  0    ],
-    [18,   27.0, 15.8, 11.5,  0,     0,     0,    0,     0,     0,   33.0,    8.0,  12.0, 10.0,   0,     0,    0,    0    ],
+    [18,   27.0, 15.8, 11.5, 27.0,  18.0,  14.0,  0,     0,     0,   33.0,    8.0,  12.0, 10.0,   0,     0,    0,    0    ],
     [20,   30.0, 18.0, 12.5, 30.0,  20.0,  17.0,  0,     0,     0,   36.05,  10.16, 12.0, 10.0,  36.0,  10.0,  5.0,  0    ],
-    [22,   34.0, 19.4, 14.0,  0,     0,     0,    0,     0,     0,   36.0,   13.1,  14.0, 12.0,   0,     0,    0,    0    ],
+    [22,   34.0, 19.4, 14.0, 33.0,  22.0,  17.0,  0,     0,     0,   36.0,   13.1,  14.0, 12.0,   0,     0,    0,    0    ],
     [24,   36.0, 21.5, 15.0, 36.0,  24.0,  18.0,  0,     0,     0,   39.0,   14.0,  14.0, 12.0,  44.0,  12.0,  6.0,  0    ],
-    [27,   41.0, 23.8, 17.0,  0,     0,     0,    0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
+    [25,   41.0, 22.0, 16.0, 37.5,  25.0,  19.0,  0,     0,     0,    0,      0,     0,   12.0,   0,     0,    0,    0    ],
+    [26,   41.0, 22.5, 16.5, 39.0,  26.0,  19.0,  0,     0,     0,    0,      0,     0,   14.0,   0,     0,    0,    0    ],
+    [27,   41.0, 23.8, 17.0, 40.0,  27.0,  19.0,  0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
+    [28,   41.0, 24.0, 18.0, 42.0,  28.0,  19.0,  0,     0,     0,    0,      0,     0,   14.0,   0,     0,    0,    0    ],
     [30,   46.0, 25.6, 19.0, 45.0,  30.0,  22.0,  0,     0,     0,    0,      0,     0,   15.0,   0,     0,    0,    0    ],
-    [33,   50.0, 28.7, 21.0,  0,     0,     0,    0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
+    [32,   50.0, 27.0, 20.0, 48.0,  32.0,  22.0,  0,     0,     0,    0,      0,     0,   17.0,   0,     0,    0,    0    ],
+    [33,   50.0, 28.7, 21.0, 50.0,  33.0,  24.0,  0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
+    [35,   55.0, 30.0, 22.0, 52.0,  35.0,  24.0,  0,     0,     0,    0,      0,     0,   17.0,   0,     0,    0,    0    ],
     [36,   55.0, 31.0, 23.0, 54.0,  36.0,  27.0,  0,     0,     0,    0,      0,     0,   18.0,   0,     0,    0,    0    ],
-    [39,   60.0, 33.4, 25.0,  0,     0,     0,    0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
+    [38,   60.0, 32.0, 24.0, 57.0,  38.0,  27.0,  0,     0,     0,    0,      0,     0,   19.0,   0,     0,    0,    0    ],
+    [39,   60.0, 33.4, 25.0, 58.5,  39.0,  27.0,  0,     0,     0,    0,      0,     0,   19.0,   0,     0,    0,    0    ],
+    [40,   65.0, 34.0, 25.5, 60.0,  40.0,  27.0,  0,     0,     0,    0,      0,     0,   19.0,   0,     0,    0,    0    ],
     [42,   65.0, 34.0, 26.0, 63.0,  42.0,  32.0,  0,     0,     0,    0,      0,     0,   21.0,   0,     0,    0,    0    ],
-    [45,   70.0, 36.0, 28.0,  0,     0,     0,    0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
+    [45,   70.0, 36.0, 28.0, 67.5,  45.0,  32.0,  0,     0,     0,    0,      0,     0,   22.0,   0,     0,    0,    0    ],
     [48,   75.0, 38.0, 30.0, 72.0,  48.0,  36.0,  0,     0,     0,    0,      0,     0,   24.0,   0,     0,    0,    0    ],
-    [52,   80.0, 41.0, 33.0,  0,     0,     0,    0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
+    [50,   75.0, 40.0, 31.0, 75.0,  50.0,  36.0,  0,     0,     0,    0,      0,     0,   24.0,   0,     0,    0,    0    ],
+    [52,   80.0, 41.0, 33.0, 78.0,  52.0,  36.0,  0,     0,     0,    0,      0,     0,   27.0,   0,     0,    0,    0    ],
+    [55,   85.0, 43.0, 34.0, 82.5,  55.0,  41.0,  0,     0,     0,    0,      0,     0,   27.0,   0,     0,    0,    0    ],
     [56,   85.0, 45.0, 35.0, 84.0,  56.0,  41.0,  0,     0,     0,    0,      0,     0,   28.0,   0,     0,    0,    0    ],
-    [60,   90.0, 46.0, 38.0,  0,     0,     0,    0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
+    [58,   90.0, 46.0, 36.0, 87.0,  58.0,  41.0,  0,     0,     0,    0,      0,     0,   28.0,   0,     0,    0,    0    ],
+    [60,   90.0, 46.0, 38.0, 90.0,  60.0,  46.0,  0,     0,     0,    0,      0,     0,   32.0,   0,     0,    0,    0    ],
+    [62,   95.0, 49.0, 39.0, 93.0,  62.0,  46.0,  0,     0,     0,    0,      0,     0,   32.0,   0,     0,    0,    0    ],
     [64,   95.0, 51.0, 40.0, 96.0,  64.0,  46.0,  0,     0,     0,    0,      0,     0,   32.0,   0,     0,    0,    0    ],
-    [68,  105.0, 54.4, 44.0,  0,     0,     0,    0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ]
+    [65,   95.0, 52.0, 41.0, 97.5,  65.0,  46.0,  0,     0,     0,    0,      0,     0,   32.0,   0,     0,    0,    0    ],
+    [68,  105.0, 54.4, 44.0,102.0,  68.0,  46.0,  0,     0,     0,    0,      0,     0,   36.0,   0,     0,    0,    0    ]
 ];
 
 # ---------------------------------------------------------------------------
 # Imperial Dimension Table (ASME B18.2.1, B18.2.2, B18.3, B18.6.3)
 #
 # Same 18-column layout as METRIC.
-# Column 0 = diameter in inches. Columns 1-17 = dimensions in inches.
-# DimRow() converts to mm before returning.
+# All dimensions use `in` suffix; DimRow() converts to mm-as-Number via Number().
 # Numbered sizes (#4-#10) have no hex bolts (bolt_head_h=0).
 # 7/16-3/4 have no pan head screws.
 # ---------------------------------------------------------------------------
 
 var IMPERIAL = [
-    #  dia     hex_af nut_h  bolt_h shcs_d shcs_h shcs_s bhcs_d bhcs_h bhcs_s fhcs_d fhcs_h fhcs_s set_s  pan_d  pan_h  slot_w phil_w
-    [ 0.112,  1/4,   3/32,  0,     0.183, 0.112, 3/32,  0.225, 0.075, 5/64,  0.225, 0.060, 5/64,  0.050, 0.219, 0.093, 0.039, 0.059 ],
-    [ 0.138,  5/16,  7/64,  0,     0.226, 0.138, 7/64,  0.279, 0.093, 7/64,  0.279, 0.073, 7/64,  1/16,  0.262, 0.110, 0.048, 0.071 ],
-    [ 0.164,  11/32, 1/8,   0,     0.270, 0.164, 9/64,  0.332, 0.110, 9/64,  0.332, 0.087, 9/64,  5/64,  0.306, 0.128, 0.054, 0.083 ],
-    [ 0.190,  3/8,   1/8,   0,     0.312, 0.190, 5/32,  0.385, 0.128, 5/32,  0.385, 0.100, 5/32,  3/32,  0.350, 0.144, 0.060, 0.091 ],
-    [ 1/4,    7/16,  7/32,  11/64, 3/8,   1/4,   3/16,  1/2,   5/32,  5/32,  0.452, 0.117, 5/32,  1/8,   0.492, 0.175, 0.075, 0     ],
-    [ 5/16,   1/2,   17/64, 7/32,  7/16,  5/16,  1/4,   5/8,   13/64, 3/16,  0.531, 0.151, 3/16,  5/32,  0.615, 0.218, 0.084, 0     ],
-    [ 3/8,    9/16,  21/64, 1/4,   9/16,  3/8,   5/16,  3/4,   15/64, 7/32,  0.656, 0.185, 7/32,  3/16,  0.740, 0.261, 0.094, 0     ],
-    [ 7/16,   11/16, 3/8,   19/64, 5/8,   7/16,  3/8,   7/8,   17/64, 1/4,   3/4,   0.210, 1/4,   7/32,  0,     0,     0,     0     ],
-    [ 1/2,    3/4,   7/16,  11/32, 3/4,   1/2,   3/8,   1,     5/16,  5/16,  0.812, 0.223, 5/16,  1/4,   0,     0,     0,     0     ],
-    [ 5/8,    15/16, 35/64, 27/64, 7/8,   5/8,   1/2,   5/4,   3/8,   3/8,   1,     0.283, 3/8,   5/16,  0,     0,     0,     0     ],
-    [ 3/4,    9/8,   41/64, 1/2,   9/8,   3/4,   5/8,   3/2,   7/16,  7/16,  9/8,   0.335, 7/16,  3/8,   0,     0,     0,     0     ]
+    #  dia        hex_af    nut_h     bolt_h    shcs_d    shcs_h    shcs_s    bhcs_d    bhcs_h    bhcs_s    fhcs_d    fhcs_h    fhcs_s    set_s     pan_d     pan_h     slot_w    phil_w
+    [ 0.112 in,  1/4 in,   3/32 in,  0,        0.183 in, 0.112 in, 3/32 in,  0.225 in, 0.075 in, 5/64 in,  0.225 in, 0.060 in, 5/64 in,  0.050 in, 0.219 in, 0.093 in, 0.039 in, 0.059 in ],
+    [ 0.138 in,  5/16 in,  7/64 in,  0,        0.226 in, 0.138 in, 7/64 in,  0.279 in, 0.093 in, 7/64 in,  0.279 in, 0.073 in, 7/64 in,  1/16 in,  0.262 in, 0.110 in, 0.048 in, 0.071 in ],
+    [ 0.164 in,  11/32 in, 1/8 in,   0,        0.270 in, 0.164 in, 9/64 in,  0.332 in, 0.110 in, 9/64 in,  0.332 in, 0.087 in, 9/64 in,  5/64 in,  0.306 in, 0.128 in, 0.054 in, 0.083 in ],
+    [ 0.190 in,  3/8 in,   1/8 in,   0,        0.312 in, 0.190 in, 5/32 in,  0.385 in, 0.128 in, 5/32 in,  0.385 in, 0.100 in, 5/32 in,  3/32 in,  0.350 in, 0.144 in, 0.060 in, 0.091 in ],
+    [ 1/4 in,    7/16 in,  7/32 in,  11/64 in, 3/8 in,   1/4 in,   3/16 in,  1/2 in,   5/32 in,  5/32 in,  0.452 in, 0.117 in, 5/32 in,  1/8 in,   0.492 in, 0.175 in, 0.075 in, 0        ],
+    [ 5/16 in,   1/2 in,   17/64 in, 7/32 in,  7/16 in,  5/16 in,  1/4 in,   5/8 in,   13/64 in, 3/16 in,  0.531 in, 0.151 in, 3/16 in,  5/32 in,  0.615 in, 0.218 in, 0.084 in, 0        ],
+    [ 3/8 in,    9/16 in,  21/64 in, 1/4 in,   9/16 in,  3/8 in,   5/16 in,  3/4 in,   15/64 in, 7/32 in,  0.656 in, 0.185 in, 7/32 in,  3/16 in,  0.740 in, 0.261 in, 0.094 in, 0        ],
+    [ 7/16 in,   11/16 in, 3/8 in,   19/64 in, 5/8 in,   7/16 in,  3/8 in,   7/8 in,   17/64 in, 1/4 in,   3/4 in,   0.210 in, 1/4 in,   7/32 in,  0,        0,        0,        0        ],
+    [ 1/2 in,    3/4 in,   7/16 in,  11/32 in, 3/4 in,   1/2 in,   3/8 in,   1 in,     5/16 in,  5/16 in,  0.812 in, 0.223 in, 5/16 in,  1/4 in,   0,        0,        0,        0        ],
+    [ 5/8 in,    15/16 in, 35/64 in, 27/64 in, 7/8 in,   5/8 in,   1/2 in,   5/4 in,   3/8 in,   3/8 in,   1 in,     0.283 in, 3/8 in,   5/16 in,  0,        0,        0,        0        ],
+    [ 3/4 in,    9/8 in,   41/64 in, 1/2 in,   9/8 in,   3/4 in,   5/8 in,   3/2 in,   7/16 in,  7/16 in,  9/8 in,   0.335 in, 7/16 in,  3/8 in,   0,        0,        0,        0        ]
 ];
 
 # Looks up a row by diameter — tries METRIC first, then IMPERIAL.
-# Imperial values are stored in inches; this converts them to mm before returning
-# so constructors can use `row[N] * 1 mm` uniformly.
+# Imperial values use `in` suffix and are converted to mm-as-Number before
+# returning, so constructors can use `row[N] * 1 mm` uniformly.
 Array DimRow(Length d) {
     var v = Number(d);
     var m = for i [0:<Size(METRIC)] {
@@ -103,13 +115,12 @@ Array DimRow(Length d) {
     return if Size(m) > 0 {
         return m[0];
     } else {
-        var vi = v / 25.4;
         var imp = for i [0:<Size(IMPERIAL)] {
-            if Abs(IMPERIAL[i][0] - vi) < 0.001 { yield IMPERIAL[i]; };
+            if Abs(Number(IMPERIAL[i][0]) - v) < 0.025 { yield IMPERIAL[i]; };
         };
         assert Size(imp) > 0, "unsupported fastener diameter";
         var row = imp[0];
-        return for j [0:<Size(row)] { yield row[j] * 25.4; };
+        return for j [0:<Size(row)] { yield Number(row[j]); };
     };
 }
 
@@ -128,7 +139,7 @@ struct HexNut {
 
 # Creates an ISO 4032 hex nut.
 HexNut HexNut(String size) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
     return HexNut {
         thread: t,
@@ -163,7 +174,7 @@ struct CapNut {
 
 # Creates a DIN 1587 cap nut.
 CapNut CapNut(String size) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
     var af = row[1] * 1 mm;
     return CapNut {
@@ -181,15 +192,18 @@ Solid CapNut.Solid() {
         yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.base_h);
 
-    # Dome: sphere section clipped to a cylinder above the hex base.
+    # Dome: sphere section clipped above the hex base.
+    # Use the flat-to-flat radius (hex_af/2), not the corner radius,
+    # so the dome sits flush with the hex flats.
     var dh = self.dome_h;
-    var cr_num = cr / (1 mm);
+    var flat_r = self.hex_af / 2;
+    var fr_num = flat_r / (1 mm);
     var dh_num = dh / (1 mm);
-    var R_num = (cr_num * cr_num + dh_num * dh_num) / (2 * dh_num);
+    var R_num = (fr_num * fr_num + dh_num * dh_num) / (2 * dh_num);
     var R = R_num * 1 mm;
     var sphere = Sphere(R)
         .Translate(0 mm, 0 mm, self.base_h + dh - R);
-    var clip = Cylinder(dh, cr, cr)
+    var clip = Cylinder(dh, flat_r, flat_r)
         .Translate(0 mm, 0 mm, self.base_h);
     var dome = sphere ^ clip;
 
@@ -218,7 +232,7 @@ struct WingNut {
 
 # Creates a DIN 315 wing nut. Dimensions derived proportionally.
 WingNut WingNut(String size) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
     var af = row[1] * 1 mm;
     var nh = row[2] * 1 mm;
@@ -293,7 +307,7 @@ struct Washer {
 
 # Creates a DIN 125 flat washer.
 Washer Washer(String size) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var md = t.major_diameter;
     return Washer {
         bore_d: md * 1.05,
@@ -325,8 +339,9 @@ struct HexBolt {
 
 # Creates an ISO 4014 hex bolt with the given shaft length.
 HexBolt HexBolt(String size, Length length) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
+    assert row[3] != 0, "HexBolt not available in " + size;
     return HexBolt {
         thread: t,
         hex_af: row[1] * 1 mm,
@@ -363,8 +378,9 @@ struct SocketHeadCapScrew {
 
 # Creates an ISO 4762 socket head cap screw.
 SocketHeadCapScrew SocketHeadCapScrew(String size, Length length) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
+    assert row[4] != 0, "SocketHeadCapScrew not available in " + size;
     return SocketHeadCapScrew {
         thread: t,
         head_d: row[4] * 1 mm,
@@ -407,8 +423,9 @@ struct ButtonHeadCapScrew {
 
 # Creates an ISO 7380 button head cap screw.
 ButtonHeadCapScrew ButtonHeadCapScrew(String size, Length length) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
+    assert row[7] != 0, "ButtonHeadCapScrew not available in " + size;
     return ButtonHeadCapScrew {
         thread: t,
         major_d: t.major_diameter,
@@ -462,8 +479,9 @@ struct CountersunkScrew {
 
 # Creates an ISO 10642 countersunk screw.
 CountersunkScrew CountersunkScrew(String size, Length length) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
+    assert row[10] != 0, "CountersunkScrew not available in " + size;
     return CountersunkScrew {
         thread: t,
         major_d: t.major_diameter,
@@ -504,8 +522,9 @@ struct SetScrew {
 
 # Creates an ISO 4026 set screw.
 SetScrew SetScrew(String size, Length length) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
+    assert row[13] != 0, "SetScrew not available in " + size;
     return SetScrew {
         thread: t,
         major_d: t.major_diameter,
@@ -542,7 +561,7 @@ struct Thumbscrew {
 
 # Creates a thumbscrew with default head dimensions and knurling.
 Thumbscrew Thumbscrew(String size, Length length) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var d = t.major_diameter;
     return Thumbscrew {
         thread: t,
@@ -556,7 +575,7 @@ Thumbscrew Thumbscrew(String size, Length length) {
 # Creates a thumbscrew with custom head dimensions and knurling.
 Thumbscrew Thumbscrew(String size, Length length, Length head_h, Length head_r, Knurl knurl) {
     return Thumbscrew {
-        thread: T.New(size),
+        thread: T.Thread(size),
         length: length,
         head_h: head_h,
         head_r: head_r,
@@ -589,8 +608,9 @@ struct FlatHeadScrew {
 
 # Creates an ISO 1580 flat head (slotted) screw.
 FlatHeadScrew FlatHeadScrew(String size, Length length) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
+    assert row[14] != 0, "FlatHeadScrew not available in " + size;
     return FlatHeadScrew {
         thread: t,
         head_d: row[14] * 1 mm,
@@ -630,8 +650,9 @@ struct PhillipsScrew {
 
 # Creates an ISO 7045 Phillips screw.
 PhillipsScrew PhillipsScrew(String size, Length length) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
+    assert row[14] != 0, "PhillipsScrew not available in " + size;
     return PhillipsScrew {
         thread: t,
         head_d: row[14] * 1 mm,
@@ -676,7 +697,7 @@ struct Standoff {
 
 # Creates a female-female hex standoff.
 Standoff Standoff(String size, Length length) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
     return Standoff {
         thread: t,
@@ -716,7 +737,7 @@ struct MaleStandoff {
 
 # Creates a male-female hex standoff.
 MaleStandoff MaleStandoff(String size, Length length, Length thread_len) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
     return MaleStandoff {
         thread: t,
@@ -745,7 +766,7 @@ Solid MaleStandoff.Solid() {
 # ---------------------------------------------------------------------------
 
 Array Showcase(String size, Length shaft_len, Length standoff_len) {
-    var t = T.New(size);
+    var t = T.Thread(size);
     var row = DimRow(t.major_diameter);
     var sp = row[1] * 1 mm * 2;
     return [

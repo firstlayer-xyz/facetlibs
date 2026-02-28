@@ -41,7 +41,7 @@ struct Fastener {
     Length bolt_head_h;
 }
 
-Fastener New(String size) {
+Fastener Fastener(String size) {
     return if size == "m3" {
         return Fastener {
             size: "m3", major_d: 3 mm,
@@ -62,7 +62,7 @@ Solid Fastener.HexNut() {
     var hex = Polygon(for i [0:<6] {
         yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.nut_h);
-    var internal = T.New(self.size).Inside(self.nut_h);
+    var internal = T.Thread(self.size).Inside(self.nut_h);
     return hex - internal;
 }
 
@@ -71,7 +71,7 @@ Solid Fastener.HexBolt(Length length) {
     var head = Polygon(for i [0:<6] {
         yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.bolt_head_h);
-    var shaft = T.New(self.size).Outside(length)
+    var shaft = T.Thread(self.size).Outside(length)
         .Translate(0 mm, 0 mm, self.bolt_head_h);
     return head + shaft;
 }
@@ -150,7 +150,7 @@ Access everything through dot notation on the import variable:
 var F = lib "github.com/firstlayer-xyz/facetlibs@main";
 
 Main() {
-    var f = F.New("m8");
+    var f = F.Fastener("m8");
     return [f.HexBolt(30 mm), f.HexNut()];
 }
 ```

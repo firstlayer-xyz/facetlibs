@@ -10,7 +10,7 @@ ISO metric, UTS/SAE, and NPT pipe thread generation.
 
 ```
 var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main";
-var t = T.New("m8");
+var t = T.Thread("m8");
 return t.Outside(20 mm);
 ```
 
@@ -30,7 +30,7 @@ ISO metric fasteners: hex nuts, hex bolts, socket head cap screws, button head c
 
 ```
 var F = lib "github.com/firstlayer-xyz/facetlibs/fasteners@main";
-var f = F.New("m8");
+var f = F.Fastener("m8");
 return f.HexBolt(30 mm);
 ```
 
