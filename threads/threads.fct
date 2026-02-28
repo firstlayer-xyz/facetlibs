@@ -13,9 +13,11 @@ struct Thread {
 
 # ISO metric coarse pitch table: [diameter, pitch]
 var METRIC_COARSE = [
-    [2, 0.4],  [2.5, 0.45], [3, 0.5],   [4, 0.7],  [5, 0.8],  [6, 1.0],
-    [8, 1.25], [10, 1.5],   [12, 1.75], [16, 2.0], [20, 2.5], [24, 3.0],
-    [30, 3.5], [36, 4.0],   [42, 4.5],  [48, 5.0], [56, 5.5], [64, 6.0]
+    [2, 0.4],   [2.5, 0.45], [3, 0.5],   [3.5, 0.6], [4, 0.7],   [5, 0.8],
+    [6, 1.0],   [8, 1.25],   [10, 1.5],  [12, 1.75], [14, 2.0],  [16, 2.0],
+    [18, 2.5],  [20, 2.5],   [22, 2.5],  [24, 3.0],  [27, 3.0],  [30, 3.5],
+    [33, 3.5],  [36, 4.0],   [39, 4.0],  [42, 4.5],  [45, 4.5],  [48, 5.0],
+    [52, 5.0],  [56, 5.5],   [60, 5.5],  [64, 6.0],  [68, 6.0]
 ];
 
 # Returns the ISO coarse pitch for a given metric diameter.
@@ -84,7 +86,7 @@ Thread ImperialThread(String size) {
 
 # Creates a `Thread` from a standard size name.
 #
-# **Metric coarse (ISO):** `"m2"` through `"m64"` — any standard diameter.
+# **Metric coarse (ISO):** `"m2"` through `"m68"` — all standard ISO diameters.
 #
 # **Metric fine (ISO):** `"m<d>x<p>"` — any diameter and pitch,
 # e.g. `"m8x1"`, `"m3x0.35"`, `"m30x2"`.
