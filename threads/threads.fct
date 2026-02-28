@@ -188,6 +188,17 @@ Thread New(String size) {
     };
 }
 
+# Creates a `Thread` with a custom pitch, using the base size for diameter.
+#
+# Example: `New("m30", 2 mm)` → M30 with 2 mm fine pitch.
+Thread New(String size, Length pitch) {
+    var t = New(size);
+    if pitch > 0 mm {
+        t.pitch = pitch;
+    };
+    return t;
+}
+
 # Generates an external (outside) thread `Solid`.
 #
 # Uses a 60° V-profile with H/8 crest truncation and H/4 root truncation.

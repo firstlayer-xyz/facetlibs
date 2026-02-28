@@ -31,6 +31,7 @@ Knurl NewKnurl(Number count, Length depth, Angle pitch_angle) {
 
 struct Fastener {
     String size;
+    Length pitch;
     Length major_d;
     Length hex_af;
     Length nut_h;
@@ -62,7 +63,7 @@ struct Fastener {
 Fastener New(String size) {
     return if size == "m2" {
         return Fastener {
-            size: "m2", major_d: 2 mm, hex_af: 4.0 mm,
+            size: "m2", pitch: 0 mm, major_d: 2 mm, hex_af: 4.0 mm,
             nut_h: 1.6 mm, bolt_head_h: 1.4 mm,
             shcs_head_d: 3.8 mm, shcs_head_h: 2.0 mm, shcs_socket: 1.5 mm,
             bhcs_head_d: 3.8 mm, bhcs_head_h: 1.3 mm, bhcs_socket: 1.3 mm,
@@ -73,7 +74,7 @@ Fastener New(String size) {
         };
     } else if size == "m2.5" {
         return Fastener {
-            size: "m2.5", major_d: 2.5 mm, hex_af: 5.0 mm,
+            size: "m2.5", pitch: 0 mm, major_d: 2.5 mm, hex_af: 5.0 mm,
             nut_h: 2.0 mm, bolt_head_h: 1.7 mm,
             shcs_head_d: 4.5 mm, shcs_head_h: 2.5 mm, shcs_socket: 2.0 mm,
             bhcs_head_d: 4.7 mm, bhcs_head_h: 1.5 mm, bhcs_socket: 1.5 mm,
@@ -84,7 +85,7 @@ Fastener New(String size) {
         };
     } else if size == "m3" {
         return Fastener {
-            size: "m3", major_d: 3 mm, hex_af: 5.5 mm,
+            size: "m3", pitch: 0 mm, major_d: 3 mm, hex_af: 5.5 mm,
             nut_h: 2.4 mm, bolt_head_h: 2.0 mm,
             shcs_head_d: 5.5 mm, shcs_head_h: 3.0 mm, shcs_socket: 2.5 mm,
             bhcs_head_d: 5.7 mm, bhcs_head_h: 1.65 mm, bhcs_socket: 2.0 mm,
@@ -95,7 +96,7 @@ Fastener New(String size) {
         };
     } else if size == "m4" {
         return Fastener {
-            size: "m4", major_d: 4 mm, hex_af: 7.0 mm,
+            size: "m4", pitch: 0 mm, major_d: 4 mm, hex_af: 7.0 mm,
             nut_h: 3.2 mm, bolt_head_h: 2.8 mm,
             shcs_head_d: 7.0 mm, shcs_head_h: 4.0 mm, shcs_socket: 3.0 mm,
             bhcs_head_d: 7.6 mm, bhcs_head_h: 2.2 mm, bhcs_socket: 2.5 mm,
@@ -106,7 +107,7 @@ Fastener New(String size) {
         };
     } else if size == "m5" {
         return Fastener {
-            size: "m5", major_d: 5 mm, hex_af: 8.0 mm,
+            size: "m5", pitch: 0 mm, major_d: 5 mm, hex_af: 8.0 mm,
             nut_h: 4.7 mm, bolt_head_h: 3.5 mm,
             shcs_head_d: 8.5 mm, shcs_head_h: 5.0 mm, shcs_socket: 4.0 mm,
             bhcs_head_d: 9.5 mm, bhcs_head_h: 2.75 mm, bhcs_socket: 3.0 mm,
@@ -117,7 +118,7 @@ Fastener New(String size) {
         };
     } else if size == "m6" {
         return Fastener {
-            size: "m6", major_d: 6 mm, hex_af: 10.0 mm,
+            size: "m6", pitch: 0 mm, major_d: 6 mm, hex_af: 10.0 mm,
             nut_h: 5.2 mm, bolt_head_h: 4.0 mm,
             shcs_head_d: 10.0 mm, shcs_head_h: 6.0 mm, shcs_socket: 5.0 mm,
             bhcs_head_d: 10.5 mm, bhcs_head_h: 3.3 mm, bhcs_socket: 4.0 mm,
@@ -128,7 +129,7 @@ Fastener New(String size) {
         };
     } else if size == "m8" {
         return Fastener {
-            size: "m8", major_d: 8 mm, hex_af: 13.0 mm,
+            size: "m8", pitch: 0 mm, major_d: 8 mm, hex_af: 13.0 mm,
             nut_h: 6.8 mm, bolt_head_h: 5.3 mm,
             shcs_head_d: 13.0 mm, shcs_head_h: 8.0 mm, shcs_socket: 6.0 mm,
             bhcs_head_d: 14.0 mm, bhcs_head_h: 4.4 mm, bhcs_socket: 5.0 mm,
@@ -139,7 +140,7 @@ Fastener New(String size) {
         };
     } else if size == "m10" {
         return Fastener {
-            size: "m10", major_d: 10 mm, hex_af: 16.0 mm,
+            size: "m10", pitch: 0 mm, major_d: 10 mm, hex_af: 16.0 mm,
             nut_h: 8.4 mm, bolt_head_h: 6.4 mm,
             shcs_head_d: 16.0 mm, shcs_head_h: 10.0 mm, shcs_socket: 8.0 mm,
             bhcs_head_d: 17.5 mm, bhcs_head_h: 5.5 mm, bhcs_socket: 6.0 mm,
@@ -150,7 +151,7 @@ Fastener New(String size) {
         };
     } else if size == "m12" {
         return Fastener {
-            size: "m12", major_d: 12 mm, hex_af: 18.0 mm,
+            size: "m12", pitch: 0 mm, major_d: 12 mm, hex_af: 18.0 mm,
             nut_h: 10.8 mm, bolt_head_h: 7.5 mm,
             shcs_head_d: 18.0 mm, shcs_head_h: 12.0 mm, shcs_socket: 10.0 mm,
             bhcs_head_d: 21.0 mm, bhcs_head_h: 6.6 mm, bhcs_socket: 8.0 mm,
@@ -161,7 +162,7 @@ Fastener New(String size) {
         };
     } else if size == "m16" {
         return Fastener {
-            size: "m16", major_d: 16 mm, hex_af: 24.0 mm,
+            size: "m16", pitch: 0 mm, major_d: 16 mm, hex_af: 24.0 mm,
             nut_h: 14.8 mm, bolt_head_h: 10.0 mm,
             shcs_head_d: 24.0 mm, shcs_head_h: 16.0 mm, shcs_socket: 14.0 mm,
             bhcs_head_d: 28.0 mm, bhcs_head_h: 8.8 mm, bhcs_socket: 10.0 mm,
@@ -172,7 +173,7 @@ Fastener New(String size) {
         };
     } else if size == "m20" {
         return Fastener {
-            size: "m20", major_d: 20 mm, hex_af: 30.0 mm,
+            size: "m20", pitch: 0 mm, major_d: 20 mm, hex_af: 30.0 mm,
             nut_h: 18.0 mm, bolt_head_h: 12.5 mm,
             shcs_head_d: 30.0 mm, shcs_head_h: 20.0 mm, shcs_socket: 17.0 mm,
             bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
@@ -183,7 +184,7 @@ Fastener New(String size) {
         };
     } else if size == "m24" {
         return Fastener {
-            size: "m24", major_d: 24 mm, hex_af: 36.0 mm,
+            size: "m24", pitch: 0 mm, major_d: 24 mm, hex_af: 36.0 mm,
             nut_h: 21.5 mm, bolt_head_h: 15.0 mm,
             shcs_head_d: 36.0 mm, shcs_head_h: 24.0 mm, shcs_socket: 18.0 mm,
             bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
@@ -194,7 +195,7 @@ Fastener New(String size) {
         };
     } else if size == "m30" {
         return Fastener {
-            size: "m30", major_d: 30 mm, hex_af: 46.0 mm,
+            size: "m30", pitch: 0 mm, major_d: 30 mm, hex_af: 46.0 mm,
             nut_h: 25.6 mm, bolt_head_h: 19.0 mm,
             shcs_head_d: 45.0 mm, shcs_head_h: 30.0 mm, shcs_socket: 22.0 mm,
             bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
@@ -205,7 +206,7 @@ Fastener New(String size) {
         };
     } else if size == "m36" {
         return Fastener {
-            size: "m36", major_d: 36 mm, hex_af: 55.0 mm,
+            size: "m36", pitch: 0 mm, major_d: 36 mm, hex_af: 55.0 mm,
             nut_h: 31.0 mm, bolt_head_h: 23.0 mm,
             shcs_head_d: 54.0 mm, shcs_head_h: 36.0 mm, shcs_socket: 27.0 mm,
             bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
@@ -216,7 +217,7 @@ Fastener New(String size) {
         };
     } else if size == "m42" {
         return Fastener {
-            size: "m42", major_d: 42 mm, hex_af: 65.0 mm,
+            size: "m42", pitch: 0 mm, major_d: 42 mm, hex_af: 65.0 mm,
             nut_h: 34.0 mm, bolt_head_h: 26.0 mm,
             shcs_head_d: 63.0 mm, shcs_head_h: 42.0 mm, shcs_socket: 32.0 mm,
             bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
@@ -227,7 +228,7 @@ Fastener New(String size) {
         };
     } else if size == "m48" {
         return Fastener {
-            size: "m48", major_d: 48 mm, hex_af: 75.0 mm,
+            size: "m48", pitch: 0 mm, major_d: 48 mm, hex_af: 75.0 mm,
             nut_h: 38.0 mm, bolt_head_h: 30.0 mm,
             shcs_head_d: 72.0 mm, shcs_head_h: 48.0 mm, shcs_socket: 36.0 mm,
             bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
@@ -238,7 +239,7 @@ Fastener New(String size) {
         };
     } else if size == "m56" {
         return Fastener {
-            size: "m56", major_d: 56 mm, hex_af: 85.0 mm,
+            size: "m56", pitch: 0 mm, major_d: 56 mm, hex_af: 85.0 mm,
             nut_h: 45.0 mm, bolt_head_h: 35.0 mm,
             shcs_head_d: 84.0 mm, shcs_head_h: 56.0 mm, shcs_socket: 41.0 mm,
             bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
@@ -249,7 +250,7 @@ Fastener New(String size) {
         };
     } else if size == "m64" {
         return Fastener {
-            size: "m64", major_d: 64 mm, hex_af: 95.0 mm,
+            size: "m64", pitch: 0 mm, major_d: 64 mm, hex_af: 95.0 mm,
             nut_h: 51.0 mm, bolt_head_h: 40.0 mm,
             shcs_head_d: 96.0 mm, shcs_head_h: 64.0 mm, shcs_socket: 46.0 mm,
             bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
@@ -260,6 +261,24 @@ Fastener New(String size) {
         };
     } else {
         assert false, "unsupported fastener size";
+    };
+}
+
+# Creates a `Fastener` with a custom thread pitch.
+#
+# Example: `New("m30", 2 mm)` → M30 fastener with 2 mm fine pitch threads.
+Fastener New(String size, Length pitch) {
+    var f = New(size);
+    f.pitch = pitch;
+    return f;
+}
+
+# Returns a Thread for this fastener, using fine pitch if set, coarse otherwise.
+Thread Fastener.Thread() {
+    return if self.pitch > 0 mm {
+        return T.New(self.size, self.pitch);
+    } else {
+        return T.New(self.size);
     };
 }
 
@@ -276,7 +295,7 @@ Solid Fastener.HexNut() {
         yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.nut_h);
 
-    var internal = T.New(self.size).Inside(self.nut_h);
+    var internal = self.Thread().Inside(self.nut_h);
 
     return hex - internal;
 }
@@ -297,7 +316,7 @@ Solid Fastener.HexBolt(Length length) {
     }).Extrude(hh);
 
     # Threaded shaft
-    var shaft = T.New(self.size).Outside(length)
+    var shaft = self.Thread().Outside(length)
         .Translate(0 mm, 0 mm, hh);
 
     return head + shaft;
@@ -325,7 +344,7 @@ Solid Fastener.SocketHeadCapScrew(Length length) {
         .Translate(0 mm, 0 mm, -1 mm);
 
     # Threaded shaft
-    var shaft = T.New(self.size).Outside(length)
+    var shaft = self.Thread().Outside(length)
         .Translate(0 mm, 0 mm, hh);
 
     return (head - socket) + shaft;
@@ -365,7 +384,7 @@ Solid Fastener.ButtonHeadCapScrew(Length length) {
         .Translate(0 mm, 0 mm, -1 mm);
 
     # Threaded shaft
-    var shaft = T.New(self.size).Outside(length)
+    var shaft = self.Thread().Outside(length)
         .Translate(0 mm, 0 mm, h);
 
     return (dome - socket) + shaft;
@@ -391,7 +410,7 @@ Solid Fastener.CountersunkScrew(Length length) {
         .Translate(0 mm, 0 mm, -1 mm);
 
     # Threaded shaft
-    var shaft = T.New(self.size).Outside(length)
+    var shaft = self.Thread().Outside(length)
         .Translate(0 mm, 0 mm, self.fhcs_head_h);
 
     return (head - socket) + shaft;
@@ -406,7 +425,7 @@ Solid Fastener.CountersunkScrew(Length length) {
 
 Solid Fastener.SetScrew(Length length) {
     # Threaded body
-    var body = T.New(self.size).Outside(length);
+    var body = self.Thread().Outside(length);
 
     # Socket recess from top
     var sock_depth = self.major_d * 0.6;
@@ -437,7 +456,7 @@ Solid Fastener.Thumbscrew(Length length, Length head_h, Length head_r, Knurl knu
     var head = knurl.ApplyZ(NewCylinder(head_h, head_r, head_r));
 
     # Threaded shaft
-    var shaft = T.New(self.size).Outside(length)
+    var shaft = self.Thread().Outside(length)
         .Translate(0 mm, 0 mm, head_h);
 
     return head + shaft;
@@ -463,7 +482,7 @@ Solid Fastener.FlatHeadScrew(Length length) {
         .Translate(0 mm, 0 mm, slot_depth / 2 - 0.5 mm);
 
     # Threaded shaft
-    var shaft = T.New(self.size).Outside(length)
+    var shaft = self.Thread().Outside(length)
         .Translate(0 mm, 0 mm, hh);
 
     return (head - slot) + shaft;
@@ -495,7 +514,7 @@ Solid Fastener.PhillipsScrew(Length length) {
     var recess = slot_a + slot_b;
 
     # Threaded shaft
-    var shaft = T.New(self.size).Outside(length)
+    var shaft = self.Thread().Outside(length)
         .Translate(0 mm, 0 mm, hh);
 
     return (head - recess) + shaft;
@@ -517,9 +536,9 @@ Solid Fastener.Standoff(Length length) {
 
     # Internal threads at both ends
     var thread_depth = Min(self.major_d, length / 2);
-    var top_thread = T.New(self.size).Inside(thread_depth)
+    var top_thread = self.Thread().Inside(thread_depth)
         .Translate(0 mm, 0 mm, length - thread_depth);
-    var bot_thread = T.New(self.size).Inside(thread_depth);
+    var bot_thread = self.Thread().Inside(thread_depth);
 
     return body - top_thread - bot_thread;
 }
@@ -563,10 +582,10 @@ Solid Fastener.MaleStandoff(Length length, Length thread_len) {
 
     # Internal thread at bottom
     var thread_depth = Min(self.major_d, length / 2);
-    var bot_thread = T.New(self.size).Inside(thread_depth);
+    var bot_thread = self.Thread().Inside(thread_depth);
 
     # External thread protruding above
-    var male_thread = T.New(self.size).Outside(thread_len)
+    var male_thread = self.Thread().Outside(thread_len)
         .Translate(0 mm, 0 mm, length);
 
     return (body - bot_thread) + male_thread;
