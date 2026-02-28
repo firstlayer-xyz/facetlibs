@@ -9,15 +9,15 @@
 #
 # Usage:
 #   var F = lib "github.com/firstlayer-xyz/facetlibs/fasteners@main";
-#   return F.NewHexBolt("m8", 30 mm).Solid();
+#   return F.HexBolt("m8", 30 mm).Solid();
 
 var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main";
 var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main";
 
 # Re-export Knurl constructor so users can create knurl specs without
 # importing knurling separately.
-Knurl NewKnurl(Number count, Length depth, Angle pitch_angle) {
-    return K.NewKnurl(count, depth, pitch_angle);
+Knurl Knurl(Number count, Length depth, Angle pitch_angle) {
+    return K.Knurl(count, depth, pitch_angle);
 }
 
 # ---------------------------------------------------------------------------
@@ -80,7 +80,7 @@ struct HexNut {
 }
 
 # Creates an ISO 4032 hex nut.
-HexNut NewHexNut(String size) {
+HexNut HexNut(String size) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return HexNut {
@@ -93,8 +93,8 @@ HexNut NewHexNut(String size) {
 # Renders the hex nut as a solid.
 Solid HexNut.Solid() {
     var cr = self.hex_af / (2 * Cos(30 deg));
-    var hex = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    var hex = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.nut_h);
     var internal = self.thread.Inside(self.nut_h);
     return hex - internal;
@@ -114,7 +114,7 @@ struct HexBolt {
 }
 
 # Creates an ISO 4014 hex bolt with the given shaft length.
-HexBolt NewHexBolt(String size, Length length) {
+HexBolt HexBolt(String size, Length length) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return HexBolt {
@@ -128,8 +128,8 @@ HexBolt NewHexBolt(String size, Length length) {
 # Renders the hex bolt as a solid.
 Solid HexBolt.Solid() {
     var cr = self.hex_af / (2 * Cos(30 deg));
-    var head = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    var head = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.head_h);
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, self.head_h);
@@ -152,7 +152,7 @@ struct SocketHeadCapScrew {
 }
 
 # Creates an ISO 4762 socket head cap screw.
-SocketHeadCapScrew NewSocketHeadCapScrew(String size, Length length) {
+SocketHeadCapScrew SocketHeadCapScrew(String size, Length length) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return SocketHeadCapScrew {
@@ -167,11 +167,11 @@ SocketHeadCapScrew NewSocketHeadCapScrew(String size, Length length) {
 # Renders the socket head cap screw as a solid.
 Solid SocketHeadCapScrew.Solid() {
     var hh = self.head_h;
-    var head = NewCylinder(hh, self.head_d / 2, self.head_d / 2);
+    var head = Cylinder(hh, self.head_d / 2, self.head_d / 2);
     var sock_depth = hh * 0.8;
     var sock_cr = self.socket / (2 * Cos(30 deg));
-    var socket = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
+    var socket = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
     }).Extrude(sock_depth + 1 mm)
         .Translate(0 mm, 0 mm, -1 mm);
     var shaft = self.thread.Outside(self.length)
@@ -196,7 +196,7 @@ struct ButtonHeadCapScrew {
 }
 
 # Creates an ISO 7380 button head cap screw.
-ButtonHeadCapScrew NewButtonHeadCapScrew(String size, Length length) {
+ButtonHeadCapScrew ButtonHeadCapScrew(String size, Length length) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return ButtonHeadCapScrew {
@@ -220,13 +220,13 @@ Solid ButtonHeadCapScrew.Solid() {
     var R_num = Sqrt(c_num * c_num + d_num * d_num / 4);
     var R = R_num * 1 mm;
     var c = c_num * 1 mm;
-    var sphere = NewSphere(R).Translate(0 mm, 0 mm, c);
-    var clip = NewCylinder(h, d / 2, d / 2);
+    var sphere = Sphere(R).Translate(0 mm, 0 mm, c);
+    var clip = Cylinder(h, d / 2, d / 2);
     var dome = sphere ^ clip;
     var sock_depth = h * 0.7;
     var sock_cr = self.socket / (2 * Cos(30 deg));
-    var socket = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
+    var socket = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
     }).Extrude(sock_depth + 1 mm)
         .Translate(0 mm, 0 mm, -1 mm);
     var shaft = self.thread.Outside(self.length)
@@ -251,7 +251,7 @@ struct CountersunkScrew {
 }
 
 # Creates an ISO 10642 countersunk screw.
-CountersunkScrew NewCountersunkScrew(String size, Length length) {
+CountersunkScrew CountersunkScrew(String size, Length length) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return CountersunkScrew {
@@ -266,11 +266,11 @@ CountersunkScrew NewCountersunkScrew(String size, Length length) {
 
 # Renders the countersunk screw as a solid.
 Solid CountersunkScrew.Solid() {
-    var head = NewCylinder(self.head_h, self.head_d / 2, self.major_d / 2);
+    var head = Cylinder(self.head_h, self.head_d / 2, self.major_d / 2);
     var sock_depth = self.head_h * 0.7;
     var sock_cr = self.socket / (2 * Cos(30 deg));
-    var socket = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
+    var socket = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
     }).Extrude(sock_depth + 1 mm)
         .Translate(0 mm, 0 mm, -1 mm);
     var shaft = self.thread.Outside(self.length)
@@ -293,7 +293,7 @@ struct SetScrew {
 }
 
 # Creates an ISO 4026 set screw.
-SetScrew NewSetScrew(String size, Length length) {
+SetScrew SetScrew(String size, Length length) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return SetScrew {
@@ -309,8 +309,8 @@ Solid SetScrew.Solid() {
     var body = self.thread.Outside(self.length);
     var sock_depth = self.major_d * 0.6;
     var sock_cr = self.socket / (2 * Cos(30 deg));
-    var socket = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
+    var socket = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr);
     }).Extrude(sock_depth + 1 mm)
         .Translate(0 mm, 0 mm, self.length - sock_depth);
     return body - socket;
@@ -331,7 +331,7 @@ struct Thumbscrew {
 }
 
 # Creates a thumbscrew with default head dimensions and knurling.
-Thumbscrew NewThumbscrew(String size, Length length) {
+Thumbscrew Thumbscrew(String size, Length length) {
     var t = T.New(size);
     var d = t.major_diameter;
     return Thumbscrew {
@@ -339,12 +339,12 @@ Thumbscrew NewThumbscrew(String size, Length length) {
         length: length,
         head_h: d * 0.8,
         head_r: d * 1.2,
-        knurl: K.NewKnurl(Number(d) * 6, 0.3 mm, 30 deg)
+        knurl: K.Knurl(Number(d) * 6, 0.3 mm, 30 deg)
     };
 }
 
 # Creates a thumbscrew with custom head dimensions and knurling.
-Thumbscrew NewThumbscrew(String size, Length length, Length head_h, Length head_r, Knurl knurl) {
+Thumbscrew Thumbscrew(String size, Length length, Length head_h, Length head_r, Knurl knurl) {
     return Thumbscrew {
         thread: T.New(size),
         length: length,
@@ -356,7 +356,7 @@ Thumbscrew NewThumbscrew(String size, Length length, Length head_h, Length head_
 
 # Renders the thumbscrew as a solid.
 Solid Thumbscrew.Solid() {
-    var head = self.knurl.ApplyZ(NewCylinder(self.head_h, self.head_r, self.head_r));
+    var head = self.knurl.ApplyZ(Cylinder(self.head_h, self.head_r, self.head_r));
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, self.head_h);
     return head + shaft;
@@ -378,7 +378,7 @@ struct FlatHeadScrew {
 }
 
 # Creates an ISO 1580 flat head (slotted) screw.
-FlatHeadScrew NewFlatHeadScrew(String size, Length length) {
+FlatHeadScrew FlatHeadScrew(String size, Length length) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return FlatHeadScrew {
@@ -394,9 +394,9 @@ FlatHeadScrew NewFlatHeadScrew(String size, Length length) {
 Solid FlatHeadScrew.Solid() {
     var hd = self.head_d;
     var hh = self.head_h;
-    var head = NewCylinder(hh, hd / 2, hd / 2);
+    var head = Cylinder(hh, hd / 2, hd / 2);
     var slot_depth = hh * 0.8;
-    var slot = NewCube(hd + 1 mm, self.slot_w, slot_depth + 1 mm)
+    var slot = Cube(hd + 1 mm, self.slot_w, slot_depth + 1 mm)
         .Translate(0 mm, 0 mm, slot_depth / 2 - 0.5 mm);
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, hh);
@@ -419,7 +419,7 @@ struct PhillipsScrew {
 }
 
 # Creates an ISO 7045 Phillips screw.
-PhillipsScrew NewPhillipsScrew(String size, Length length) {
+PhillipsScrew PhillipsScrew(String size, Length length) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return PhillipsScrew {
@@ -436,13 +436,13 @@ Solid PhillipsScrew.Solid() {
     var hd = self.head_d;
     var hh = self.head_h;
     var pw = self.phillips_w;
-    var head = NewCylinder(hh, hd / 2, hd / 2);
+    var head = Cylinder(hh, hd / 2, hd / 2);
     var recess_depth = hh * 0.8;
     var arm_len = pw * 1.2;
     var arm_w = pw * 0.25;
-    var slot_a = NewCube(arm_len, arm_w, recess_depth + 1 mm)
+    var slot_a = Cube(arm_len, arm_w, recess_depth + 1 mm)
         .Translate(0 mm, 0 mm, recess_depth / 2 - 0.5 mm);
-    var slot_b = NewCube(arm_w, arm_len, recess_depth + 1 mm)
+    var slot_b = Cube(arm_w, arm_len, recess_depth + 1 mm)
         .Translate(0 mm, 0 mm, recess_depth / 2 - 0.5 mm);
     var recess = slot_a + slot_b;
     var shaft = self.thread.Outside(self.length)
@@ -465,7 +465,7 @@ struct Standoff {
 }
 
 # Creates a female-female hex standoff.
-Standoff NewStandoff(String size, Length length) {
+Standoff Standoff(String size, Length length) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return Standoff {
@@ -479,8 +479,8 @@ Standoff NewStandoff(String size, Length length) {
 # Renders the standoff as a solid.
 Solid Standoff.Solid() {
     var cr = self.hex_af / (2 * Cos(30 deg));
-    var body = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    var body = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.length);
     var thread_depth = Min(self.major_d, self.length / 2);
     var top_thread = self.thread.Inside(thread_depth)
@@ -505,7 +505,7 @@ struct MaleStandoff {
 }
 
 # Creates a male-female hex standoff.
-MaleStandoff NewMaleStandoff(String size, Length length, Length thread_len) {
+MaleStandoff MaleStandoff(String size, Length length, Length thread_len) {
     var t = T.New(size);
     var row = MetricRow(t.major_diameter);
     return MaleStandoff {
@@ -520,8 +520,8 @@ MaleStandoff NewMaleStandoff(String size, Length length, Length thread_len) {
 # Renders the male standoff as a solid.
 Solid MaleStandoff.Solid() {
     var cr = self.hex_af / (2 * Cos(30 deg));
-    var body = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    var body = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.length);
     var thread_depth = Min(self.major_d, self.length / 2);
     var bot_thread = self.thread.Inside(thread_depth);
@@ -539,16 +539,16 @@ Array Showcase(String size, Length shaft_len, Length standoff_len) {
     var row = MetricRow(t.major_diameter);
     var sp = row[1] * 1 mm * 2;
     return [
-        NewHexNut(size).Solid(),
-        NewHexBolt(size, shaft_len).Solid().Translate(sp, 0 mm, 0 mm),
-        NewSocketHeadCapScrew(size, shaft_len).Solid().Translate(sp * 2, 0 mm, 0 mm),
-        NewButtonHeadCapScrew(size, shaft_len).Solid().Translate(sp * 3, 0 mm, 0 mm),
-        NewCountersunkScrew(size, shaft_len).Solid().Translate(sp * 4, 0 mm, 0 mm),
-        NewSetScrew(size, shaft_len).Solid().Translate(sp * 5, 0 mm, 0 mm),
-        NewThumbscrew(size, shaft_len).Solid().Translate(sp * 6, 0 mm, 0 mm),
-        NewFlatHeadScrew(size, shaft_len).Solid().Translate(sp * 7, 0 mm, 0 mm),
-        NewPhillipsScrew(size, shaft_len).Solid().Translate(sp * 8, 0 mm, 0 mm),
-        NewStandoff(size, standoff_len).Solid().Translate(sp * 9, 0 mm, 0 mm),
-        NewMaleStandoff(size, standoff_len, shaft_len).Solid().Translate(sp * 10, 0 mm, 0 mm)
+        HexNut(size).Solid(),
+        HexBolt(size, shaft_len).Solid().Translate(sp, 0 mm, 0 mm),
+        SocketHeadCapScrew(size, shaft_len).Solid().Translate(sp * 2, 0 mm, 0 mm),
+        ButtonHeadCapScrew(size, shaft_len).Solid().Translate(sp * 3, 0 mm, 0 mm),
+        CountersunkScrew(size, shaft_len).Solid().Translate(sp * 4, 0 mm, 0 mm),
+        SetScrew(size, shaft_len).Solid().Translate(sp * 5, 0 mm, 0 mm),
+        Thumbscrew(size, shaft_len).Solid().Translate(sp * 6, 0 mm, 0 mm),
+        FlatHeadScrew(size, shaft_len).Solid().Translate(sp * 7, 0 mm, 0 mm),
+        PhillipsScrew(size, shaft_len).Solid().Translate(sp * 8, 0 mm, 0 mm),
+        Standoff(size, standoff_len).Solid().Translate(sp * 9, 0 mm, 0 mm),
+        MaleStandoff(size, standoff_len, shaft_len).Solid().Translate(sp * 10, 0 mm, 0 mm)
     ];
 }

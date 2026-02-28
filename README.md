@@ -20,7 +20,7 @@ Diamond crosshatch grip texture for cylindrical solids.
 
 ```
 var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main";
-var knurl = K.NewKnurl(40, 0.5 mm, 30 deg);
+var knurl = K.Knurl(40, 0.5 mm, 30 deg);
 return knurl.Apply(cylinder);
 ```
 

@@ -1,0 +1,128 @@
+# Involute spur gear generator.
+#
+# Generates 2D involute gear profiles and extruded spur gears with
+# standard involute tooth geometry.
+
+struct Gear {
+    Number teeth;
+    Length module;
+    Angle pressure_angle;
+}
+
+# Creates a gear with the standard 20° pressure angle.
+Gear Gear(Number teeth, Length module) {
+    return Gear { teeth: teeth, module: module, pressure_angle: 20 deg };
+}
+
+# Creates a gear with a custom pressure angle.
+Gear Gear(Number teeth, Length module, Angle pressure_angle) {
+    return Gear { teeth: teeth, module: module, pressure_angle: pressure_angle };
+}
+
+# Returns the pitch radius: m * N / 2.
+Length Gear.PitchRadius() {
+    return self.module * self.teeth / 2;
+}
+
+# Returns the base radius: r_p * cos(α).
+Length Gear.BaseRadius() {
+    return self.module * self.teeth / 2 * Cos(self.pressure_angle);
+}
+
+# Returns the addendum (outer tip) radius: r_p + m.
+Length Gear.AddendumRadius() {
+    return self.module * self.teeth / 2 + self.module;
+}
+
+# Returns the dedendum (root) radius: r_p - 1.25m.
+Length Gear.DedendumRadius() {
+    return self.module * self.teeth / 2 - 1.25 * self.module;
+}
+
+# Generates a 2D involute gear profile.
+#
+# `n_involute` controls the number of sample points per involute flank.
+# Higher values give smoother tooth curves.
+Sketch Gear.Profile(Number n_involute = 20) {
+    var N = self.teeth;
+    var m = self.module;
+    var alpha = self.pressure_angle;
+
+    var r_p = m * N / 2;
+    var r_b = r_p * Cos(alpha);
+    var r_a = r_p + m;
+    var r_d = r_p - 1.25 * m;
+
+    # Pressure angle in radians (Number)
+    var alpha_rad = alpha / (1 rad);
+
+    # Involute function value at pressure angle: inv(α) = tan(α) - α
+    var inv_alpha = Tan(alpha) - alpha_rad;
+
+    # Angular half-tooth width at base circle (radians)
+    var half_tooth = PI / (2 * N) + inv_alpha;
+
+    # Max pressure angle at addendum circle
+    var t_max = Acos(r_b / r_a) / (1 rad);
+
+    # Involute angle offset at tip
+    var inv_max = Tan(t_max * 1 rad) - t_max;
+
+    # Samples for tip and root arcs
+    var n_arc = 3;
+    var n_per_tooth = n_involute * 2 + n_arc * 2;
+    var n_total = N * n_per_tooth;
+
+    # Angular pitch per tooth (radians)
+    var pitch_angle = TAU / N;
+
+    var points = for idx [0:<n_total] {
+        var j = idx % n_per_tooth;
+        var tooth_idx = (idx - j) / n_per_tooth;
+        var tooth_rot = tooth_idx * pitch_angle;
+
+        var pt = if j < n_involute {
+            # Right involute flank (base to tip)
+            var t = t_max * j / (n_involute - 1);
+            var inv_t = Tan(t * 1 rad) - t;
+            var r = r_b / Cos(t * 1 rad);
+            var theta = (half_tooth - inv_t + tooth_rot) * 1 rad;
+            return Point2d(r * Cos(theta), r * Sin(theta));
+
+        } else if j < n_involute + n_arc {
+            # Tip arc at addendum radius
+            var k = j - n_involute;
+            var theta_right = half_tooth - inv_max + tooth_rot;
+            var theta_left = 0 - half_tooth + inv_max + tooth_rot;
+            var frac = k / (n_arc - 1);
+            var theta = (theta_right + (theta_left - theta_right) * frac) * 1 rad;
+            return Point2d(r_a * Cos(theta), r_a * Sin(theta));
+
+        } else if j < n_involute * 2 + n_arc {
+            # Left involute flank (mirrored, tip to base)
+            var k = j - n_involute - n_arc;
+            var t = t_max * (1 - k / (n_involute - 1));
+            var inv_t = Tan(t * 1 rad) - t;
+            var r = r_b / Cos(t * 1 rad);
+            var theta = (0 - half_tooth + inv_t + tooth_rot) * 1 rad;
+            return Point2d(r * Cos(theta), r * Sin(theta));
+
+        } else {
+            # Root arc at dedendum radius
+            var k = j - n_involute * 2 - n_arc;
+            var theta_start = 0 - half_tooth + tooth_rot;
+            var theta_end = half_tooth + pitch_angle + tooth_rot;
+            var frac = k / (n_arc - 1);
+            var theta = (theta_start + (theta_end - theta_start) * frac) * 1 rad;
+            return Point2d(r_d * Cos(theta), r_d * Sin(theta));
+        };
+        yield pt;
+    };
+
+    return Polygon(points);
+}
+
+# Extrudes the gear profile to create a spur gear solid.
+Solid Gear.Spur(Length width) {
+    return self.Profile().Extrude(width);
+}

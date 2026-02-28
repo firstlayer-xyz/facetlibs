@@ -4,7 +4,7 @@
 
 A Facet library is a directory containing a single `.fct` file named after the directory. For example, a library at `fasteners/` must contain `fasteners/fasteners.fct`. Functions, structs, and methods defined in the file become available through the library's import variable.
 
-The standard library (`facet/std`) is always available in root scope without an explicit import — `NewCube`, `Translate`, `Sin`, etc. all work out of the box. Other built-in libraries like `facet/threads` require an explicit `lib` import.
+The standard library (`facet/std`) is always available in root scope without an explicit import — `Cube`, `Translate`, `Sin`, etc. all work out of the box. Other built-in libraries like `facet/threads` require an explicit `lib` import.
 
 ## Directory structure
 
@@ -59,8 +59,8 @@ Fastener New(String size) {
 
 Solid Fastener.HexNut() {
     var cr = self.hex_af / (2 * Cos(30 deg));
-    var hex = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    var hex = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.nut_h);
     var internal = T.New(self.size).Inside(self.nut_h);
     return hex - internal;
@@ -68,8 +68,8 @@ Solid Fastener.HexNut() {
 
 Solid Fastener.HexBolt(Length length) {
     var cr = self.hex_af / (2 * Cos(30 deg));
-    var head = NewPolygon(for i [0:<6] {
-        yield NewPoint2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+    var head = Polygon(for i [0:<6] {
+        yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.bolt_head_h);
     var shaft = T.New(self.size).Outside(length)
         .Translate(0 mm, 0 mm, self.bolt_head_h);

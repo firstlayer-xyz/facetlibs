@@ -3,7 +3,7 @@
 #
 # Usage:
 #   var K = lib "facet/knurling";
-#   var knurl = K.NewKnurl(40, 0.5 mm, 30 deg);
+#   var knurl = K.Knurl(40, 0.5 mm, 30 deg);
 #   return knurl.Apply(cylinder);
 
 # ---------------------------------------------------------------------------
@@ -17,7 +17,7 @@ struct Knurl {
 }
 
 # Creates a knurl pattern with the given groove `count`, `depth`, and `pitch_angle`.
-Knurl NewKnurl(Number count, Length depth, Angle pitch_angle) {
+Knurl Knurl(Number count, Length depth, Angle pitch_angle) {
     return Knurl { count: count, depth: depth, pitch_angle: pitch_angle };
 }
 
@@ -51,14 +51,14 @@ Solid Knurl.ApplyZ(Solid target) {
         var base_angle = i * angle_step;
         yield if Floor(idx / 2) * 2 == idx {
             # Even index: crest point
-            return NewPoint2d(r_crest * Cos(base_angle), r_crest * Sin(base_angle));
+            return Point2d(r_crest * Cos(base_angle), r_crest * Sin(base_angle));
         } else {
             # Odd index: valley point (offset by half step)
-            return NewPoint2d(r_valley * Cos(base_angle + half_step),
+            return Point2d(r_valley * Cos(base_angle + half_step),
                        r_valley * Sin(base_angle + half_step));
         };
     };
-    var star = NewPolygon(points);
+    var star = Polygon(points);
 
     # 4. Calculate helical twist
     var r_num = r_max / (1 mm);
