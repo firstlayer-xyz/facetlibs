@@ -55,7 +55,8 @@ struct Fastener {
 # Constructor — returns a Fastener with ISO dimensions for the given size.
 #
 # Supported sizes: `"m2"`, `"m2.5"`, `"m3"`, `"m4"`, `"m5"`, `"m6"`, `"m8"`,
-# `"m10"`, `"m12"`, `"m16"`, `"m20"`
+# `"m10"`, `"m12"`, `"m16"`, `"m20"`, `"m24"`, `"m30"`, `"m36"`, `"m42"`,
+# `"m48"`, `"m56"`, `"m64"`
 # ---------------------------------------------------------------------------
 
 Fastener New(String size) {
@@ -180,18 +181,85 @@ Fastener New(String size) {
             pan_head_d: 36.0 mm, pan_head_h: 10.0 mm,
             slot_w: 5.0 mm, phillips_w: 0 mm
         };
-    } else {
-        # Default to M8
+    } else if size == "m24" {
         return Fastener {
-            size: "m8", major_d: 8 mm, hex_af: 13.0 mm,
-            nut_h: 6.8 mm, bolt_head_h: 5.3 mm,
-            shcs_head_d: 13.0 mm, shcs_head_h: 8.0 mm, shcs_socket: 6.0 mm,
-            bhcs_head_d: 14.0 mm, bhcs_head_h: 4.4 mm, bhcs_socket: 5.0 mm,
-            fhcs_head_d: 15.24 mm, fhcs_head_h: 4.96 mm, fhcs_socket: 5.0 mm,
-            set_socket: 4.0 mm,
-            pan_head_d: 16.0 mm, pan_head_h: 5.0 mm,
-            slot_w: 2.0 mm, phillips_w: 5.1 mm
+            size: "m24", major_d: 24 mm, hex_af: 36.0 mm,
+            nut_h: 21.5 mm, bolt_head_h: 15.0 mm,
+            shcs_head_d: 36.0 mm, shcs_head_h: 24.0 mm, shcs_socket: 18.0 mm,
+            bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
+            fhcs_head_d: 39.0 mm, fhcs_head_h: 14.0 mm, fhcs_socket: 14.0 mm,
+            set_socket: 12.0 mm,
+            pan_head_d: 44.0 mm, pan_head_h: 12.0 mm,
+            slot_w: 6.0 mm, phillips_w: 0 mm
         };
+    } else if size == "m30" {
+        return Fastener {
+            size: "m30", major_d: 30 mm, hex_af: 46.0 mm,
+            nut_h: 25.6 mm, bolt_head_h: 19.0 mm,
+            shcs_head_d: 45.0 mm, shcs_head_h: 30.0 mm, shcs_socket: 22.0 mm,
+            bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
+            fhcs_head_d: 0 mm, fhcs_head_h: 0 mm, fhcs_socket: 0 mm,
+            set_socket: 15.0 mm,
+            pan_head_d: 0 mm, pan_head_h: 0 mm,
+            slot_w: 0 mm, phillips_w: 0 mm
+        };
+    } else if size == "m36" {
+        return Fastener {
+            size: "m36", major_d: 36 mm, hex_af: 55.0 mm,
+            nut_h: 31.0 mm, bolt_head_h: 23.0 mm,
+            shcs_head_d: 54.0 mm, shcs_head_h: 36.0 mm, shcs_socket: 27.0 mm,
+            bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
+            fhcs_head_d: 0 mm, fhcs_head_h: 0 mm, fhcs_socket: 0 mm,
+            set_socket: 18.0 mm,
+            pan_head_d: 0 mm, pan_head_h: 0 mm,
+            slot_w: 0 mm, phillips_w: 0 mm
+        };
+    } else if size == "m42" {
+        return Fastener {
+            size: "m42", major_d: 42 mm, hex_af: 65.0 mm,
+            nut_h: 34.0 mm, bolt_head_h: 26.0 mm,
+            shcs_head_d: 63.0 mm, shcs_head_h: 42.0 mm, shcs_socket: 32.0 mm,
+            bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
+            fhcs_head_d: 0 mm, fhcs_head_h: 0 mm, fhcs_socket: 0 mm,
+            set_socket: 21.0 mm,
+            pan_head_d: 0 mm, pan_head_h: 0 mm,
+            slot_w: 0 mm, phillips_w: 0 mm
+        };
+    } else if size == "m48" {
+        return Fastener {
+            size: "m48", major_d: 48 mm, hex_af: 75.0 mm,
+            nut_h: 38.0 mm, bolt_head_h: 30.0 mm,
+            shcs_head_d: 72.0 mm, shcs_head_h: 48.0 mm, shcs_socket: 36.0 mm,
+            bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
+            fhcs_head_d: 0 mm, fhcs_head_h: 0 mm, fhcs_socket: 0 mm,
+            set_socket: 24.0 mm,
+            pan_head_d: 0 mm, pan_head_h: 0 mm,
+            slot_w: 0 mm, phillips_w: 0 mm
+        };
+    } else if size == "m56" {
+        return Fastener {
+            size: "m56", major_d: 56 mm, hex_af: 85.0 mm,
+            nut_h: 45.0 mm, bolt_head_h: 35.0 mm,
+            shcs_head_d: 84.0 mm, shcs_head_h: 56.0 mm, shcs_socket: 41.0 mm,
+            bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
+            fhcs_head_d: 0 mm, fhcs_head_h: 0 mm, fhcs_socket: 0 mm,
+            set_socket: 28.0 mm,
+            pan_head_d: 0 mm, pan_head_h: 0 mm,
+            slot_w: 0 mm, phillips_w: 0 mm
+        };
+    } else if size == "m64" {
+        return Fastener {
+            size: "m64", major_d: 64 mm, hex_af: 95.0 mm,
+            nut_h: 51.0 mm, bolt_head_h: 40.0 mm,
+            shcs_head_d: 96.0 mm, shcs_head_h: 64.0 mm, shcs_socket: 46.0 mm,
+            bhcs_head_d: 0 mm, bhcs_head_h: 0 mm, bhcs_socket: 0 mm,
+            fhcs_head_d: 0 mm, fhcs_head_h: 0 mm, fhcs_socket: 0 mm,
+            set_socket: 32.0 mm,
+            pan_head_d: 0 mm, pan_head_h: 0 mm,
+            slot_w: 0 mm, phillips_w: 0 mm
+        };
+    } else {
+        assert false, "unsupported fastener size";
     };
 }
 

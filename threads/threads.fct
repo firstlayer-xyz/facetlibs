@@ -13,7 +13,8 @@ struct Thread {
 
 # Creates a `Thread` from a standard size name.
 #
-# **Metric coarse (ISO):** `"m2"`, `"m2.5"`, `"m3"`, `"m4"`, `"m5"`, `"m6"`, `"m8"`, `"m10"`, `"m12"`, `"m16"`, `"m20"`
+# **Metric coarse (ISO):** `"m2"`, `"m2.5"`, `"m3"`, `"m4"`, `"m5"`, `"m6"`, `"m8"`, `"m10"`, `"m12"`, `"m16"`, `"m20"`,
+# `"m24"`, `"m30"`, `"m36"`, `"m42"`, `"m48"`, `"m56"`, `"m64"`
 #
 # **Metric fine (ISO):** `"m8x1"`, `"m10x1"`, `"m10x1.25"`, `"m12x1.25"`, `"m12x1.5"`,
 # `"m16x1.5"`, `"m20x1.5"`, `"m20x2"`
@@ -49,6 +50,20 @@ Thread New(String size) {
         return Thread { pitch: 2.0 mm, major_diameter: 16 mm, taper: 0, tolerance: 0.1 mm };
     } else if size == "m20" {
         return Thread { pitch: 2.5 mm, major_diameter: 20 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m24" {
+        return Thread { pitch: 3.0 mm, major_diameter: 24 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m30" {
+        return Thread { pitch: 3.5 mm, major_diameter: 30 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m36" {
+        return Thread { pitch: 4.0 mm, major_diameter: 36 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m42" {
+        return Thread { pitch: 4.5 mm, major_diameter: 42 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m48" {
+        return Thread { pitch: 5.0 mm, major_diameter: 48 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m56" {
+        return Thread { pitch: 5.5 mm, major_diameter: 56 mm, taper: 0, tolerance: 0.1 mm };
+    } else if size == "m64" {
+        return Thread { pitch: 6.0 mm, major_diameter: 64 mm, taper: 0, tolerance: 0.1 mm };
     # --- Metric ISO fine ---
     } else if size == "m8x1" {
         return Thread { pitch: 1.0 mm, major_diameter: 8 mm, taper: 0, tolerance: 0.1 mm };
@@ -128,7 +143,7 @@ Thread New(String size) {
     } else if size == "1-npt" {
         return Thread { pitch: 2/23 in, major_diameter: 1.315 in, taper: 1/16, tolerance: 0.1 mm };
     } else {
-        return Thread { pitch: 0.5 mm, major_diameter: 3 mm, taper: 0, tolerance: 0.1 mm };
+        assert false, "unsupported thread size";
     };
 }
 
