@@ -242,29 +242,37 @@ Solid WingNut.Solid() {
     var wh = self.wing_h;
     var wt = self.wing_t;
     var hr = self.hub_d / 2;
-    var rect_h = wh - ws / 2;
+    var base_w = ws * 0.15;
+    var overlap = hr * 0.3;
+    var cap_w = ws + overlap;
+    var body_h = wh - cap_w / 2;
 
-    # Right wing (+X): rectangle body + semicircular cap
-    var rect_r = Cube(ws, wt, rect_h)
-        .Translate(hr + ws / 2, 0 mm, rect_h / 2);
-    var cap_r = Cylinder(wt, ws / 2, ws / 2)
+    # Right wing (+X): V-shaped profile, narrow at bottom, wide at top,
+    # extends slightly over the hub at the top.
+    # Profile in XY (X = radial from hub surface, Y = height),
+    # extruded in Z for thickness, then rotated upright.
+    var wing_body = Polygon([
+        Point2d(0 mm, 0 mm),
+        Point2d(base_w, 0 mm),
+        Point2d(ws, body_h),
+        Point2d(-overlap, body_h)
+    ]).Extrude(wt)
         .Translate(0 mm, 0 mm, -wt / 2)
         .Rotate(90 deg, 0 deg, 0 deg)
-        .Translate(hr + ws / 2, 0 mm, rect_h);
-    var clip_r = Cube(ws + 1 mm, wt + 1 mm, ws / 2)
-        .Translate(hr + ws / 2, 0 mm, rect_h + ws / 4);
-    var wing_r = rect_r + (cap_r ^ clip_r);
+        .Translate(hr, 0 mm, 0 mm);
+
+    # Rounded cap on top of wing
+    var cap_cx = hr - overlap + cap_w / 2;
+    var cap = Cylinder(wt, cap_w / 2, cap_w / 2)
+        .Translate(0 mm, 0 mm, -wt / 2)
+        .Rotate(90 deg, 0 deg, 0 deg)
+        .Translate(cap_cx, 0 mm, body_h);
+    var clip = Cube(cap_w + 1 mm, wt + 1 mm, cap_w / 2)
+        .Translate(cap_cx, 0 mm, body_h + cap_w / 4);
+    var wing_r = wing_body + (cap ^ clip);
 
     # Left wing (-X): mirror of right wing
-    var rect_l = Cube(ws, wt, rect_h)
-        .Translate(-(hr + ws / 2), 0 mm, rect_h / 2);
-    var cap_l = Cylinder(wt, ws / 2, ws / 2)
-        .Translate(0 mm, 0 mm, -wt / 2)
-        .Rotate(90 deg, 0 deg, 0 deg)
-        .Translate(-(hr + ws / 2), 0 mm, rect_h);
-    var clip_l = Cube(ws + 1 mm, wt + 1 mm, ws / 2)
-        .Translate(-(hr + ws / 2), 0 mm, rect_h + ws / 4);
-    var wing_l = rect_l + (cap_l ^ clip_l);
+    var wing_l = wing_r.Rotate(0 deg, 0 deg, 180 deg);
 
     var internal = self.thread.Inside(self.hub_h);
 
