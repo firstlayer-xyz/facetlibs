@@ -531,6 +531,29 @@ Solid Fastener.Standoff(Length length) {
 # Hex body spans Z=0 upward (+Z). Male thread extends above the body (+Z).
 # ---------------------------------------------------------------------------
 
+Solid Fastener.Showcase(Length shaft_len, Length standoff_len) {
+    var sp = self.hex_af * 2;
+    var result = self.HexNut();
+    result += self.HexBolt(shaft_len).Translate(sp, 0 mm, 0 mm);
+    result += self.SocketHeadCapScrew(shaft_len).Translate(sp * 2, 0 mm, 0 mm);
+    result += self.ButtonHeadCapScrew(shaft_len).Translate(sp * 3, 0 mm, 0 mm);
+    result += self.CountersunkScrew(shaft_len).Translate(sp * 4, 0 mm, 0 mm);
+    result += self.SetScrew(shaft_len).Translate(sp * 5, 0 mm, 0 mm);
+    result += self.Thumbscrew(shaft_len).Translate(sp * 6, 0 mm, 0 mm);
+    result += self.FlatHeadScrew(shaft_len).Translate(sp * 7, 0 mm, 0 mm);
+    result += self.PhillipsScrew(shaft_len).Translate(sp * 8, 0 mm, 0 mm);
+    result += self.Standoff(standoff_len).Translate(sp * 9, 0 mm, 0 mm);
+    result += self.MaleStandoff(standoff_len, shaft_len).Translate(sp * 10, 0 mm, 0 mm);
+    return result;
+}
+
+# ---------------------------------------------------------------------------
+# MaleStandoff — male-female hex standoff
+#
+# Hex body with internal thread at bottom and external thread protruding above.
+# Hex body spans Z=0 upward (+Z). Male thread extends above the body (+Z).
+# ---------------------------------------------------------------------------
+
 Solid Fastener.MaleStandoff(Length length, Length thread_len) {
     # Hex body
     var cr = self.hex_af / (2 * Cos(30 deg));

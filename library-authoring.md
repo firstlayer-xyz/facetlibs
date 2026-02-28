@@ -2,7 +2,7 @@
 
 ## What is a Facet library?
 
-A Facet library is a directory containing one or more `.fct` files. When imported, all `.fct` files in the directory are parsed in alphabetical order and merged into a single namespace. Functions, structs, and methods defined across any file in the library become available through the library's import variable.
+A Facet library is a directory containing a single `.fct` file named after the directory. For example, a library at `fasteners/` must contain `fasteners/fasteners.fct`. Functions, structs, and methods defined in the file become available through the library's import variable.
 
 The standard library (`facet/std`) is always available in root scope without an explicit import — `NewCube`, `Translate`, `Sin`, etc. all work out of the box. Other built-in libraries like `facet/threads` require an explicit `lib` import.
 
@@ -13,13 +13,12 @@ Libraries use a simple directory layout. A monorepo can contain multiple librari
 ```
 facetlibs/
   fasteners/
-    library.fct
+    fasteners.fct
   gears/
-    spur.fct
-    helical.fct
+    gears.fct
 ```
 
-Each subdirectory is a separate importable library.
+Each subdirectory is a separate importable library. The `.fct` file must be named the same as its containing directory.
 
 ## Creating a library
 
@@ -29,7 +28,7 @@ A library is plain Facet code. There is no special declaration or manifest file.
 
 The real fasteners library lives at [`github.com/firstlayer-xyz/facetlibs`](https://github.com/firstlayer-xyz/facetlibs). Here's a simplified excerpt:
 
-**fasteners/library.fct**
+**fasteners/fasteners.fct**
 
 ```
 var T = lib "facet/threads";
@@ -78,7 +77,7 @@ Solid Fastener.HexBolt(Length length) {
 }
 ```
 
-Because files are merged into one namespace, multi-file libraries can cross-reference freely — globals from earlier files (alphabetically) are visible in later files.
+All library code lives in the single file.
 
 ### Methods
 
