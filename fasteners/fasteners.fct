@@ -100,14 +100,17 @@ Array DimRow(Length d) {
     var m = for i [0:<Size(METRIC)] {
         if METRIC[i][0] == v { yield METRIC[i]; };
     };
-    if Size(m) > 0 { return m[0]; };
-    var vi = v / 25.4;
-    var imp = for i [0:<Size(IMPERIAL)] {
-        if Abs(IMPERIAL[i][0] - vi) < 0.001 { yield IMPERIAL[i]; };
+    return if Size(m) > 0 {
+        return m[0];
+    } else {
+        var vi = v / 25.4;
+        var imp = for i [0:<Size(IMPERIAL)] {
+            if Abs(IMPERIAL[i][0] - vi) < 0.001 { yield IMPERIAL[i]; };
+        };
+        assert Size(imp) > 0, "unsupported fastener diameter";
+        var row = imp[0];
+        return for j [0:<Size(row)] { yield row[j] * 25.4; };
     };
-    assert Size(imp) > 0, "unsupported fastener diameter";
-    var row = imp[0];
-    return for j [0:<Size(row)] { yield row[j] * 25.4; };
 }
 
 # ---------------------------------------------------------------------------
