@@ -11,16 +11,83 @@ struct Thread {
     Length tolerance;
 }
 
+# ISO metric coarse pitch table: [diameter, pitch]
+var METRIC_COARSE = [
+    [2, 0.4],  [2.5, 0.45], [3, 0.5],   [4, 0.7],  [5, 0.8],  [6, 1.0],
+    [8, 1.25], [10, 1.5],   [12, 1.75], [16, 2.0], [20, 2.5], [24, 3.0],
+    [30, 3.5], [36, 4.0],   [42, 4.5],  [48, 5.0], [56, 5.5], [64, 6.0]
+];
+
+# Returns the ISO coarse pitch for a given metric diameter.
+Length MetricCoarsePitch(Length d) {
+    var v = Number(d);
+    var matches = for i [0:<Size(METRIC_COARSE)] {
+        if METRIC_COARSE[i][0] == v {
+            yield METRIC_COARSE[i][1];
+        };
+    };
+    assert Size(matches) > 0, "unsupported metric coarse diameter";
+    return matches[0] * 1 mm;
+}
+
+# Imperial thread table: [size, pitch_in, diameter_in, taper]
+var IMPERIAL = [
+    # SAE UNC (coarse)
+    ["#4-40",    1/40,   0.112,   0],
+    ["#6-32",    1/32,   0.138,   0],
+    ["#8-32",    1/32,   0.164,   0],
+    ["#10-24",   1/24,   0.190,   0],
+    ["1/4-20",   1/20,   1/4,     0],
+    ["5/16-18",  1/18,   5/16,    0],
+    ["3/8-16",   1/16,   3/8,     0],
+    ["7/16-14",  1/14,   7/16,    0],
+    ["1/2-13",   1/13,   1/2,     0],
+    ["5/8-11",   1/11,   5/8,     0],
+    ["3/4-10",   1/10,   3/4,     0],
+    # SAE UNF (fine)
+    ["#4-48",    1/48,   0.112,   0],
+    ["#6-40",    1/40,   0.138,   0],
+    ["#8-36",    1/36,   0.164,   0],
+    ["#10-32",   1/32,   0.190,   0],
+    ["1/4-28",   1/28,   1/4,     0],
+    ["5/16-24",  1/24,   5/16,    0],
+    ["3/8-24",   1/24,   3/8,     0],
+    ["7/16-20",  1/20,   7/16,    0],
+    ["1/2-20",   1/20,   1/2,     0],
+    ["5/8-18",   1/18,   5/8,     0],
+    ["3/4-16",   1/16,   3/4,     0],
+    # NPT (diameter is pipe OD, not nominal pipe size)
+    ["1/8-npt",  1/27,   0.405,   1/16],
+    ["1/4-npt",  1/18,   0.540,   1/16],
+    ["3/8-npt",  1/18,   0.675,   1/16],
+    ["1/2-npt",  1/14,   0.840,   1/16],
+    ["3/4-npt",  1/14,   1.050,   1/16],
+    ["1-npt",    2/23,   1.315,   1/16]
+];
+
+# Looks up an imperial thread by size string.
+Thread ImperialThread(String size) {
+    var matches = for i [0:<Size(IMPERIAL)] {
+        if IMPERIAL[i][0] == size {
+            yield IMPERIAL[i];
+        };
+    };
+    assert Size(matches) > 0, "unsupported thread size";
+    var row = matches[0];
+    return Thread {
+        pitch: row[1] * 1 in,
+        major_diameter: row[2] * 1 in,
+        taper: row[3],
+        tolerance: 0.1 mm
+    };
+}
+
 # Creates a `Thread` from a standard size name.
 #
-# **Metric coarse (ISO):** `"m2"`, `"m2.5"`, `"m3"`, `"m4"`, `"m5"`, `"m6"`, `"m8"`, `"m10"`, `"m12"`, `"m16"`, `"m20"`,
-# `"m24"`, `"m30"`, `"m36"`, `"m42"`, `"m48"`, `"m56"`, `"m64"`
+# **Metric coarse (ISO):** `"m2"` through `"m64"` — any standard diameter.
 #
-# **Metric fine (ISO):** `"m8x1"`, `"m10x1"`, `"m10x1.25"`, `"m12x1.25"`, `"m12x1.5"`,
-# `"m16x1.5"`, `"m20x1.5"`, `"m20x2"`, `"m24x1.5"`, `"m24x2"`, `"m30x1.5"`, `"m30x2"`,
-# `"m36x1.5"`, `"m36x2"`, `"m36x3"`, `"m42x1.5"`, `"m42x2"`, `"m42x3"`,
-# `"m48x1.5"`, `"m48x2"`, `"m48x3"`, `"m56x1.5"`, `"m56x2"`, `"m56x4"`,
-# `"m64x1.5"`, `"m64x2"`, `"m64x4"`
+# **Metric fine (ISO):** `"m<d>x<p>"` — any diameter and pitch,
+# e.g. `"m8x1"`, `"m3x0.35"`, `"m30x2"`.
 #
 # **SAE UNC (coarse):** `"#4-40"`, `"#6-32"`, `"#8-32"`, `"#10-24"`,
 # `"1/4-20"`, `"5/16-18"`, `"3/8-16"`, `"7/16-14"`, `"1/2-13"`, `"5/8-11"`, `"3/4-10"`
@@ -30,173 +97,23 @@ struct Thread {
 #
 # **NPT:** `"1/8-npt"`, `"1/4-npt"`, `"3/8-npt"`, `"1/2-npt"`, `"3/4-npt"`, `"1-npt"`
 Thread New(String size) {
-    # --- Metric ISO ---
-    return if size == "m2" {
-        return Thread { pitch: 0.4 mm, major_diameter: 2 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m2.5" {
-        return Thread { pitch: 0.45 mm, major_diameter: 2.5 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m3" {
-        return Thread { pitch: 0.5 mm, major_diameter: 3 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m4" {
-        return Thread { pitch: 0.7 mm, major_diameter: 4 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m5" {
-        return Thread { pitch: 0.8 mm, major_diameter: 5 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m6" {
-        return Thread { pitch: 1.0 mm, major_diameter: 6 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m8" {
-        return Thread { pitch: 1.25 mm, major_diameter: 8 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m10" {
-        return Thread { pitch: 1.5 mm, major_diameter: 10 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m12" {
-        return Thread { pitch: 1.75 mm, major_diameter: 12 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m16" {
-        return Thread { pitch: 2.0 mm, major_diameter: 16 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m20" {
-        return Thread { pitch: 2.5 mm, major_diameter: 20 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m24" {
-        return Thread { pitch: 3.0 mm, major_diameter: 24 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m30" {
-        return Thread { pitch: 3.5 mm, major_diameter: 30 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m36" {
-        return Thread { pitch: 4.0 mm, major_diameter: 36 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m42" {
-        return Thread { pitch: 4.5 mm, major_diameter: 42 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m48" {
-        return Thread { pitch: 5.0 mm, major_diameter: 48 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m56" {
-        return Thread { pitch: 5.5 mm, major_diameter: 56 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m64" {
-        return Thread { pitch: 6.0 mm, major_diameter: 64 mm, taper: 0, tolerance: 0.1 mm };
-    # --- Metric ISO fine ---
-    } else if size == "m8x1" {
-        return Thread { pitch: 1.0 mm, major_diameter: 8 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m10x1" {
-        return Thread { pitch: 1.0 mm, major_diameter: 10 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m10x1.25" {
-        return Thread { pitch: 1.25 mm, major_diameter: 10 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m12x1.25" {
-        return Thread { pitch: 1.25 mm, major_diameter: 12 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m12x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 12 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m16x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 16 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m20x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 20 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m20x2" {
-        return Thread { pitch: 2.0 mm, major_diameter: 20 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m24x2" {
-        return Thread { pitch: 2.0 mm, major_diameter: 24 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m24x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 24 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m30x2" {
-        return Thread { pitch: 2.0 mm, major_diameter: 30 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m30x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 30 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m36x3" {
-        return Thread { pitch: 3.0 mm, major_diameter: 36 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m36x2" {
-        return Thread { pitch: 2.0 mm, major_diameter: 36 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m36x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 36 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m42x3" {
-        return Thread { pitch: 3.0 mm, major_diameter: 42 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m42x2" {
-        return Thread { pitch: 2.0 mm, major_diameter: 42 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m42x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 42 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m48x3" {
-        return Thread { pitch: 3.0 mm, major_diameter: 48 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m48x2" {
-        return Thread { pitch: 2.0 mm, major_diameter: 48 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m48x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 48 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m56x4" {
-        return Thread { pitch: 4.0 mm, major_diameter: 56 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m56x2" {
-        return Thread { pitch: 2.0 mm, major_diameter: 56 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m56x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 56 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m64x4" {
-        return Thread { pitch: 4.0 mm, major_diameter: 64 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m64x2" {
-        return Thread { pitch: 2.0 mm, major_diameter: 64 mm, taper: 0, tolerance: 0.1 mm };
-    } else if size == "m64x1.5" {
-        return Thread { pitch: 1.5 mm, major_diameter: 64 mm, taper: 0, tolerance: 0.1 mm };
-    # --- SAE UNC (coarse, numbered) ---
-    } else if size == "#4-40" {
-        return Thread { pitch: 1/40 in, major_diameter: 0.112 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "#6-32" {
-        return Thread { pitch: 1/32 in, major_diameter: 0.138 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "#8-32" {
-        return Thread { pitch: 1/32 in, major_diameter: 0.164 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "#10-24" {
-        return Thread { pitch: 1/24 in, major_diameter: 0.190 in, taper: 0, tolerance: 0.1 mm };
-    # --- SAE UNC (coarse, fractional) ---
-    } else if size == "1/4-20" {
-        return Thread { pitch: 1/20 in, major_diameter: 1/4 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "5/16-18" {
-        return Thread { pitch: 1/18 in, major_diameter: 5/16 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "3/8-16" {
-        return Thread { pitch: 1/16 in, major_diameter: 3/8 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "7/16-14" {
-        return Thread { pitch: 1/14 in, major_diameter: 7/16 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "1/2-13" {
-        return Thread { pitch: 1/13 in, major_diameter: 1/2 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "5/8-11" {
-        return Thread { pitch: 1/11 in, major_diameter: 5/8 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "3/4-10" {
-        return Thread { pitch: 1/10 in, major_diameter: 3/4 in, taper: 0, tolerance: 0.1 mm };
-    # --- SAE UNF (fine, numbered) ---
-    } else if size == "#4-48" {
-        return Thread { pitch: 1/48 in, major_diameter: 0.112 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "#6-40" {
-        return Thread { pitch: 1/40 in, major_diameter: 0.138 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "#8-36" {
-        return Thread { pitch: 1/36 in, major_diameter: 0.164 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "#10-32" {
-        return Thread { pitch: 1/32 in, major_diameter: 0.190 in, taper: 0, tolerance: 0.1 mm };
-    # --- SAE UNF (fine, fractional) ---
-    } else if size == "1/4-28" {
-        return Thread { pitch: 1/28 in, major_diameter: 1/4 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "5/16-24" {
-        return Thread { pitch: 1/24 in, major_diameter: 5/16 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "3/8-24" {
-        return Thread { pitch: 1/24 in, major_diameter: 3/8 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "7/16-20" {
-        return Thread { pitch: 1/20 in, major_diameter: 7/16 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "1/2-20" {
-        return Thread { pitch: 1/20 in, major_diameter: 1/2 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "5/8-18" {
-        return Thread { pitch: 1/18 in, major_diameter: 5/8 in, taper: 0, tolerance: 0.1 mm };
-    } else if size == "3/4-16" {
-        return Thread { pitch: 1/16 in, major_diameter: 3/4 in, taper: 0, tolerance: 0.1 mm };
-    # --- NPT (diameter is pipe OD, not nominal pipe size) ---
-    } else if size == "1/8-npt" {
-        return Thread { pitch: 1/27 in, major_diameter: 0.405 in, taper: 1/16, tolerance: 0.1 mm };
-    } else if size == "1/4-npt" {
-        return Thread { pitch: 1/18 in, major_diameter: 0.540 in, taper: 1/16, tolerance: 0.1 mm };
-    } else if size == "3/8-npt" {
-        return Thread { pitch: 1/18 in, major_diameter: 0.675 in, taper: 1/16, tolerance: 0.1 mm };
-    } else if size == "1/2-npt" {
-        return Thread { pitch: 1/14 in, major_diameter: 0.840 in, taper: 1/16, tolerance: 0.1 mm };
-    } else if size == "3/4-npt" {
-        return Thread { pitch: 1/14 in, major_diameter: 1.050 in, taper: 1/16, tolerance: 0.1 mm };
-    } else if size == "1-npt" {
-        return Thread { pitch: 2/23 in, major_diameter: 1.315 in, taper: 1/16, tolerance: 0.1 mm };
+    # --- Metric fine: m<diameter>x<pitch> ---
+    var mfine = size.Match(`m(\d+\.?\d*)x([\d.]+)`);
+    return if mfine == true {
+        var d = Number(mfine[1]) * 1 mm;
+        var p = Number(mfine[2]) * 1 mm;
+        return Thread { pitch: p, major_diameter: d, taper: 0, tolerance: 0.1 mm };
     } else {
-        assert false, "unsupported thread size";
+    # --- Metric coarse: m<diameter> ---
+    var mcoarse = size.Match(`m(\d+\.?\d*)$`);
+    return if mcoarse == true {
+        var d = Number(mcoarse[1]) * 1 mm;
+        return Thread { pitch: MetricCoarsePitch(d), major_diameter: d, taper: 0, tolerance: 0.1 mm };
+    } else {
+    # --- Imperial: SAE UNC, UNF, NPT ---
+    return ImperialThread(size);
     };
-}
-
-# Creates a `Thread` with a custom pitch, using the base size for diameter.
-#
-# Example: `New("m30", 2 mm)` → M30 with 2 mm fine pitch.
-Thread New(String size, Length pitch) {
-    var t = New(size);
-    if pitch > 0 mm {
-        t.pitch = pitch;
     };
-    return t;
 }
 
 # Generates an external (outside) thread `Solid`.
