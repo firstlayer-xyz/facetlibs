@@ -203,7 +203,7 @@ Solid CapNut.Solid() {
     var R = R_num * 1 mm;
     var sphere = Sphere(R)
         .Translate(0 mm, 0 mm, self.base_h + dh - R);
-    var clip = Cylinder(dh, flat_r, flat_r)
+    var clip = Cylinder(flat_r, flat_r, dh)
         .Translate(0 mm, 0 mm, self.base_h);
     var dome = sphere ^ clip;
 
@@ -250,7 +250,7 @@ WingNut WingNut(String size) {
 
 # Renders the wing nut as a solid.
 Solid WingNut.Solid() {
-    var hub = Cylinder(self.hub_h, self.hub_d / 2, self.hub_d / 2);
+    var hub = Cylinder(self.hub_d / 2, self.hub_d / 2, self.hub_h);
 
     var ws = self.wing_span;
     var wh = self.wing_h;
@@ -277,7 +277,7 @@ Solid WingNut.Solid() {
 
     # Rounded cap on top of wing
     var cap_cx = hr - overlap + cap_w / 2;
-    var cap = Cylinder(wt, cap_w / 2, cap_w / 2)
+    var cap = Cylinder(cap_w / 2, cap_w / 2, wt)
         .Translate(0 mm, 0 mm, -wt / 2)
         .Rotate(90 deg, 0 deg, 0 deg)
         .Translate(cap_cx, 0 mm, body_h);
@@ -318,8 +318,8 @@ Washer Washer(String size) {
 
 # Renders the washer as a solid.
 Solid Washer.Solid() {
-    var outer = Cylinder(self.thickness, self.outer_d / 2, self.outer_d / 2);
-    var bore = Cylinder(self.thickness + 1 mm, self.bore_d / 2, self.bore_d / 2)
+    var outer = Cylinder(self.outer_d / 2, self.outer_d / 2, self.thickness);
+    var bore = Cylinder(self.bore_d / 2, self.bore_d / 2, self.thickness + 1 mm)
         .Translate(0 mm, 0 mm, -0.5 mm);
     return outer - bore;
 }
@@ -393,7 +393,7 @@ SocketHeadCapScrew SocketHeadCapScrew(String size, Length length) {
 # Renders the socket head cap screw as a solid.
 Solid SocketHeadCapScrew.Solid() {
     var hh = self.head_h;
-    var head = Cylinder(hh, self.head_d / 2, self.head_d / 2);
+    var head = Cylinder(self.head_d / 2, self.head_d / 2, hh);
     var sock_depth = hh * 0.8;
     var sock_cr = self.socket / (2 * Cos(30 deg));
     var socket = Polygon(for i [0:<6] {
@@ -448,7 +448,7 @@ Solid ButtonHeadCapScrew.Solid() {
     var R = R_num * 1 mm;
     var c = c_num * 1 mm;
     var sphere = Sphere(R).Translate(0 mm, 0 mm, c);
-    var clip = Cylinder(h, d / 2, d / 2);
+    var clip = Cylinder(d / 2, d / 2, h);
     var dome = sphere ^ clip;
     var sock_depth = h * 0.7;
     var sock_cr = self.socket / (2 * Cos(30 deg));
@@ -494,7 +494,7 @@ CountersunkScrew CountersunkScrew(String size, Length length) {
 
 # Renders the countersunk screw as a solid.
 Solid CountersunkScrew.Solid() {
-    var head = Cylinder(self.head_h, self.head_d / 2, self.major_d / 2);
+    var head = Cylinder(self.head_d / 2, self.major_d / 2, self.head_h);
     var sock_depth = self.head_h * 0.7;
     var sock_cr = self.socket / (2 * Cos(30 deg));
     var socket = Polygon(for i [0:<6] {
@@ -585,7 +585,7 @@ Thumbscrew Thumbscrew(String size, Length length, Length head_h, Length head_r, 
 
 # Renders the thumbscrew as a solid.
 Solid Thumbscrew.Solid() {
-    var head = self.knurl.ApplyZ(Cylinder(self.head_h, self.head_r, self.head_r));
+    var head = self.knurl.ApplyZ(Cylinder(self.head_r, self.head_r, self.head_h));
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, self.head_h);
     return head + shaft;
@@ -624,7 +624,7 @@ FlatHeadScrew FlatHeadScrew(String size, Length length) {
 Solid FlatHeadScrew.Solid() {
     var hd = self.head_d;
     var hh = self.head_h;
-    var head = Cylinder(hh, hd / 2, hd / 2);
+    var head = Cylinder(hd / 2, hd / 2, hh);
     var slot_depth = hh * 0.8;
     var slot = Cube(hd + 1 mm, self.slot_w, slot_depth + 1 mm)
         .Translate(-(hd + 1 mm) / 2, -self.slot_w / 2, -1 mm);
@@ -667,7 +667,7 @@ Solid PhillipsScrew.Solid() {
     var hd = self.head_d;
     var hh = self.head_h;
     var pw = self.phillips_w;
-    var head = Cylinder(hh, hd / 2, hd / 2);
+    var head = Cylinder(hd / 2, hd / 2, hh);
     var recess_depth = hh * 0.8;
     var arm_len = pw * 1.2;
     var arm_w = pw * 0.25;
