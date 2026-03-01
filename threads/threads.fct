@@ -168,33 +168,32 @@ Solid Thread.Outside(Length length) {
     # Build tooth polygon in polar coordinates: (r*cos(theta), r*sin(theta))
     # Segments: leading flank, crest arc, trailing flank, root arc
     var points = for i[0:<n_total] {
-        var pt = if i < n_flank {
+        if i < n_flank {
             # Leading flank: (r_min, -root_half) to (r_maj, -crest_half)
             var t = i / (n_flank - 1);
             var r = r_min + (r_maj - r_min) * t;
             var theta = (0 deg - root_half) + (root_half - crest_half) * t;
-            return Point2d(r * Cos(theta), r * Sin(theta));
+            yield Point2d(r * Cos(theta), r * Sin(theta));
         } else if i < n_flank + n_crest {
             # Crest arc at r_maj: from -crest_half to +crest_half
             var j = i - n_flank;
             var t = j / (n_crest - 1);
             var theta = (0 deg - crest_half) + 2 * crest_half * t;
-            return Point2d(r_maj * Cos(theta), r_maj * Sin(theta));
+            yield Point2d(r_maj * Cos(theta), r_maj * Sin(theta));
         } else if i < n_flank * 2 + n_crest {
             # Trailing flank: (r_maj, +crest_half) to (r_min, +root_half)
             var j = i - n_flank - n_crest;
             var t = j / (n_flank - 1);
             var r = r_maj + (r_min - r_maj) * t;
             var theta = crest_half + (root_half - crest_half) * t;
-            return Point2d(r * Cos(theta), r * Sin(theta));
+            yield Point2d(r * Cos(theta), r * Sin(theta));
         } else {
             # Root arc at r_min: from +root_half through 180 deg to -root_half (90 deg span)
             var j = i - n_flank * 2 - n_crest;
             var t = j / (n_root - 1);
             var theta = root_half + gap * t;
-            return Point2d(r_min * Cos(theta), r_min * Sin(theta));
-        };
-        yield pt;
+            yield Point2d(r_min * Cos(theta), r_min * Sin(theta));
+        }
     };
 
     var tooth = Polygon(points);
@@ -241,33 +240,32 @@ Solid Thread.Inside(Length length) {
     # Build tooth polygon in polar coordinates
     # Segments: leading flank, crest arc, trailing flank, root arc
     var points = for i[0:<n_total] {
-        var pt = if i < n_flank {
+        if i < n_flank {
             # Leading flank: (r_min, -root_half) to (r_maj, -crest_half)
             var t = i / (n_flank - 1);
             var r = r_min + (r_maj - r_min) * t;
             var theta = (0 deg - root_half) + (root_half - crest_half) * t;
-            return Point2d(r * Cos(theta), r * Sin(theta));
+            yield Point2d(r * Cos(theta), r * Sin(theta));
         } else if i < n_flank + n_crest {
             # Crest at r_maj: from -crest_half to +crest_half
             var j = i - n_flank;
             var t = j / (n_crest - 1);
             var theta = (0 deg - crest_half) + 2 * crest_half * t;
-            return Point2d(r_maj * Cos(theta), r_maj * Sin(theta));
+            yield Point2d(r_maj * Cos(theta), r_maj * Sin(theta));
         } else if i < n_flank * 2 + n_crest {
             # Trailing flank: (r_maj, +crest_half) to (r_min, +root_half)
             var j = i - n_flank - n_crest;
             var t = j / (n_flank - 1);
             var r = r_maj + (r_min - r_maj) * t;
             var theta = crest_half + (root_half - crest_half) * t;
-            return Point2d(r * Cos(theta), r * Sin(theta));
+            yield Point2d(r * Cos(theta), r * Sin(theta));
         } else {
             # Root at r_min: from +root_half to -root_half
             var j = i - n_flank * 2 - n_crest;
             var t = j / (n_root - 1);
             var theta = root_half + gap * t;
-            return Point2d(r_min * Cos(theta), r_min * Sin(theta));
-        };
-        yield pt;
+            yield Point2d(r_min * Cos(theta), r_min * Sin(theta));
+        }
     };
 
     var tooth = Polygon(points);

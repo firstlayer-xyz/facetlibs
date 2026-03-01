@@ -49,14 +49,14 @@ Solid Knurl.ApplyZ(Solid target) {
     var points = for idx [0:<n_pts] {
         var i = Floor(idx / 2);
         var base_angle = i * angle_step;
-        yield if Floor(idx / 2) * 2 == idx {
+        if Floor(idx / 2) * 2 == idx {
             # Even index: crest point
-            return Point2d(r_crest * Cos(base_angle), r_crest * Sin(base_angle));
+            yield Point2d(r_crest * Cos(base_angle), r_crest * Sin(base_angle));
         } else {
             # Odd index: valley point (offset by half step)
-            return Point2d(r_valley * Cos(base_angle + half_step),
+            yield Point2d(r_valley * Cos(base_angle + half_step),
                        r_valley * Sin(base_angle + half_step));
-        };
+        }
     };
     var star = Polygon(points);
 

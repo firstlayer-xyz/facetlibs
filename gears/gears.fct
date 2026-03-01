@@ -81,13 +81,13 @@ Sketch Gear.Profile(Number n_involute = 20) {
         var tooth_idx = (idx - j) / n_per_tooth;
         var tooth_rot = tooth_idx * pitch_angle;
 
-        var pt = if j < n_involute {
+        if j < n_involute {
             # Right involute flank (base to tip)
             var t = t_max * j / (n_involute - 1);
             var inv_t = Tan(t * 1 rad) - t;
             var r = r_b / Cos(t * 1 rad);
             var theta = (half_tooth - inv_t + tooth_rot) * 1 rad;
-            return Point2d(r * Cos(theta), r * Sin(theta));
+            yield Point2d(r * Cos(theta), r * Sin(theta));
 
         } else if j < n_involute + n_arc {
             # Tip arc at addendum radius
@@ -96,7 +96,7 @@ Sketch Gear.Profile(Number n_involute = 20) {
             var theta_left = 0 - half_tooth + inv_max + tooth_rot;
             var frac = k / (n_arc - 1);
             var theta = (theta_right + (theta_left - theta_right) * frac) * 1 rad;
-            return Point2d(r_a * Cos(theta), r_a * Sin(theta));
+            yield Point2d(r_a * Cos(theta), r_a * Sin(theta));
 
         } else if j < n_involute * 2 + n_arc {
             # Left involute flank (mirrored, tip to base)
@@ -105,7 +105,7 @@ Sketch Gear.Profile(Number n_involute = 20) {
             var inv_t = Tan(t * 1 rad) - t;
             var r = r_b / Cos(t * 1 rad);
             var theta = (0 - half_tooth + inv_t + tooth_rot) * 1 rad;
-            return Point2d(r * Cos(theta), r * Sin(theta));
+            yield Point2d(r * Cos(theta), r * Sin(theta));
 
         } else {
             # Root arc at dedendum radius
@@ -114,9 +114,8 @@ Sketch Gear.Profile(Number n_involute = 20) {
             var theta_end = half_tooth + pitch_angle + tooth_rot;
             var frac = k / (n_arc - 1);
             var theta = (theta_start + (theta_end - theta_start) * frac) * 1 rad;
-            return Point2d(r_d * Cos(theta), r_d * Sin(theta));
-        };
-        yield pt;
+            yield Point2d(r_d * Cos(theta), r_d * Sin(theta));
+        }
     };
 
     return Polygon(points);
