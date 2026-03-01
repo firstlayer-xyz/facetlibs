@@ -17,7 +17,7 @@ PolyMesh Tetrahedron() {
     var s = 1 mm / Sqrt(3);
     return PolyMesh {
         vertices: [Point3d(s, s, s), Point3d(s, -s, -s), Point3d(-s, s, -s), Point3d(-s, -s, s)],
-        faces: [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]],
+        faces: [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]]
     };
 }
 
@@ -32,7 +32,7 @@ PolyMesh Octahedron() {
         faces: [
             [0, 2, 4], [2, 1, 4], [1, 3, 4], [3, 0, 4],
             [0, 3, 5], [3, 1, 5], [1, 2, 5], [2, 0, 5],
-        ],
+        ]
     };
 }
 
@@ -51,7 +51,7 @@ PolyMesh PlatoCube() {
             [2, 3, 7, 6],
             [0, 4, 7, 3],
             [1, 2, 6, 5],
-        ],
+        ]
     };
 }
 
@@ -75,7 +75,7 @@ PolyMesh Icosahedron() {
             [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
             [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9],
             [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1],
-        ],
+        ]
     };
 }
 
@@ -232,7 +232,7 @@ PolyMesh Prism(Number n) {
     };
     return PolyMesh {
         vertices: verts,
-        faces: faces,
+        faces: faces
     }.ScaleToRadius(1 mm);
 }
 
@@ -265,7 +265,7 @@ PolyMesh Antiprism(Number n) {
     };
     return PolyMesh {
         vertices: verts,
-        faces: faces,
+        faces: faces
     }.ScaleToRadius(1 mm);
 }
 
@@ -292,7 +292,7 @@ PolyMesh Pyramid(Number n) {
     };
     return PolyMesh {
         vertices: verts,
-        faces: faces,
+        faces: faces
     }.ScaleToRadius(1 mm);
 }
 
@@ -320,7 +320,7 @@ PolyMesh Bipyramid(Number n) {
     };
     return PolyMesh {
         vertices: verts,
-        faces: faces,
+        faces: faces
     }.ScaleToRadius(1 mm);
 }
 
