@@ -282,7 +282,7 @@ Solid WingNut.Solid() {
         .Rotate(90 deg, 0 deg, 0 deg)
         .Translate(cap_cx, 0 mm, body_h);
     var clip = Cube(cap_w + 1 mm, wt + 1 mm, cap_w / 2)
-        .Translate(cap_cx, 0 mm, body_h + cap_w / 4);
+        .Translate(cap_cx - (cap_w + 1 mm) / 2, -(wt + 1 mm) / 2, body_h);
     var wing_r = wing_body + (cap ^ clip);
 
     # Left wing (-X): mirror of right wing
@@ -627,7 +627,7 @@ Solid FlatHeadScrew.Solid() {
     var head = Cylinder(hh, hd / 2, hd / 2);
     var slot_depth = hh * 0.8;
     var slot = Cube(hd + 1 mm, self.slot_w, slot_depth + 1 mm)
-        .Translate(0 mm, 0 mm, slot_depth / 2 - 0.5 mm);
+        .Translate(-(hd + 1 mm) / 2, -self.slot_w / 2, -1 mm);
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, hh);
     return (head - slot) + shaft;
@@ -672,9 +672,9 @@ Solid PhillipsScrew.Solid() {
     var arm_len = pw * 1.2;
     var arm_w = pw * 0.25;
     var slot_a = Cube(arm_len, arm_w, recess_depth + 1 mm)
-        .Translate(0 mm, 0 mm, recess_depth / 2 - 0.5 mm);
+        .Translate(-arm_len / 2, -arm_w / 2, -1 mm);
     var slot_b = Cube(arm_w, arm_len, recess_depth + 1 mm)
-        .Translate(0 mm, 0 mm, recess_depth / 2 - 0.5 mm);
+        .Translate(-arm_w / 2, -arm_len / 2, -1 mm);
     var recess = slot_a + slot_b;
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, hh);
