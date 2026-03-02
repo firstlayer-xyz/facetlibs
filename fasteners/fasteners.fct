@@ -107,7 +107,7 @@ var IMPERIAL = [
 # Looks up a row by diameter — tries METRIC first, then IMPERIAL.
 # Imperial values use `in` suffix and are converted to mm-as-Number before
 # returning, so constructors can use `row[N] * 1 mm` uniformly.
-Array DimRow(Length d) {
+Number[] DimRow(Length d) {
     var v = Number(d)
     var m = for i [0:<Size(METRIC)] {
         if METRIC[i][0] == v { yield METRIC[i]; }
@@ -765,7 +765,7 @@ Solid MaleStandoff.Solid() {
 # Showcase — renders one of each fastener type side by side
 # ---------------------------------------------------------------------------
 
-Array Showcase(String size, Length shaft_len, Length standoff_len) {
+Solid[] Showcase(String size, Length shaft_len, Length standoff_len) {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     var sp = row[1] * 1 mm * 2

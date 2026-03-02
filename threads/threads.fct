@@ -5,10 +5,10 @@
 # The `tolerance` field is a radial clearance applied to both inside and
 # outside threads — 0.2 mm by default, suitable for FDM 3D printing.
 struct Thread {
-    Length pitch;
-    Length major_diameter;
-    Number taper;
-    Length tolerance;
+    Length pitch
+    Length major_diameter
+    Number taper
+    Length tolerance
 }
 
 # ISO metric default pitch table: [diameter, pitch]
@@ -22,72 +22,80 @@ var METRIC_DEFAULT = [
     [36, 4.0],  [38, 1.5],   [39, 4.0],  [40, 1.5],  [42, 4.5],  [45, 4.5],
     [48, 5.0],  [50, 1.5],   [52, 5.0],  [55, 1.5],  [56, 5.5],  [58, 1.5],
     [60, 5.5],  [62, 1.5],   [64, 6.0],  [65, 1.5],  [68, 6.0]
-];
+]
 
 # Returns the default pitch for a given metric diameter.
 # For standard coarse sizes this is the ISO 261 coarse pitch.
 # For fine-pitch-only sizes this is the most common fine pitch.
 Length MetricDefaultPitch(Length d) {
-    var v = Number(d);
+    var v = Number(d)
     var matches = for i [0:<Size(METRIC_DEFAULT)] {
         if METRIC_DEFAULT[i][0] == v {
-            yield METRIC_DEFAULT[i][1];
-        };
-    };
-    assert Size(matches) > 0, "unsupported metric diameter";
-    return matches[0] * 1 mm;
+            yield METRIC_DEFAULT[i][1]
+        }
+    }
+    assert Size(matches) > 0, "unsupported metric diameter"
+    return matches[0] * 1 mm
 }
 
-# Imperial thread table: [size, pitch_in, diameter_in, taper]
-var IMPERIAL = [
+# Imperial thread specification row.
+struct ImperialSpec {
+    String size
+    Number pitch_in
+    Number diameter_in
+    Number taper
+}
+
+# Imperial thread table
+var IMPERIAL = ImperialSpec[
     # SAE UNC (coarse)
-    ["#4-40",    1/40,   0.112,   0],
-    ["#6-32",    1/32,   0.138,   0],
-    ["#8-32",    1/32,   0.164,   0],
-    ["#10-24",   1/24,   0.190,   0],
-    ["1/4-20",   1/20,   1/4,     0],
-    ["5/16-18",  1/18,   5/16,    0],
-    ["3/8-16",   1/16,   3/8,     0],
-    ["7/16-14",  1/14,   7/16,    0],
-    ["1/2-13",   1/13,   1/2,     0],
-    ["5/8-11",   1/11,   5/8,     0],
-    ["3/4-10",   1/10,   3/4,     0],
+    { "#4-40",    1/40,   0.112,   0 },
+    { "#6-32",    1/32,   0.138,   0 },
+    { "#8-32",    1/32,   0.164,   0 },
+    { "#10-24",   1/24,   0.190,   0 },
+    { "1/4-20",   1/20,   1/4,     0 },
+    { "5/16-18",  1/18,   5/16,    0 },
+    { "3/8-16",   1/16,   3/8,     0 },
+    { "7/16-14",  1/14,   7/16,    0 },
+    { "1/2-13",   1/13,   1/2,     0 },
+    { "5/8-11",   1/11,   5/8,     0 },
+    { "3/4-10",   1/10,   3/4,     0 },
     # SAE UNF (fine)
-    ["#4-48",    1/48,   0.112,   0],
-    ["#6-40",    1/40,   0.138,   0],
-    ["#8-36",    1/36,   0.164,   0],
-    ["#10-32",   1/32,   0.190,   0],
-    ["1/4-28",   1/28,   1/4,     0],
-    ["5/16-24",  1/24,   5/16,    0],
-    ["3/8-24",   1/24,   3/8,     0],
-    ["7/16-20",  1/20,   7/16,    0],
-    ["1/2-20",   1/20,   1/2,     0],
-    ["5/8-18",   1/18,   5/8,     0],
-    ["3/4-16",   1/16,   3/4,     0],
+    { "#4-48",    1/48,   0.112,   0 },
+    { "#6-40",    1/40,   0.138,   0 },
+    { "#8-36",    1/36,   0.164,   0 },
+    { "#10-32",   1/32,   0.190,   0 },
+    { "1/4-28",   1/28,   1/4,     0 },
+    { "5/16-24",  1/24,   5/16,    0 },
+    { "3/8-24",   1/24,   3/8,     0 },
+    { "7/16-20",  1/20,   7/16,    0 },
+    { "1/2-20",   1/20,   1/2,     0 },
+    { "5/8-18",   1/18,   5/8,     0 },
+    { "3/4-16",   1/16,   3/4,     0 },
     # NPT (diameter is pipe OD, not nominal pipe size)
-    ["1/8-npt",  1/27,   0.405,   1/16],
-    ["1/4-npt",  1/18,   0.540,   1/16],
-    ["3/8-npt",  1/18,   0.675,   1/16],
-    ["1/2-npt",  1/14,   0.840,   1/16],
-    ["3/4-npt",  1/14,   1.050,   1/16],
-    ["1-npt",    2/23,   1.315,   1/16]
-];
+    { "1/8-npt",  1/27,   0.405,   1/16 },
+    { "1/4-npt",  1/18,   0.540,   1/16 },
+    { "3/8-npt",  1/18,   0.675,   1/16 },
+    { "1/2-npt",  1/14,   0.840,   1/16 },
+    { "3/4-npt",  1/14,   1.050,   1/16 },
+    { "1-npt",    2/23,   1.315,   1/16 }
+]
 
 # Looks up an imperial thread by size string.
 Thread ImperialThread(String size) {
     var matches = for i [0:<Size(IMPERIAL)] {
-        if IMPERIAL[i][0] == size {
-            yield IMPERIAL[i];
-        };
-    };
-    assert Size(matches) > 0, "unsupported thread size";
-    var row = matches[0];
+        if IMPERIAL[i].size == size {
+            yield IMPERIAL[i]
+        }
+    }
+    assert Size(matches) > 0, "unsupported thread size"
+    var row = matches[0]
     return Thread {
-        pitch: row[1] * 1 in,
-        major_diameter: row[2] * 1 in,
-        taper: row[3],
+        pitch: row.pitch_in * 1 in,
+        major_diameter: row.diameter_in * 1 in,
+        taper: row.taper,
         tolerance: 0.1 mm
-    };
+    }
 }
 
 # Creates a `Thread` from a standard size name.
@@ -109,22 +117,22 @@ Thread ImperialThread(String size) {
 # **NPT:** `"1/8-npt"`, `"1/4-npt"`, `"3/8-npt"`, `"1/2-npt"`, `"3/4-npt"`, `"1-npt"`
 Thread Thread(String size) {
     # --- Metric fine: m<diameter>x<pitch> ---
-    var mfine = size.Match(`m(\d+\.?\d*)x([\d.]+)`);
+    var mfine = size.Match(`m(\d+\.?\d*)x([\d.]+)`)
     return if mfine == true {
-        var d = Number(mfine[1]) * 1 mm;
-        var p = Number(mfine[2]) * 1 mm;
-        return Thread { pitch: p, major_diameter: d, taper: 0, tolerance: 0.1 mm };
+        var d = Number(mfine[1]) * 1 mm
+        var p = Number(mfine[2]) * 1 mm
+        return Thread { pitch: p, major_diameter: d, taper: 0, tolerance: 0.1 mm }
     } else {
     # --- Metric: m<diameter> (coarse or default fine pitch) ---
-    var mcoarse = size.Match(`m(\d+\.?\d*)$`);
+    var mcoarse = size.Match(`m(\d+\.?\d*)$`)
     return if mcoarse == true {
-        var d = Number(mcoarse[1]) * 1 mm;
-        return Thread { pitch: MetricDefaultPitch(d), major_diameter: d, taper: 0, tolerance: 0.1 mm };
+        var d = Number(mcoarse[1]) * 1 mm
+        return Thread { pitch: MetricDefaultPitch(d), major_diameter: d, taper: 0, tolerance: 0.1 mm }
     } else {
     # --- Imperial: SAE UNC, UNF, NPT ---
-    return ImperialThread(size);
-    };
-    };
+    return ImperialThread(size)
+    }
+    }
 }
 
 # Generates an external (outside) thread `Solid`.
@@ -135,69 +143,69 @@ Thread Thread(String size) {
 #
 # Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
 Solid Thread.Outside(Length length) {
-    var pitch = self.pitch;
-    var major_d = self.major_diameter;
-    var taper = self.taper;
-    var tol = self.tolerance;
-    var turns = length / pitch;
+    var pitch = self.pitch
+    var major_d = self.major_diameter
+    var taper = self.taper
+    var tol = self.tolerance
+    var turns = length / pitch
 
     # Taper: diameter changes by length * taper over the full length
-    var taper_d = length * taper;
-    var d_small = major_d - taper_d / 2;
-    var d_large = major_d + taper_d / 2;
-    var taper_scale = if taper > 0 { return d_large / d_small; } else { return 1; };
+    var taper_d = length * taper
+    var d_small = major_d - taper_d / 2
+    var d_large = major_d + taper_d / 2
+    var taper_scale = if taper > 0 { return d_large / d_small; } else { return 1; }
 
-    var H = pitch * Sqrt(3) / 2;
+    var H = pitch * Sqrt(3) / 2
     # Shrink outside thread by tolerance so printed bolt fits
-    var r_maj = d_small / 2 - tol;
-    var r_min = r_maj - H * 0.625;
+    var r_maj = d_small / 2 - tol
+    var r_min = r_maj - H * 0.625
 
     # ISO angular half-widths (constant for all 60-deg threads):
     #   crest: (P/16) * 2π/P = π/8 = 22.5 deg
     #   root:  (3P/8) * 2π/P = 3π/4 = 135 deg
-    var crest_half = 22.5 deg;
-    var root_half = 135 deg;
-    var gap = 360 deg - 2 * root_half;
+    var crest_half = 22.5 deg
+    var root_half = 135 deg
+    var gap = 360 deg - 2 * root_half
 
     # Sample counts per polygon segment
-    var n_flank = 10;
-    var n_crest = 4;
-    var n_root = 8;
-    var n_total = n_flank * 2 + n_crest + n_root;
+    var n_flank = 10
+    var n_crest = 4
+    var n_root = 8
+    var n_total = n_flank * 2 + n_crest + n_root
 
     # Build tooth polygon in polar coordinates: (r*cos(theta), r*sin(theta))
     # Segments: leading flank, crest arc, trailing flank, root arc
     var points = for i[0:<n_total] {
         if i < n_flank {
             # Leading flank: (r_min, -root_half) to (r_maj, -crest_half)
-            var t = i / (n_flank - 1);
-            var r = r_min + (r_maj - r_min) * t;
-            var theta = (0 deg - root_half) + (root_half - crest_half) * t;
-            yield Point2d(r * Cos(theta), r * Sin(theta));
+            var t = i / (n_flank - 1)
+            var r = r_min + (r_maj - r_min) * t
+            var theta = (0 deg - root_half) + (root_half - crest_half) * t
+            yield Point2d(r * Cos(theta), r * Sin(theta))
         } else if i < n_flank + n_crest {
             # Crest arc at r_maj: from -crest_half to +crest_half
-            var j = i - n_flank;
-            var t = j / (n_crest - 1);
-            var theta = (0 deg - crest_half) + 2 * crest_half * t;
-            yield Point2d(r_maj * Cos(theta), r_maj * Sin(theta));
+            var j = i - n_flank
+            var t = j / (n_crest - 1)
+            var theta = (0 deg - crest_half) + 2 * crest_half * t
+            yield Point2d(r_maj * Cos(theta), r_maj * Sin(theta))
         } else if i < n_flank * 2 + n_crest {
             # Trailing flank: (r_maj, +crest_half) to (r_min, +root_half)
-            var j = i - n_flank - n_crest;
-            var t = j / (n_flank - 1);
-            var r = r_maj + (r_min - r_maj) * t;
-            var theta = crest_half + (root_half - crest_half) * t;
-            yield Point2d(r * Cos(theta), r * Sin(theta));
+            var j = i - n_flank - n_crest
+            var t = j / (n_flank - 1)
+            var r = r_maj + (r_min - r_maj) * t
+            var theta = crest_half + (root_half - crest_half) * t
+            yield Point2d(r * Cos(theta), r * Sin(theta))
         } else {
             # Root arc at r_min: from +root_half through 180 deg to -root_half (90 deg span)
-            var j = i - n_flank * 2 - n_crest;
-            var t = j / (n_root - 1);
-            var theta = root_half + gap * t;
-            yield Point2d(r_min * Cos(theta), r_min * Sin(theta));
+            var j = i - n_flank * 2 - n_crest
+            var t = j / (n_root - 1)
+            var theta = root_half + gap * t
+            yield Point2d(r_min * Cos(theta), r_min * Sin(theta))
         }
-    };
+    }
 
-    var tooth = Polygon(points);
-    return tooth.Extrude(length, turns * 80, turns * 360 deg, taper_scale, taper_scale);
+    var tooth = Polygon(points)
+    return tooth.Extrude(length, turns * 80, turns * 360 deg, taper_scale, taper_scale)
 }
 
 # Generates an internal (inside) thread `Solid`.
@@ -209,65 +217,65 @@ Solid Thread.Outside(Length length) {
 # Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
 # Subtract this from a nut body to create internal threads.
 Solid Thread.Inside(Length length) {
-    var pitch = self.pitch;
-    var major_d = self.major_diameter;
-    var taper = self.taper;
-    var turns = length / pitch;
+    var pitch = self.pitch
+    var major_d = self.major_diameter
+    var taper = self.taper
+    var turns = length / pitch
 
     # Taper: diameter changes by length * taper over the full length
-    var taper_d = length * taper;
-    var d_small = major_d - taper_d / 2;
-    var d_large = major_d + taper_d / 2;
-    var taper_scale = if taper > 0 { return d_large / d_small; } else { return 1; };
+    var taper_d = length * taper
+    var d_small = major_d - taper_d / 2
+    var d_large = major_d + taper_d / 2
+    var taper_scale = if taper > 0 { return d_large / d_small; } else { return 1; }
 
-    var H = pitch * Sqrt(3) / 2;
+    var H = pitch * Sqrt(3) / 2
     # Expand inside thread by tolerance so printed nut fits
-    var tol = self.tolerance;
-    var r_maj = d_small / 2 + tol;
-    var r_min = d_small / 2 - H * 0.625 + tol;
+    var tol = self.tolerance
+    var r_maj = d_small / 2 + tol
+    var r_min = d_small / 2 - H * 0.625 + tol
 
     # Sharp V-profile: minimal crest/root flats
-    var crest_half = 5 deg;
-    var root_half = 170 deg;
-    var gap = 360 deg - 2 * root_half;
+    var crest_half = 5 deg
+    var root_half = 170 deg
+    var gap = 360 deg - 2 * root_half
 
     # Sample counts per polygon segment
-    var n_flank = 10;
-    var n_crest = 2;
-    var n_root = 2;
-    var n_total = n_flank * 2 + n_crest + n_root;
+    var n_flank = 10
+    var n_crest = 2
+    var n_root = 2
+    var n_total = n_flank * 2 + n_crest + n_root
 
     # Build tooth polygon in polar coordinates
     # Segments: leading flank, crest arc, trailing flank, root arc
     var points = for i[0:<n_total] {
         if i < n_flank {
             # Leading flank: (r_min, -root_half) to (r_maj, -crest_half)
-            var t = i / (n_flank - 1);
-            var r = r_min + (r_maj - r_min) * t;
-            var theta = (0 deg - root_half) + (root_half - crest_half) * t;
-            yield Point2d(r * Cos(theta), r * Sin(theta));
+            var t = i / (n_flank - 1)
+            var r = r_min + (r_maj - r_min) * t
+            var theta = (0 deg - root_half) + (root_half - crest_half) * t
+            yield Point2d(r * Cos(theta), r * Sin(theta))
         } else if i < n_flank + n_crest {
             # Crest at r_maj: from -crest_half to +crest_half
-            var j = i - n_flank;
-            var t = j / (n_crest - 1);
-            var theta = (0 deg - crest_half) + 2 * crest_half * t;
-            yield Point2d(r_maj * Cos(theta), r_maj * Sin(theta));
+            var j = i - n_flank
+            var t = j / (n_crest - 1)
+            var theta = (0 deg - crest_half) + 2 * crest_half * t
+            yield Point2d(r_maj * Cos(theta), r_maj * Sin(theta))
         } else if i < n_flank * 2 + n_crest {
             # Trailing flank: (r_maj, +crest_half) to (r_min, +root_half)
-            var j = i - n_flank - n_crest;
-            var t = j / (n_flank - 1);
-            var r = r_maj + (r_min - r_maj) * t;
-            var theta = crest_half + (root_half - crest_half) * t;
-            yield Point2d(r * Cos(theta), r * Sin(theta));
+            var j = i - n_flank - n_crest
+            var t = j / (n_flank - 1)
+            var r = r_maj + (r_min - r_maj) * t
+            var theta = crest_half + (root_half - crest_half) * t
+            yield Point2d(r * Cos(theta), r * Sin(theta))
         } else {
             # Root at r_min: from +root_half to -root_half
-            var j = i - n_flank * 2 - n_crest;
-            var t = j / (n_root - 1);
-            var theta = root_half + gap * t;
-            yield Point2d(r_min * Cos(theta), r_min * Sin(theta));
+            var j = i - n_flank * 2 - n_crest
+            var t = j / (n_root - 1)
+            var theta = root_half + gap * t
+            yield Point2d(r_min * Cos(theta), r_min * Sin(theta))
         }
-    };
+    }
 
-    var tooth = Polygon(points);
-    return tooth.Extrude(length, turns * 80, turns * 360 deg, taper_scale, taper_scale);
+    var tooth = Polygon(points)
+    return tooth.Extrude(length, turns * 80, turns * 360 deg, taper_scale, taper_scale)
 }
