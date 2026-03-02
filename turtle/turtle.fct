@@ -1,0 +1,215 @@
+# Turtle graphics library for Facet.
+#
+# Two turtle types:
+# - Turtle2d: moves in the XY plane, produces Sketch or extruded Solid
+# - Turtle3d: moves in 3D space with yaw/pitch/roll, produces Solid via Sweep
+#
+# Example — 2D square:
+# ```
+# var T = lib "facet/turtle";
+# var t = T.Turtle2d();
+# t.Forward(20 mm);
+# t.Turn(-90 deg);
+# t.Forward(20 mm);
+# t.Turn(-90 deg);
+# t.Forward(20 mm);
+# t.Turn(-90 deg);
+# t.Forward(20 mm);
+# Main() { return t.Extrude(5 mm); }
+# ```
+#
+# Example — 3D helix:
+# ```
+# var T = lib "facet/turtle";
+# var t = T.Turtle3d();
+# for i [0:<36] {
+#     t.Forward(5 mm);
+#     t.Turn(-10 deg, 5 deg);
+# };
+# Main() { return t.Sweep(Circle(1 mm)); }
+# ```
+
+# =========================================================================
+# Turtle2d — 2D turtle in the XY plane
+# =========================================================================
+
+struct Turtle2d {
+    Point2d pos;
+    Angle heading;
+    Bool pen;
+    Array path;
+}
+
+# Creates a new 2D turtle at the origin, heading up (90 deg), pen down.
+Turtle2d Turtle2d() {
+    var start = Point2d(0 mm, 0 mm);
+    return Turtle2d {
+        pos: start,
+        heading: 90 deg,
+        pen: true,
+        path: [start]
+    };
+}
+
+# Moves forward by `dist` in the current heading direction.
+Turtle2d.Forward(Length dist) {
+    var nx = self.pos.x + Cos(self.heading) * dist;
+    var ny = self.pos.y + Sin(self.heading) * dist;
+    var np = Point2d(nx, ny);
+    self.pos = np;
+    if self.pen {
+        self.path = self.path + np;
+    };
+}
+
+# Moves backward by `dist`.
+Turtle2d.Back(Length dist) {
+    self.Forward(-dist);
+}
+
+# Turns by angle `a`. Positive = counterclockwise, negative = clockwise.
+Turtle2d.Turn(Angle a) {
+    self.heading = self.heading + a;
+}
+
+# Jumps to absolute position (x, y). Appends to path if pen is down.
+Turtle2d.GoTo(Length x, Length y) {
+    var np = Point2d(x, y);
+    self.pos = np;
+    if self.pen {
+        self.path = self.path + np;
+    };
+}
+
+# Lifts the pen — movement will not add to the path.
+Turtle2d.PenUp() {
+    self.pen = false;
+}
+
+# Puts the pen down — movement resumes adding to the path.
+Turtle2d.PenDown() {
+    self.pen = true;
+    self.path = self.path + self.pos;
+}
+
+# Returns the path as a closed polygon sketch.
+Sketch Turtle2d.ToSketch() {
+    return Polygon(self.path);
+}
+
+# Extrudes the path into a solid with the given height.
+Solid Turtle2d.Extrude(Length h) {
+    return Polygon(self.path).Extrude(h);
+}
+
+# Sweeps a cross-section along the 2D path.
+Solid Turtle2d.Sweep(Sketch cross) {
+    var pts = self.path;
+    var n = Size(pts);
+    assert n >= 2, "Turtle2d.Sweep requires at least 2 path points";
+    var segments = for i [0:<n - 1] {
+        var p0 = pts[i];
+        var p1 = pts[i + 1];
+        var dx = p1.x - p0.x;
+        var dy = p1.y - p0.y;
+        var segLen = Sqrt(Number(dx) * Number(dx) + Number(dy) * Number(dy)) * 1 mm;
+        var segAngle = Atan2(Number(dy), Number(dx));
+        yield cross
+            .Extrude(segLen)
+            .Rotate(0 deg, -90 deg, segAngle)
+            .Translate(p0.x, p0.y, 0 mm);
+    };
+    return fold a, b segments { return a + b; };
+}
+
+# =========================================================================
+# Turtle3d — full 3D turtle with yaw, pitch, roll
+# =========================================================================
+
+struct Turtle3d {
+    Point3d pos;
+    Angle yaw;
+    Angle pitch;
+    Bool pen;
+    Array path;
+}
+
+# Creates a new 3D turtle at the origin, facing +X (yaw=0, pitch=0), pen down.
+Turtle3d Turtle3d() {
+    var start = Point3d(0 mm, 0 mm, 0 mm);
+    return Turtle3d {
+        pos: start,
+        yaw: 0 deg,
+        pitch: 0 deg,
+        pen: true,
+        path: [start]
+    };
+}
+
+# Moves forward by `dist` in the current yaw/pitch direction.
+Turtle3d.Forward(Length dist) {
+    var nx = self.pos.x + Cos(self.pitch) * Cos(self.yaw) * dist;
+    var ny = self.pos.y + Cos(self.pitch) * Sin(self.yaw) * dist;
+    var nz = self.pos.z + Sin(self.pitch) * dist;
+    var np = Point3d(nx, ny, nz);
+    self.pos = np;
+    if self.pen {
+        self.path = self.path + np;
+    };
+}
+
+# Moves backward by `dist`.
+Turtle3d.Back(Length dist) {
+    self.Forward(-dist);
+}
+
+# Turns by yaw and pitch. Positive yaw = left, negative = right.
+# Positive pitch = up, negative = down.
+Turtle3d.Turn(Angle yaw, Angle pitch) {
+    self.yaw = self.yaw + yaw;
+    self.pitch = self.pitch + pitch;
+}
+
+# Jumps to absolute position (x, y, z). Appends to path if pen is down.
+Turtle3d.GoTo(Length x, Length y, Length z) {
+    var np = Point3d(x, y, z);
+    self.pos = np;
+    if self.pen {
+        self.path = self.path + np;
+    };
+}
+
+# Lifts the pen.
+Turtle3d.PenUp() {
+    self.pen = false;
+}
+
+# Puts the pen down.
+Turtle3d.PenDown() {
+    self.pen = true;
+    self.path = self.path + self.pos;
+}
+
+# Sweeps a cross-section along the 3D path.
+# Each segment gets the cross-section extruded along the segment direction.
+Solid Turtle3d.Sweep(Sketch cross) {
+    var pts = self.path;
+    var n = Size(pts);
+    assert n >= 2, "Turtle3d.Sweep requires at least 2 path points";
+    var segments = for i [0:<n - 1] {
+        var p0 = pts[i];
+        var p1 = pts[i + 1];
+        var dx = p1.x - p0.x;
+        var dy = p1.y - p0.y;
+        var dz = p1.z - p0.z;
+        var segLen = Sqrt(Number(dx) * Number(dx) + Number(dy) * Number(dy) + Number(dz) * Number(dz)) * 1 mm;
+        var xyLen = Sqrt(Number(dx) * Number(dx) + Number(dy) * Number(dy));
+        var segYaw = Atan2(Number(dy), Number(dx));
+        var segPitch = Atan2(Number(dz), xyLen);
+        yield cross
+            .Extrude(segLen)
+            .Rotate(0 deg, -90 deg + segPitch, segYaw)
+            .Translate(p0.x, p0.y, p0.z);
+    };
+    return fold a, b segments { return a + b; };
+}
