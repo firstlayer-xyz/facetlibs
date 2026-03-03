@@ -1,0 +1,215 @@
+# Curves Library
+#
+# Bezier and spline functions that return arrays of points.
+# Use with Polygon() for 2D profiles, or with Turtle.Sweep() for swept solids.
+#
+# Example — cubic bezier profile:
+# ```
+# var C = lib "github.com/firstlayer-xyz/facetlibs/curves@main"
+# var pts = C.CubicBezier2d(
+#     Point2d(0 mm, 0 mm),
+#     Point2d(10 mm, 30 mm),
+#     Point2d(30 mm, 30 mm),
+#     Point2d(40 mm, 0 mm),
+#     20
+# )
+# ```
+#
+# Example — smooth curve through points:
+# ```
+# var pts = C.CatmullRom2d([
+#     Point2d(0 mm, 0 mm),
+#     Point2d(10 mm, 20 mm),
+#     Point2d(30 mm, 15 mm),
+#     Point2d(40 mm, 0 mm),
+# ], 16)
+# ```
+
+# =========================================================================
+# 2D Bezier Curves
+# =========================================================================
+
+# Quadratic bezier curve (3 control points).
+# @param p0     Start point
+# @param p1     Control point
+# @param p2     End point
+# @param steps  Number of line segments
+# @return       Array of Point2d along the curve
+fn QuadBezier2d(Point2d p0, p1, p2, Number steps) Point2d[] {
+    return for i [0:steps] {
+        var t = i / steps
+        var u = 1 - t
+        yield Point2d(
+            u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+            u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y
+        )
+    }
+}
+
+# Cubic bezier curve (4 control points).
+# @param p0     Start point
+# @param p1     First control point (tangent at start)
+# @param p2     Second control point (tangent at end)
+# @param p3     End point
+# @param steps  Number of line segments
+# @return       Array of Point2d along the curve
+fn CubicBezier2d(Point2d p0, p1, p2, p3, Number steps) Point2d[] {
+    return for i [0:steps] {
+        var t = i / steps
+        var u = 1 - t
+        var u2 = u * u
+        var t2 = t * t
+        yield Point2d(
+            u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
+            u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y
+        )
+    }
+}
+
+# =========================================================================
+# 3D Bezier Curves
+# =========================================================================
+
+# Quadratic bezier curve in 3D.
+# @param p0     Start point
+# @param p1     Control point
+# @param p2     End point
+# @param steps  Number of line segments
+# @return       Array of Point3d along the curve
+fn QuadBezier3d(Point3d p0, p1, p2, Number steps) Point3d[] {
+    return for i [0:steps] {
+        var t = i / steps
+        var u = 1 - t
+        yield Point3d(
+            u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+            u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
+            u * u * p0.z + 2 * u * t * p1.z + t * t * p2.z
+        )
+    }
+}
+
+# Cubic bezier curve in 3D.
+# @param p0     Start point
+# @param p1     First control point
+# @param p2     Second control point
+# @param p3     End point
+# @param steps  Number of line segments
+# @return       Array of Point3d along the curve
+fn CubicBezier3d(Point3d p0, p1, p2, p3, Number steps) Point3d[] {
+    return for i [0:steps] {
+        var t = i / steps
+        var u = 1 - t
+        var u2 = u * u
+        var t2 = t * t
+        yield Point3d(
+            u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
+            u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y,
+            u2 * u * p0.z + 3 * u2 * t * p1.z + 3 * u * t2 * p2.z + t2 * t * p3.z
+        )
+    }
+}
+
+# =========================================================================
+# Catmull-Rom Splines
+#
+# Smooth curves that pass through every control point.
+# Uses centripetal parameterization (alpha=0.5) for minimal cusps.
+# =========================================================================
+
+# Catmull-Rom spline through 2D points.
+# Automatically extends start/end tangents by reflecting the first/last segment.
+# @param points     Array of Point2d to interpolate (>= 2)
+# @param segments   Number of line segments between each pair of points
+# @return           Array of Point2d along the smooth curve
+fn CatmullRom2d(Point2d[] points, Number segments) Point2d[] {
+    var n = Size(points)
+    assert n >= 2, "CatmullRom2d requires at least 2 points"
+
+    # Mirror first and last points to create virtual endpoints
+    var p_first = Point2d(
+        2 * points[0].x - points[1].x,
+        2 * points[0].y - points[1].y
+    )
+    var p_last = Point2d(
+        2 * points[n - 1].x - points[n - 2].x,
+        2 * points[n - 1].y - points[n - 2].y
+    )
+
+    return for seg [0:<n - 1] {
+        var p0 = if seg == 0 { return p_first; } else { return points[seg - 1]; }
+        var p1 = points[seg]
+        var p2 = points[seg + 1]
+        var p3 = if seg == n - 2 { return p_last; } else { return points[seg + 2]; }
+
+        for j [0:<segments] {
+            var t = j / segments
+            var t2 = t * t
+            var t3 = t2 * t
+
+            # Catmull-Rom basis matrix coefficients
+            var c0 = -0.5 * t3 + t2 - 0.5 * t
+            var c1 = 1.5 * t3 - 2.5 * t2 + 1
+            var c2 = -1.5 * t3 + 2 * t2 + 0.5 * t
+            var c3 = 0.5 * t3 - 0.5 * t2
+
+            yield Point2d(
+                c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
+                c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y
+            )
+        }
+
+        # Include the final point of the last segment
+        if seg == n - 2 {
+            yield points[n - 1]
+        }
+    }
+}
+
+# Catmull-Rom spline through 3D points.
+# Automatically extends start/end tangents by reflecting the first/last segment.
+# @param points     Array of Point3d to interpolate (>= 2)
+# @param segments   Number of line segments between each pair of points
+# @return           Array of Point3d along the smooth curve
+fn CatmullRom3d(Point3d[] points, Number segments) Point3d[] {
+    var n = Size(points)
+    assert n >= 2, "CatmullRom3d requires at least 2 points"
+
+    var p_first = Point3d(
+        2 * points[0].x - points[1].x,
+        2 * points[0].y - points[1].y,
+        2 * points[0].z - points[1].z
+    )
+    var p_last = Point3d(
+        2 * points[n - 1].x - points[n - 2].x,
+        2 * points[n - 1].y - points[n - 2].y,
+        2 * points[n - 1].z - points[n - 2].z
+    )
+
+    return for seg [0:<n - 1] {
+        var p0 = if seg == 0 { return p_first; } else { return points[seg - 1]; }
+        var p1 = points[seg]
+        var p2 = points[seg + 1]
+        var p3 = if seg == n - 2 { return p_last; } else { return points[seg + 2]; }
+
+        for j [0:<segments] {
+            var t = j / segments
+            var t2 = t * t
+            var t3 = t2 * t
+
+            var c0 = -0.5 * t3 + t2 - 0.5 * t
+            var c1 = 1.5 * t3 - 2.5 * t2 + 1
+            var c2 = -1.5 * t3 + 2 * t2 + 0.5 * t
+            var c3 = 0.5 * t3 - 0.5 * t2
+
+            yield Point3d(
+                c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
+                c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y,
+                c0 * p0.z + c1 * p1.z + c2 * p2.z + c3 * p3.z
+            )
+        }
+
+        if seg == n - 2 {
+            yield points[n - 1]
+        }
+    }
+}

@@ -81,6 +81,34 @@ fn Turtle2d.GoTo(Length x, y) {
     }
 }
 
+# Draws a cubic bezier curve from the current position to `end`.
+# Control points `cp1` and `cp2` shape the curve.
+# @param cp1    First control point (tangent direction from current position)
+# @param cp2    Second control point (tangent direction arriving at end)
+# @param end    End point of the curve
+# @param steps  Number of line segments to approximate the curve
+fn Turtle2d.BezierTo(Point2d cp1, cp2, end, Number steps) {
+    var p0 = self.pos
+    for i [1:steps] {
+        var t = i / steps
+        var u = 1 - t
+        var u2 = u * u
+        var t2 = t * t
+        var np = Point2d(
+            u2 * u * p0.x + 3 * u2 * t * cp1.x + 3 * u * t2 * cp2.x + t2 * t * end.x,
+            u2 * u * p0.y + 3 * u2 * t * cp1.y + 3 * u * t2 * cp2.y + t2 * t * end.y
+        )
+        self.pos = np
+        if self.pen {
+            self.path = self.path + np
+        }
+    }
+    # Update heading to match the curve's exit tangent
+    var dx = end.x - cp2.x
+    var dy = end.y - cp2.y
+    self.heading = Atan2(Number(dy), Number(dx))
+}
+
 # Lifts the pen — movement will not add to the path.
 fn Turtle2d.PenUp() {
     self.pen = false
@@ -102,24 +130,16 @@ fn Turtle2d.Extrude(Length h) Solid {
     return Polygon(self.path).Extrude(h)
 }
 
-# Sweeps a cross-section along the 2D path.
+# Sweeps a cross-section along the 2D path using the native sweep builtin.
 fn Turtle2d.Sweep(Sketch cross) Solid {
     var pts = self.path
     var n = Size(pts)
     assert n >= 2, "Turtle2d.Sweep requires at least 2 path points"
-    var segments = for i [0:<n - 1] {
-        var p0 = pts[i]
-        var p1 = pts[i + 1]
-        var dx = p1.x - p0.x
-        var dy = p1.y - p0.y
-        var segLen = Sqrt(Number(dx) * Number(dx) + Number(dy) * Number(dy)) * 1 mm
-        var segAngle = Atan2(Number(dy), Number(dx))
-        yield cross
-            .Extrude(segLen)
-            .Rotate(0 deg, -90 deg, segAngle)
-            .Translate(p0.x, p0.y, 0 mm)
+    # Lift 2D path to 3D (Z = 0)
+    var path3d = for i [0:<n] {
+        yield Point3d(pts[i].x, pts[i].y, 0 mm)
     }
-    return fold a, b segments { return a + b; }
+    return cross.Sweep(path3d)
 }
 
 # =========================================================================
@@ -179,6 +199,46 @@ fn Turtle3d.GoTo(Length x, y, z) {
     }
 }
 
+# Returns the forward direction as a unit-length Point3d.
+fn Turtle3d.Heading() Point3d {
+    return Point3d(
+        Cos(self.pitch) * Cos(self.yaw) * 1 mm,
+        Cos(self.pitch) * Sin(self.yaw) * 1 mm,
+        Sin(self.pitch) * 1 mm
+    )
+}
+
+# Draws a cubic bezier curve from the current position to `end`.
+# @param cp1    First control point
+# @param cp2    Second control point
+# @param end    End point of the curve
+# @param steps  Number of line segments to approximate the curve
+fn Turtle3d.BezierTo(Point3d cp1, cp2, end, Number steps) {
+    var p0 = self.pos
+    for i [1:steps] {
+        var t = i / steps
+        var u = 1 - t
+        var u2 = u * u
+        var t2 = t * t
+        var np = Point3d(
+            u2 * u * p0.x + 3 * u2 * t * cp1.x + 3 * u * t2 * cp2.x + t2 * t * end.x,
+            u2 * u * p0.y + 3 * u2 * t * cp1.y + 3 * u * t2 * cp2.y + t2 * t * end.y,
+            u2 * u * p0.z + 3 * u2 * t * cp1.z + 3 * u * t2 * cp2.z + t2 * t * end.z
+        )
+        self.pos = np
+        if self.pen {
+            self.path = self.path + np
+        }
+    }
+    # Update yaw/pitch to match the curve's exit tangent
+    var dx = end.x - cp2.x
+    var dy = end.y - cp2.y
+    var dz = end.z - cp2.z
+    var xyLen = Sqrt(Number(dx) * Number(dx) + Number(dy) * Number(dy))
+    self.yaw = Atan2(Number(dy), Number(dx))
+    self.pitch = Atan2(Number(dz), xyLen)
+}
+
 # Lifts the pen.
 fn Turtle3d.PenUp() {
     self.pen = false
@@ -190,26 +250,10 @@ fn Turtle3d.PenDown() {
     self.path = self.path + self.pos
 }
 
-# Sweeps a cross-section along the 3D path.
-# Each segment gets the cross-section extruded along the segment direction.
+# Sweeps a cross-section along the 3D path using the native sweep builtin.
 fn Turtle3d.Sweep(Sketch cross) Solid {
     var pts = self.path
     var n = Size(pts)
     assert n >= 2, "Turtle3d.Sweep requires at least 2 path points"
-    var segments = for i [0:<n - 1] {
-        var p0 = pts[i]
-        var p1 = pts[i + 1]
-        var dx = p1.x - p0.x
-        var dy = p1.y - p0.y
-        var dz = p1.z - p0.z
-        var segLen = Sqrt(Number(dx) * Number(dx) + Number(dy) * Number(dy) + Number(dz) * Number(dz)) * 1 mm
-        var xyLen = Sqrt(Number(dx) * Number(dx) + Number(dy) * Number(dy))
-        var segYaw = Atan2(Number(dy), Number(dx))
-        var segPitch = Atan2(Number(dz), xyLen)
-        yield cross
-            .Extrude(segLen)
-            .Rotate(0 deg, -90 deg + segPitch, segYaw)
-            .Translate(p0.x, p0.y, p0.z)
-    }
-    return fold a, b segments { return a + b; }
+    return cross.Sweep(pts)
 }
