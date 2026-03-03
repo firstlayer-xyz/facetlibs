@@ -15,7 +15,7 @@
 # t.Forward(20 mm)
 # t.Turn(-90 deg)
 # t.Forward(20 mm)
-# Main() { return t.Extrude(5 mm); }
+# fn Main() { return t.Extrude(5 mm); }
 # ```
 #
 # Example — 3D helix:
@@ -26,7 +26,7 @@
 #     t.Forward(5 mm)
 #     t.Turn(-10 deg, 5 deg)
 # }
-# Main() { return t.Sweep(Circle(1 mm)); }
+# fn Main() { return t.Sweep(Circle(1 mm)); }
 # ```
 
 # =========================================================================
@@ -41,7 +41,7 @@ struct Turtle2d {
 }
 
 # Creates a new 2D turtle at the origin, heading up (90 deg), pen down.
-Turtle2d Turtle2d() {
+fn Turtle2d() Turtle2d {
     var start = Point2d(0 mm, 0 mm)
     return Turtle2d {
         pos: start,
@@ -52,7 +52,7 @@ Turtle2d Turtle2d() {
 }
 
 # Moves forward by `dist` in the current heading direction.
-Turtle2d.Forward(Length dist) {
+fn Turtle2d.Forward(Length dist) {
     var nx = self.pos.x + Cos(self.heading) * dist
     var ny = self.pos.y + Sin(self.heading) * dist
     var np = Point2d(nx, ny)
@@ -63,17 +63,17 @@ Turtle2d.Forward(Length dist) {
 }
 
 # Moves backward by `dist`.
-Turtle2d.Back(Length dist) {
+fn Turtle2d.Back(Length dist) {
     self.Forward(-dist)
 }
 
 # Turns by angle `a`. Positive = counterclockwise, negative = clockwise.
-Turtle2d.Turn(Angle a) {
+fn Turtle2d.Turn(Angle a) {
     self.heading = self.heading + a
 }
 
 # Jumps to absolute position (x, y). Appends to path if pen is down.
-Turtle2d.GoTo(Length x, Length y) {
+fn Turtle2d.GoTo(Length x, y) {
     var np = Point2d(x, y)
     self.pos = np
     if self.pen {
@@ -82,28 +82,28 @@ Turtle2d.GoTo(Length x, Length y) {
 }
 
 # Lifts the pen — movement will not add to the path.
-Turtle2d.PenUp() {
+fn Turtle2d.PenUp() {
     self.pen = false
 }
 
 # Puts the pen down — movement resumes adding to the path.
-Turtle2d.PenDown() {
+fn Turtle2d.PenDown() {
     self.pen = true
     self.path = self.path + self.pos
 }
 
 # Returns the path as a closed polygon sketch.
-Sketch Turtle2d.ToSketch() {
+fn Turtle2d.ToSketch() Sketch {
     return Polygon(self.path)
 }
 
 # Extrudes the path into a solid with the given height.
-Solid Turtle2d.Extrude(Length h) {
+fn Turtle2d.Extrude(Length h) Solid {
     return Polygon(self.path).Extrude(h)
 }
 
 # Sweeps a cross-section along the 2D path.
-Solid Turtle2d.Sweep(Sketch cross) {
+fn Turtle2d.Sweep(Sketch cross) Solid {
     var pts = self.path
     var n = Size(pts)
     assert n >= 2, "Turtle2d.Sweep requires at least 2 path points"
@@ -135,7 +135,7 @@ struct Turtle3d {
 }
 
 # Creates a new 3D turtle at the origin, facing +X (yaw=0, pitch=0), pen down.
-Turtle3d Turtle3d() {
+fn Turtle3d() Turtle3d {
     var start = Point3d(0 mm, 0 mm, 0 mm)
     return Turtle3d {
         pos: start,
@@ -147,7 +147,7 @@ Turtle3d Turtle3d() {
 }
 
 # Moves forward by `dist` in the current yaw/pitch direction.
-Turtle3d.Forward(Length dist) {
+fn Turtle3d.Forward(Length dist) {
     var nx = self.pos.x + Cos(self.pitch) * Cos(self.yaw) * dist
     var ny = self.pos.y + Cos(self.pitch) * Sin(self.yaw) * dist
     var nz = self.pos.z + Sin(self.pitch) * dist
@@ -159,19 +159,19 @@ Turtle3d.Forward(Length dist) {
 }
 
 # Moves backward by `dist`.
-Turtle3d.Back(Length dist) {
+fn Turtle3d.Back(Length dist) {
     self.Forward(-dist)
 }
 
 # Turns by yaw and pitch. Positive yaw = left, negative = right.
 # Positive pitch = up, negative = down.
-Turtle3d.Turn(Angle yaw, Angle pitch) {
+fn Turtle3d.Turn(Angle yaw, pitch) {
     self.yaw = self.yaw + yaw
     self.pitch = self.pitch + pitch
 }
 
 # Jumps to absolute position (x, y, z). Appends to path if pen is down.
-Turtle3d.GoTo(Length x, Length y, Length z) {
+fn Turtle3d.GoTo(Length x, y, z) {
     var np = Point3d(x, y, z)
     self.pos = np
     if self.pen {
@@ -180,19 +180,19 @@ Turtle3d.GoTo(Length x, Length y, Length z) {
 }
 
 # Lifts the pen.
-Turtle3d.PenUp() {
+fn Turtle3d.PenUp() {
     self.pen = false
 }
 
 # Puts the pen down.
-Turtle3d.PenDown() {
+fn Turtle3d.PenDown() {
     self.pen = true
     self.path = self.path + self.pos
 }
 
 # Sweeps a cross-section along the 3D path.
 # Each segment gets the cross-section extruded along the segment direction.
-Solid Turtle3d.Sweep(Sketch cross) {
+fn Turtle3d.Sweep(Sketch cross) Solid {
     var pts = self.path
     var n = Size(pts)
     assert n >= 2, "Turtle3d.Sweep requires at least 2 path points"

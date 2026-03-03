@@ -41,7 +41,7 @@ struct Fastener {
     Length bolt_head_h;
 }
 
-Fastener Fastener(String size) {
+fn Fastener(String size) Fastener {
     return if size == "m3" {
         return Fastener {
             size: "m3", major_d: 3 mm,
@@ -57,7 +57,7 @@ Fastener Fastener(String size) {
     };
 }
 
-Solid Fastener.HexNut() {
+fn Fastener.HexNut() Solid {
     var cr = self.hex_af / (2 * Cos(30 deg));
     var hex = Polygon(for i [0:<6] {
         yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
@@ -66,7 +66,7 @@ Solid Fastener.HexNut() {
     return hex - internal;
 }
 
-Solid Fastener.HexBolt(Length length) {
+fn Fastener.HexBolt(Length length) Solid {
     var cr = self.hex_af / (2 * Cos(30 deg));
     var head = Polygon(for i [0:<6] {
         yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
@@ -84,7 +84,7 @@ All library code lives in the single file.
 Methods extend a struct with behavior using the implicit `self` receiver:
 
 ```
-Solid Fastener.HexNut() {
+fn Fastener.HexNut() Solid {
     # self refers to the Fastener instance
     return ...;
 }
@@ -149,7 +149,7 @@ Access everything through dot notation on the import variable:
 ```
 var F = lib "github.com/firstlayer-xyz/facetlibs@main";
 
-Main() {
+fn Main() {
     var f = F.Fastener("m8");
     return [f.HexBolt(30 mm), f.HexNut()];
 }

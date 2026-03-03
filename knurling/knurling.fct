@@ -17,7 +17,7 @@ struct Knurl {
 }
 
 # Creates a knurl pattern with the given groove `count`, `depth`, and `pitch_angle`.
-Knurl Knurl(Number count, Length depth, Angle pitch_angle) {
+fn Knurl(Number count, Length depth, Angle pitch_angle) Knurl {
     return Knurl { count: count, depth: depth, pitch_angle: pitch_angle }
 }
 
@@ -25,7 +25,7 @@ Knurl Knurl(Number count, Length depth, Angle pitch_angle) {
 # Core: Apply knurl around Z axis
 # ---------------------------------------------------------------------------
 
-Solid Knurl.ApplyZ(Solid target) {
+fn Knurl.ApplyZ(Solid target) Solid {
     # 1. Get bounding box
     var box = target.BoundingBox()
     var rx = Max(Abs(box.min.x), Abs(box.max.x))
@@ -83,18 +83,18 @@ Solid Knurl.ApplyZ(Solid target) {
 # ---------------------------------------------------------------------------
 
 # Applies knurl around the Z axis (default).
-Solid Knurl.Apply(Solid target) {
+fn Knurl.Apply(Solid target) Solid {
     return self.ApplyZ(target)
 }
 
 # Applies knurl around the X axis.
-Solid Knurl.ApplyX(Solid target) {
+fn Knurl.ApplyX(Solid target) Solid {
     return self.ApplyZ(target.Rotate(0 deg, 90 deg, 0 deg))
               .Rotate(0 deg, -90 deg, 0 deg)
 }
 
 # Applies knurl around the Y axis.
-Solid Knurl.ApplyY(Solid target) {
+fn Knurl.ApplyY(Solid target) Solid {
     return self.ApplyZ(target.Rotate(90 deg, 0 deg, 0 deg))
               .Rotate(-90 deg, 0 deg, 0 deg)
 }

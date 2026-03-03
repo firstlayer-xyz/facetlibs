@@ -27,7 +27,7 @@ var METRIC_DEFAULT = [
 # Returns the default pitch for a given metric diameter.
 # For standard coarse sizes this is the ISO 261 coarse pitch.
 # For fine-pitch-only sizes this is the most common fine pitch.
-Length MetricDefaultPitch(Length d) {
+fn MetricDefaultPitch(Length d) Length {
     var v = Number(d)
     var matches = for i [0:<Size(METRIC_DEFAULT)] {
         if METRIC_DEFAULT[i][0] == v {
@@ -82,7 +82,7 @@ var IMPERIAL = ImperialSpec[
 ]
 
 # Looks up an imperial thread by size string.
-Thread ImperialThread(String size) {
+fn ImperialThread(String size) Thread {
     var matches = for i [0:<Size(IMPERIAL)] {
         if IMPERIAL[i].size == size {
             yield IMPERIAL[i]
@@ -115,7 +115,7 @@ Thread ImperialThread(String size) {
 # `"1/4-28"`, `"5/16-24"`, `"3/8-24"`, `"7/16-20"`, `"1/2-20"`, `"5/8-18"`, `"3/4-16"`
 #
 # **NPT:** `"1/8-npt"`, `"1/4-npt"`, `"3/8-npt"`, `"1/2-npt"`, `"3/4-npt"`, `"1-npt"`
-Thread Thread(String size) {
+fn Thread(String size) Thread {
     # --- Metric fine: m<diameter>x<pitch> ---
     var mfine = size.Match(`m(\d+\.?\d*)x([\d.]+)`)
     return if mfine == true {
@@ -142,7 +142,7 @@ Thread Thread(String size) {
 # the extrusion scales to the large-end radius.
 #
 # Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
-Solid Thread.Outside(Length length) {
+fn Thread.Outside(Length length) Solid {
     var pitch = self.pitch
     var major_d = self.major_diameter
     var taper = self.taper
@@ -216,7 +216,7 @@ Solid Thread.Outside(Length length) {
 #
 # Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
 # Subtract this from a nut body to create internal threads.
-Solid Thread.Inside(Length length) {
+fn Thread.Inside(Length length) Solid {
     var pitch = self.pitch
     var major_d = self.major_diameter
     var taper = self.taper

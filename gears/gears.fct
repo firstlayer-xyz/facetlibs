@@ -10,32 +10,32 @@ struct Gear {
 }
 
 # Creates a gear with the standard 20° pressure angle.
-Gear Gear(Number teeth, Length module) {
+fn Gear(Number teeth, Length module) Gear {
     return Gear { teeth: teeth, module: module, pressure_angle: 20 deg }
 }
 
 # Creates a gear with a custom pressure angle.
-Gear Gear(Number teeth, Length module, Angle pressure_angle) {
+fn Gear(Number teeth, Length module, Angle pressure_angle) Gear {
     return Gear { teeth: teeth, module: module, pressure_angle: pressure_angle }
 }
 
 # Returns the pitch radius: m * N / 2.
-Length Gear.PitchRadius() {
+fn Gear.PitchRadius() Length {
     return self.module * self.teeth / 2
 }
 
 # Returns the base radius: r_p * cos(α).
-Length Gear.BaseRadius() {
+fn Gear.BaseRadius() Length {
     return self.module * self.teeth / 2 * Cos(self.pressure_angle)
 }
 
 # Returns the addendum (outer tip) radius: r_p + m.
-Length Gear.AddendumRadius() {
+fn Gear.AddendumRadius() Length {
     return self.module * self.teeth / 2 + self.module
 }
 
 # Returns the dedendum (root) radius: r_p - 1.25m.
-Length Gear.DedendumRadius() {
+fn Gear.DedendumRadius() Length {
     return self.module * self.teeth / 2 - 1.25 * self.module
 }
 
@@ -43,7 +43,7 @@ Length Gear.DedendumRadius() {
 #
 # `n_involute` controls the number of sample points per involute flank.
 # Higher values give smoother tooth curves.
-Sketch Gear.Profile(Number n_involute = 20) {
+fn Gear.Profile(Number n_involute = 20) Sketch {
     var N = self.teeth
     var m = self.module
     var alpha = self.pressure_angle
@@ -122,6 +122,6 @@ Sketch Gear.Profile(Number n_involute = 20) {
 }
 
 # Extrudes the gear profile to create a spur gear solid.
-Solid Gear.Spur(Length width) {
+fn Gear.Spur(Length width) Solid {
     return self.Profile().Extrude(width)
 }
