@@ -7,10 +7,10 @@
 # ```
 # var C = lib "github.com/firstlayer-xyz/facetlibs/curves@main"
 # var pts = C.CubicBezier2d(
-#     Pt2d(0 mm, 0 mm),
-#     Pt2d(10 mm, 30 mm),
-#     Pt2d(30 mm, 30 mm),
-#     Pt2d(40 mm, 0 mm),
+#     Vec2d(0 mm, 0 mm),
+#     Vec2d(10 mm, 30 mm),
+#     Vec2d(30 mm, 30 mm),
+#     Vec2d(40 mm, 0 mm),
 #     20
 # )
 # ```
@@ -18,10 +18,10 @@
 # Example — smooth curve through points:
 # ```
 # var pts = C.CatmullRom2d([
-#     Pt2d(0 mm, 0 mm),
-#     Pt2d(10 mm, 20 mm),
-#     Pt2d(30 mm, 15 mm),
-#     Pt2d(40 mm, 0 mm),
+#     Vec2d(0 mm, 0 mm),
+#     Vec2d(10 mm, 20 mm),
+#     Vec2d(30 mm, 15 mm),
+#     Vec2d(40 mm, 0 mm),
 # ], 16)
 # ```
 
@@ -34,12 +34,12 @@
 # @param p1     Control point
 # @param p2     End point
 # @param steps  Number of line segments
-# @return       Array of Pt2d along the curve
-fn QuadBezier2d(Pt2d p0, p1, p2, Number steps) Pt2d[] {
+# @return       Array of Vec2d along the curve
+fn QuadBezier2d(Vec2d p0, p1, p2, Number steps) Vec2d[] {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
-        yield Pt2d(
+        yield Vec2d(
             u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
             u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y
         )
@@ -52,14 +52,14 @@ fn QuadBezier2d(Pt2d p0, p1, p2, Number steps) Pt2d[] {
 # @param p2     Second control point (tangent at end)
 # @param p3     End point
 # @param steps  Number of line segments
-# @return       Array of Pt2d along the curve
-fn CubicBezier2d(Pt2d p0, p1, p2, p3, Number steps) Pt2d[] {
+# @return       Array of Vec2d along the curve
+fn CubicBezier2d(Vec2d p0, p1, p2, p3, Number steps) Vec2d[] {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
         var u2 = u * u
         var t2 = t * t
-        yield Pt2d(
+        yield Vec2d(
             u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
             u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y
         )
@@ -75,12 +75,12 @@ fn CubicBezier2d(Pt2d p0, p1, p2, p3, Number steps) Pt2d[] {
 # @param p1     Control point
 # @param p2     End point
 # @param steps  Number of line segments
-# @return       Array of Pt3d along the curve
-fn QuadBezier3d(Pt3d p0, p1, p2, Number steps) Pt3d[] {
+# @return       Array of Vec3d along the curve
+fn QuadBezier3d(Vec3d p0, p1, p2, Number steps) Vec3d[] {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
-        yield Pt3d(
+        yield Vec3d(
             u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
             u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
             u * u * p0.z + 2 * u * t * p1.z + t * t * p2.z
@@ -94,14 +94,14 @@ fn QuadBezier3d(Pt3d p0, p1, p2, Number steps) Pt3d[] {
 # @param p2     Second control point
 # @param p3     End point
 # @param steps  Number of line segments
-# @return       Array of Pt3d along the curve
-fn CubicBezier3d(Pt3d p0, p1, p2, p3, Number steps) Pt3d[] {
+# @return       Array of Vec3d along the curve
+fn CubicBezier3d(Vec3d p0, p1, p2, p3, Number steps) Vec3d[] {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
         var u2 = u * u
         var t2 = t * t
-        yield Pt3d(
+        yield Vec3d(
             u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
             u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y,
             u2 * u * p0.z + 3 * u2 * t * p1.z + 3 * u * t2 * p2.z + t2 * t * p3.z
@@ -118,19 +118,19 @@ fn CubicBezier3d(Pt3d p0, p1, p2, p3, Number steps) Pt3d[] {
 
 # Catmull-Rom spline through 2D points.
 # Automatically extends start/end tangents by reflecting the first/last segment.
-# @param points     Array of Pt2d to interpolate (>= 2)
+# @param points     Array of Vec2d to interpolate (>= 2)
 # @param segments   Number of line segments between each pair of points
-# @return           Array of Pt2d along the smooth curve
-fn CatmullRom2d(Pt2d[] points, Number segments) Pt2d[] {
+# @return           Array of Vec2d along the smooth curve
+fn CatmullRom2d(Vec2d[] points, Number segments) Vec2d[] {
     var n = Size(points)
     assert n >= 2, "CatmullRom2d requires at least 2 points"
 
     # Mirror first and last points to create virtual endpoints
-    var p_first = Pt2d(
+    var p_first = Vec2d(
         2 * points[0].x - points[1].x,
         2 * points[0].y - points[1].y
     )
-    var p_last = Pt2d(
+    var p_last = Vec2d(
         2 * points[n - 1].x - points[n - 2].x,
         2 * points[n - 1].y - points[n - 2].y
     )
@@ -152,7 +152,7 @@ fn CatmullRom2d(Pt2d[] points, Number segments) Pt2d[] {
             var c2 = -1.5 * t3 + 2 * t2 + 0.5 * t
             var c3 = 0.5 * t3 - 0.5 * t2
 
-            yield Pt2d(
+            yield Vec2d(
                 c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
                 c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y
             )
@@ -167,19 +167,19 @@ fn CatmullRom2d(Pt2d[] points, Number segments) Pt2d[] {
 
 # Catmull-Rom spline through 3D points.
 # Automatically extends start/end tangents by reflecting the first/last segment.
-# @param points     Array of Pt3d to interpolate (>= 2)
+# @param points     Array of Vec3d to interpolate (>= 2)
 # @param segments   Number of line segments between each pair of points
-# @return           Array of Pt3d along the smooth curve
-fn CatmullRom3d(Pt3d[] points, Number segments) Pt3d[] {
+# @return           Array of Vec3d along the smooth curve
+fn CatmullRom3d(Vec3d[] points, Number segments) Vec3d[] {
     var n = Size(points)
     assert n >= 2, "CatmullRom3d requires at least 2 points"
 
-    var p_first = Pt3d(
+    var p_first = Vec3d(
         2 * points[0].x - points[1].x,
         2 * points[0].y - points[1].y,
         2 * points[0].z - points[1].z
     )
-    var p_last = Pt3d(
+    var p_last = Vec3d(
         2 * points[n - 1].x - points[n - 2].x,
         2 * points[n - 1].y - points[n - 2].y,
         2 * points[n - 1].z - points[n - 2].z
@@ -201,7 +201,7 @@ fn CatmullRom3d(Pt3d[] points, Number segments) Pt3d[] {
             var c2 = -1.5 * t3 + 2 * t2 + 0.5 * t
             var c3 = 0.5 * t3 - 0.5 * t2
 
-            yield Pt3d(
+            yield Vec3d(
                 c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
                 c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y,
                 c0 * p0.z + c1 * p1.z + c2 * p2.z + c3 * p3.z
