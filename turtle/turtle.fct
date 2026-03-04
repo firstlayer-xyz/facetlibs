@@ -34,15 +34,15 @@
 # =========================================================================
 
 struct Turtle2d {
-    Vec2d pos
+    Vec2 pos
     Angle heading
     Bool pen
-    Vec2d[] path
+    Vec2[] path
 }
 
 # Creates a new 2D turtle at the origin, heading up (90 deg), pen down.
 fn Turtle2d() Turtle2d {
-    var start = Vec2d(0 mm, 0 mm)
+    var start = Vec2(0 mm, 0 mm)
     return Turtle2d {
         pos: start,
         heading: 90 deg,
@@ -55,7 +55,7 @@ fn Turtle2d() Turtle2d {
 fn Turtle2d.Forward(Length dist) {
     var nx = self.pos.x + Cos(self.heading) * dist
     var ny = self.pos.y + Sin(self.heading) * dist
-    var np = Vec2d(nx, ny)
+    var np = Vec2(nx, ny)
     self.pos = np
     if self.pen {
         self.path = self.path + np
@@ -74,7 +74,7 @@ fn Turtle2d.Turn(Angle a) {
 
 # Jumps to absolute position (x, y). Appends to path if pen is down.
 fn Turtle2d.GoTo(Length x, y) {
-    var np = Vec2d(x, y)
+    var np = Vec2(x, y)
     self.pos = np
     if self.pen {
         self.path = self.path + np
@@ -87,14 +87,14 @@ fn Turtle2d.GoTo(Length x, y) {
 # @param cp2    Second control point (tangent direction arriving at end)
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
-fn Turtle2d.BezierTo(Vec2d cp1, cp2, end, Number steps) {
+fn Turtle2d.BezierTo(Vec2 cp1, cp2, end, Number steps) {
     var p0 = self.pos
     for i [1:steps] {
         var t = i / steps
         var u = 1 - t
         var u2 = u * u
         var t2 = t * t
-        var np = Vec2d(
+        var np = Vec2(
             u2 * u * p0.x + 3 * u2 * t * cp1.x + 3 * u * t2 * cp2.x + t2 * t * end.x,
             u2 * u * p0.y + 3 * u2 * t * cp1.y + 3 * u * t2 * cp2.y + t2 * t * end.y
         )
@@ -137,7 +137,7 @@ fn Turtle2d.Sweep(Sketch cross) Solid {
     assert n >= 2, "Turtle2d.Sweep requires at least 2 path points"
     # Lift 2D path to 3D (Z = 0)
     var path3d = for i [0:<n] {
-        yield Vec3d(pts[i].x, pts[i].y, 0 mm)
+        yield Vec3(pts[i].x, pts[i].y, 0 mm)
     }
     return cross.Sweep(path3d)
 }
@@ -147,16 +147,16 @@ fn Turtle2d.Sweep(Sketch cross) Solid {
 # =========================================================================
 
 struct Turtle3d {
-    Vec3d pos
+    Vec3 pos
     Angle yaw
     Angle pitch
     Bool pen
-    Vec3d[] path
+    Vec3[] path
 }
 
 # Creates a new 3D turtle at the origin, facing +X (yaw=0, pitch=0), pen down.
 fn Turtle3d() Turtle3d {
-    var start = Vec3d(0 mm, 0 mm, 0 mm)
+    var start = Vec3(0 mm, 0 mm, 0 mm)
     return Turtle3d {
         pos: start,
         yaw: 0 deg,
@@ -171,7 +171,7 @@ fn Turtle3d.Forward(Length dist) {
     var nx = self.pos.x + Cos(self.pitch) * Cos(self.yaw) * dist
     var ny = self.pos.y + Cos(self.pitch) * Sin(self.yaw) * dist
     var nz = self.pos.z + Sin(self.pitch) * dist
-    var np = Vec3d(nx, ny, nz)
+    var np = Vec3(nx, ny, nz)
     self.pos = np
     if self.pen {
         self.path = self.path + np
@@ -192,16 +192,16 @@ fn Turtle3d.Turn(Angle yaw, pitch) {
 
 # Jumps to absolute position (x, y, z). Appends to path if pen is down.
 fn Turtle3d.GoTo(Length x, y, z) {
-    var np = Vec3d(x, y, z)
+    var np = Vec3(x, y, z)
     self.pos = np
     if self.pen {
         self.path = self.path + np
     }
 }
 
-# Returns the forward direction as a unit-length Vec3d.
-fn Turtle3d.Heading() Vec3d {
-    return Vec3d(
+# Returns the forward direction as a unit-length Vec3.
+fn Turtle3d.Heading() Vec3 {
+    return Vec3(
         Cos(self.pitch) * Cos(self.yaw) * 1 mm,
         Cos(self.pitch) * Sin(self.yaw) * 1 mm,
         Sin(self.pitch) * 1 mm
@@ -213,14 +213,14 @@ fn Turtle3d.Heading() Vec3d {
 # @param cp2    Second control point
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
-fn Turtle3d.BezierTo(Vec3d cp1, cp2, end, Number steps) {
+fn Turtle3d.BezierTo(Vec3 cp1, cp2, end, Number steps) {
     var p0 = self.pos
     for i [1:steps] {
         var t = i / steps
         var u = 1 - t
         var u2 = u * u
         var t2 = t * t
-        var np = Vec3d(
+        var np = Vec3(
             u2 * u * p0.x + 3 * u2 * t * cp1.x + 3 * u * t2 * cp2.x + t2 * t * end.x,
             u2 * u * p0.y + 3 * u2 * t * cp1.y + 3 * u * t2 * cp2.y + t2 * t * end.y,
             u2 * u * p0.z + 3 * u2 * t * cp1.z + 3 * u * t2 * cp2.z + t2 * t * end.z

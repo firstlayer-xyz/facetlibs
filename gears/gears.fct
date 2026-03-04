@@ -87,7 +87,7 @@ fn Gear.Profile(Number n_involute = 20) Sketch {
             var inv_t = Tan(t * 1 rad) - t
             var r = r_b / Cos(t * 1 rad)
             var theta = (half_tooth - inv_t + tooth_rot) * 1 rad
-            yield Vec2d(r * Cos(theta), r * Sin(theta))
+            yield Vec2(r * Cos(theta), r * Sin(theta))
 
         } else if j < n_involute + n_arc {
             # Tip arc at addendum radius
@@ -96,7 +96,7 @@ fn Gear.Profile(Number n_involute = 20) Sketch {
             var theta_left = 0 - half_tooth + inv_max + tooth_rot
             var frac = k / (n_arc - 1)
             var theta = (theta_right + (theta_left - theta_right) * frac) * 1 rad
-            yield Vec2d(r_a * Cos(theta), r_a * Sin(theta))
+            yield Vec2(r_a * Cos(theta), r_a * Sin(theta))
 
         } else if j < n_involute * 2 + n_arc {
             # Left involute flank (mirrored, tip to base)
@@ -105,7 +105,7 @@ fn Gear.Profile(Number n_involute = 20) Sketch {
             var inv_t = Tan(t * 1 rad) - t
             var r = r_b / Cos(t * 1 rad)
             var theta = (0 - half_tooth + inv_t + tooth_rot) * 1 rad
-            yield Vec2d(r * Cos(theta), r * Sin(theta))
+            yield Vec2(r * Cos(theta), r * Sin(theta))
 
         } else {
             # Root arc at dedendum radius
@@ -114,7 +114,7 @@ fn Gear.Profile(Number n_involute = 20) Sketch {
             var theta_end = half_tooth + pitch_angle + tooth_rot
             var frac = k / (n_arc - 1)
             var theta = (theta_start + (theta_end - theta_start) * frac) * 1 rad
-            yield Vec2d(r_d * Cos(theta), r_d * Sin(theta))
+            yield Vec2(r_d * Cos(theta), r_d * Sin(theta))
         }
     }
 

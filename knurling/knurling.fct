@@ -51,10 +51,10 @@ fn Knurl.ApplyZ(Solid target) Solid {
         var base_angle = i * angle_step
         if Floor(idx / 2) * 2 == idx {
             # Even index: crest point
-            yield Vec2d(r_crest * Cos(base_angle), r_crest * Sin(base_angle))
+            yield Vec2(r_crest * Cos(base_angle), r_crest * Sin(base_angle))
         } else {
             # Odd index: valley point (offset by half step)
-            yield Vec2d(r_valley * Cos(base_angle + half_step),
+            yield Vec2(r_valley * Cos(base_angle + half_step),
                        r_valley * Sin(base_angle + half_step))
         }
     }
