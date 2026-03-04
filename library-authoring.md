@@ -60,7 +60,7 @@ fn Fastener(String size) Fastener {
 fn Fastener.HexNut() Solid {
     var cr = self.hex_af / (2 * Cos(30 deg));
     var hex = Polygon(for i [0:<6] {
-        yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+        yield Pt2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.nut_h);
     var internal = T.Thread(self.size).Inside(self.nut_h);
     return hex - internal;
@@ -69,7 +69,7 @@ fn Fastener.HexNut() Solid {
 fn Fastener.HexBolt(Length length) Solid {
     var cr = self.hex_af / (2 * Cos(30 deg));
     var head = Polygon(for i [0:<6] {
-        yield Point2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
+        yield Pt2d(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr);
     }).Extrude(self.bolt_head_h);
     var shaft = T.Thread(self.size).Outside(length)
         .Translate(0 mm, 0 mm, self.bolt_head_h);
