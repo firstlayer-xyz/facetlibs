@@ -16,6 +16,11 @@
 var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main"
 var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main"
 
+# Hex polygon from across-flats measurement.
+fn HexSketch(Length af) Sketch {
+    return Circle(af / (2 * Cos(30 deg)), 6)
+}
+
 # Re-export Knurl constructor so users can create knurl specs without
 # importing knurling separately.
 fn Knurl(Number count, Length depth, Angle pitch_angle) K.Knurl {
@@ -150,10 +155,7 @@ fn HexNut(String size) HexNut {
 
 # Renders the hex nut as a solid.
 fn HexNut.Solid() Solid {
-    var cr = self.hex_af / (2 * Cos(30 deg))
-    var hex = Polygon(for i [0:<6] {
-        yield Vec2(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr)
-    }).Extrude(self.nut_h)
+    var hex = HexSketch(self.hex_af).Extrude(self.nut_h)
     var internal = self.thread.Inside(self.nut_h)
     return hex - internal
 }
@@ -187,10 +189,7 @@ fn CapNut(String size) CapNut {
 
 # Renders the cap nut as a solid.
 fn CapNut.Solid() Solid {
-    var cr = self.hex_af / (2 * Cos(30 deg))
-    var hex = Polygon(for i [0:<6] {
-        yield Vec2(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr)
-    }).Extrude(self.base_h)
+    var hex = HexSketch(self.hex_af).Extrude(self.base_h)
 
     # Dome: sphere section clipped above the hex base.
     # Use the flat-to-flat radius (hex_af/2), not the corner radius,
@@ -352,10 +351,7 @@ fn HexBolt(String size, Length length) HexBolt {
 
 # Renders the hex bolt as a solid.
 fn HexBolt.Solid() Solid {
-    var cr = self.hex_af / (2 * Cos(30 deg))
-    var head = Polygon(for i [0:<6] {
-        yield Vec2(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr)
-    }).Extrude(self.head_h)
+    var head = HexSketch(self.hex_af).Extrude(self.head_h)
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, self.head_h)
     return head + shaft
@@ -395,10 +391,7 @@ fn SocketHeadCapScrew.Solid() Solid {
     var hh = self.head_h
     var head = Cylinder(self.head_d / 2, self.head_d / 2, hh)
     var sock_depth = hh * 0.8
-    var sock_cr = self.socket / (2 * Cos(30 deg))
-    var socket = Polygon(for i [0:<6] {
-        yield Vec2(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr)
-    }).Extrude(sock_depth + 1 mm)
+    var socket = HexSketch(self.socket).Extrude(sock_depth + 1 mm)
         .Translate(0 mm, 0 mm, -1 mm)
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, hh)
@@ -451,10 +444,7 @@ fn ButtonHeadCapScrew.Solid() Solid {
     var clip = Cylinder(d / 2, d / 2, h)
     var dome = sphere ^ clip
     var sock_depth = h * 0.7
-    var sock_cr = self.socket / (2 * Cos(30 deg))
-    var socket = Polygon(for i [0:<6] {
-        yield Vec2(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr)
-    }).Extrude(sock_depth + 1 mm)
+    var socket = HexSketch(self.socket).Extrude(sock_depth + 1 mm)
         .Translate(0 mm, 0 mm, -1 mm)
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, h)
@@ -496,10 +486,7 @@ fn CountersunkScrew(String size, Length length) CountersunkScrew {
 fn CountersunkScrew.Solid() Solid {
     var head = Cylinder(self.head_d / 2, self.major_d / 2, self.head_h)
     var sock_depth = self.head_h * 0.7
-    var sock_cr = self.socket / (2 * Cos(30 deg))
-    var socket = Polygon(for i [0:<6] {
-        yield Vec2(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr)
-    }).Extrude(sock_depth + 1 mm)
+    var socket = HexSketch(self.socket).Extrude(sock_depth + 1 mm)
         .Translate(0 mm, 0 mm, -1 mm)
     var shaft = self.thread.Outside(self.length)
         .Translate(0 mm, 0 mm, self.head_h)
@@ -537,10 +524,7 @@ fn SetScrew(String size, Length length) SetScrew {
 fn SetScrew.Solid() Solid {
     var body = self.thread.Outside(self.length)
     var sock_depth = self.major_d * 0.6
-    var sock_cr = self.socket / (2 * Cos(30 deg))
-    var socket = Polygon(for i [0:<6] {
-        yield Vec2(Cos(i * 60 deg) * sock_cr, Sin(i * 60 deg) * sock_cr)
-    }).Extrude(sock_depth + 1 mm)
+    var socket = HexSketch(self.socket).Extrude(sock_depth + 1 mm)
         .Translate(0 mm, 0 mm, -1 mm)
     return body - socket
 }
@@ -709,10 +693,7 @@ fn Standoff(String size, Length length) Standoff {
 
 # Renders the standoff as a solid.
 fn Standoff.Solid() Solid {
-    var cr = self.hex_af / (2 * Cos(30 deg))
-    var body = Polygon(for i [0:<6] {
-        yield Vec2(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr)
-    }).Extrude(self.length)
+    var body = HexSketch(self.hex_af).Extrude(self.length)
     var thread_depth = Min(self.major_d, self.length / 2)
     var top_thread = self.thread.Inside(thread_depth)
         .Translate(0 mm, 0 mm, self.length - thread_depth)
@@ -750,10 +731,7 @@ fn MaleStandoff(String size, Length length, thread_len) MaleStandoff {
 
 # Renders the male standoff as a solid.
 fn MaleStandoff.Solid() Solid {
-    var cr = self.hex_af / (2 * Cos(30 deg))
-    var body = Polygon(for i [0:<6] {
-        yield Vec2(Cos(i * 60 deg) * cr, Sin(i * 60 deg) * cr)
-    }).Extrude(self.length)
+    var body = HexSketch(self.hex_af).Extrude(self.length)
     var thread_depth = Min(self.major_d, self.length / 2)
     var bot_thread = self.thread.Inside(thread_depth)
     var male_thread = self.thread.Outside(self.thread_len)

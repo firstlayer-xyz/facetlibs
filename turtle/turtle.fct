@@ -29,6 +29,8 @@
 # fn Main() { return t.Sweep(Circle(1 mm)); }
 # ```
 
+var Curves = lib "github.com/firstlayer-xyz/facetlibs/curves@main"
+
 # =========================================================================
 # Turtle2d — 2D turtle in the XY plane
 # =========================================================================
@@ -74,10 +76,13 @@ fn Turtle2d.Turn(Angle a) {
 
 # Jumps to absolute position (x, y). Appends to path if pen is down.
 fn Turtle2d.GoTo(Length x, y) {
-    var np = Vec2(x, y)
-    self.pos = np
+    self.GoTo(Vec2(x, y))
+}
+
+fn Turtle2d.GoTo(Vec2 pos) {
+    self.pos = pos
     if self.pen {
-        self.path = self.path + np
+        self.path = self.path + pos
     }
 }
 
@@ -88,19 +93,12 @@ fn Turtle2d.GoTo(Length x, y) {
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
 fn Turtle2d.BezierTo(Vec2 cp1, cp2, end, Number steps) {
-    var p0 = self.pos
-    for i [1:steps] {
-        var t = i / steps
-        var u = 1 - t
-        var u2 = u * u
-        var t2 = t * t
-        var np = Vec2(
-            u2 * u * p0.x + 3 * u2 * t * cp1.x + 3 * u * t2 * cp2.x + t2 * t * end.x,
-            u2 * u * p0.y + 3 * u2 * t * cp1.y + 3 * u * t2 * cp2.y + t2 * t * end.y
-        )
-        self.pos = np
+    var pts = Curves.CubicBezier2d(self.pos, cp1, cp2, end, steps)
+    var n = Size(pts)
+    for i [1:<n] {
+        self.pos = pts[i]
         if self.pen {
-            self.path = self.path + np
+            self.path = self.path + pts[i]
         }
     }
     # Update heading to match the curve's exit tangent
@@ -192,10 +190,13 @@ fn Turtle3d.Turn(Angle yaw, pitch) {
 
 # Jumps to absolute position (x, y, z). Appends to path if pen is down.
 fn Turtle3d.GoTo(Length x, y, z) {
-    var np = Vec3(x, y, z)
-    self.pos = np
+    self.GoTo(Vec3(x, y, z))
+}
+
+fn Turtle3d.GoTo(Vec3 pos) {
+    self.pos = pos
     if self.pen {
-        self.path = self.path + np
+        self.path = self.path + pos
     }
 }
 
@@ -214,20 +215,12 @@ fn Turtle3d.Heading() Vec3 {
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
 fn Turtle3d.BezierTo(Vec3 cp1, cp2, end, Number steps) {
-    var p0 = self.pos
-    for i [1:steps] {
-        var t = i / steps
-        var u = 1 - t
-        var u2 = u * u
-        var t2 = t * t
-        var np = Vec3(
-            u2 * u * p0.x + 3 * u2 * t * cp1.x + 3 * u * t2 * cp2.x + t2 * t * end.x,
-            u2 * u * p0.y + 3 * u2 * t * cp1.y + 3 * u * t2 * cp2.y + t2 * t * end.y,
-            u2 * u * p0.z + 3 * u2 * t * cp1.z + 3 * u * t2 * cp2.z + t2 * t * end.z
-        )
-        self.pos = np
+    var pts = Curves.CubicBezier3d(self.pos, cp1, cp2, end, steps)
+    var n = Size(pts)
+    for i [1:<n] {
+        self.pos = pts[i]
         if self.pen {
-            self.path = self.path + np
+            self.path = self.path + pts[i]
         }
     }
     # Update yaw/pitch to match the curve's exit tangent
