@@ -27,7 +27,7 @@ fn Knurl(Number count, Length depth, Angle pitch_angle) Knurl {
 
 fn Knurl.ApplyZ(Solid target) Solid {
     # 1. Get bounding box
-    var box = target.BoundingBox()
+    var box = target.Bounds()
     var rx = Max(Abs(box.min.x), Abs(box.max.x))
     var ry = Max(Abs(box.min.y), Abs(box.max.y))
     var r_max = Max(rx, ry)
