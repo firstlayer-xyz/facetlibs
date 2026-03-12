@@ -204,7 +204,7 @@ fn CapNut.Solid() Solid {
         .Translate(0 mm, 0 mm, self.base_h + dh - R)
     var clip = Cylinder(flat_r, flat_r, dh)
         .Translate(0 mm, 0 mm, self.base_h)
-    var dome = sphere ^ clip
+    var dome = sphere & clip
 
     # Internal thread — blind hole through hex base only.
     var internal = self.thread.Inside(self.base_h)
@@ -282,7 +282,7 @@ fn WingNut.Solid() Solid {
         .Translate(cap_cx, 0 mm, body_h)
     var clip = Cube(cap_w + 1 mm, wt + 1 mm, cap_w / 2)
         .Translate(cap_cx - (cap_w + 1 mm) / 2, -(wt + 1 mm) / 2, body_h)
-    var wing_r = wing_body + (cap ^ clip)
+    var wing_r = wing_body + (cap & clip)
 
     # Left wing (-X): mirror of right wing
     var wing_l = wing_r.Rotate(0 deg, 0 deg, 180 deg)
@@ -442,7 +442,7 @@ fn ButtonHeadCapScrew.Solid() Solid {
     var c = c_num * 1 mm
     var sphere = Sphere(R).Translate(0 mm, 0 mm, c)
     var clip = Cylinder(d / 2, d / 2, h)
-    var dome = sphere ^ clip
+    var dome = sphere & clip
     var sock_depth = h * 0.7
     var socket = HexSketch(self.socket).Extrude(sock_depth + 1 mm)
         .Translate(0 mm, 0 mm, -1 mm)

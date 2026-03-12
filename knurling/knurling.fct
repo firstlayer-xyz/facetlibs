@@ -75,7 +75,7 @@ fn Knurl.ApplyZ(Solid target) Solid {
         .Translate(0 mm, 0 mm, z_offset)
 
     # 6. Diamond pattern via double intersection
-    return (target ^ helix_a) ^ helix_b
+    return (target & helix_a) & helix_b
 }
 
 # ---------------------------------------------------------------------------

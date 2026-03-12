@@ -47,7 +47,7 @@ fn Star(Length outerRadius, innerRadius, Number points) Sketch {
 }
 
 fn Semicircle(Length radius) Sketch {
-    return Circle(radius) ^ Square(radius * 2, radius).Translate(-radius, 0 mm);
+    return Circle(radius) & Square(radius * 2, radius).Translate(-radius, 0 mm);
 }
 
 # 3D Shapes (→ Solid)
@@ -92,5 +92,5 @@ fn Cone(Length radius, height) Solid {
 }
 
 fn Dome(Length radius) Solid {
-    return Sphere(radius) ^ Cube(radius * 2, radius * 2, radius).Translate(-radius, -radius, 0 mm);
+    return Sphere(radius) & Cube(radius * 2, radius * 2, radius).Translate(-radius, -radius, 0 mm);
 }
