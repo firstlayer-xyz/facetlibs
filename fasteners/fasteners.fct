@@ -271,21 +271,21 @@ fn WingNut.Solid() Solid {
         Vec2(-overlap, body_h)
     ]).Extrude(wt)
         .Translate(0 mm, 0 mm, -wt / 2)
-        .Rotate(90 deg, 0 deg, 0 deg)
+        .RotateX(90 deg, 0 mm, 0 mm)
         .Translate(hr, 0 mm, 0 mm)
 
     # Rounded cap on top of wing
     var cap_cx = hr - overlap + cap_w / 2
     var cap = Cylinder(cap_w / 2, cap_w / 2, wt)
         .Translate(0 mm, 0 mm, -wt / 2)
-        .Rotate(90 deg, 0 deg, 0 deg)
+        .RotateX(90 deg, 0 mm, 0 mm)
         .Translate(cap_cx, 0 mm, body_h)
     var clip = Cube(cap_w + 1 mm, wt + 1 mm, cap_w / 2)
         .Translate(cap_cx - (cap_w + 1 mm) / 2, -(wt + 1 mm) / 2, body_h)
     var wing_r = wing_body + (cap & clip)
 
-    # Left wing (-X): mirror of right wing
-    var wing_l = wing_r.Rotate(0 deg, 0 deg, 180 deg)
+    # Left wing (-X): mirror of right wing around Z axis at origin
+    var wing_l = wing_r.RotateZ(180 deg, 0 mm, 0 mm)
 
     var internal = self.thread.Inside(self.hub_h)
 
