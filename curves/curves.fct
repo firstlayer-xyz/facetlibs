@@ -35,7 +35,7 @@
 # @param p2     End point
 # @param steps  Number of line segments
 # @return       Array of Vec2 along the curve
-fn QuadBezier2d(Vec2 p0, p1, p2, Number steps) Vec2[] {
+fn QuadBezier2d(p0, p1, p2 Vec2, steps Number) []Vec2 {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
@@ -53,7 +53,7 @@ fn QuadBezier2d(Vec2 p0, p1, p2, Number steps) Vec2[] {
 # @param p3     End point
 # @param steps  Number of line segments
 # @return       Array of Vec2 along the curve
-fn CubicBezier2d(Vec2 p0, p1, p2, p3, Number steps) Vec2[] {
+fn CubicBezier2d(p0, p1, p2, p3 Vec2, steps Number) []Vec2 {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
@@ -76,7 +76,7 @@ fn CubicBezier2d(Vec2 p0, p1, p2, p3, Number steps) Vec2[] {
 # @param p2     End point
 # @param steps  Number of line segments
 # @return       Array of Vec3 along the curve
-fn QuadBezier3d(Vec3 p0, p1, p2, Number steps) Vec3[] {
+fn QuadBezier3d(p0, p1, p2 Vec3, steps Number) []Vec3 {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
@@ -95,7 +95,7 @@ fn QuadBezier3d(Vec3 p0, p1, p2, Number steps) Vec3[] {
 # @param p3     End point
 # @param steps  Number of line segments
 # @return       Array of Vec3 along the curve
-fn CubicBezier3d(Vec3 p0, p1, p2, p3, Number steps) Vec3[] {
+fn CubicBezier3d(p0, p1, p2, p3 Vec3, steps Number) []Vec3 {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
@@ -121,7 +121,7 @@ fn CubicBezier3d(Vec3 p0, p1, p2, p3, Number steps) Vec3[] {
 # @param points     Array of Vec2 to interpolate (>= 2)
 # @param segments   Number of line segments between each pair of points
 # @return           Array of Vec2 along the smooth curve
-fn CatmullRom2d(Vec2[] points, Number segments) Vec2[] {
+fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
     var n = Size(points)
     assert n >= 2, "CatmullRom2d requires at least 2 points"
 
@@ -170,7 +170,7 @@ fn CatmullRom2d(Vec2[] points, Number segments) Vec2[] {
 # @param points     Array of Vec3 to interpolate (>= 2)
 # @param segments   Number of line segments between each pair of points
 # @return           Array of Vec3 along the smooth curve
-fn CatmullRom3d(Vec3[] points, Number segments) Vec3[] {
+fn CatmullRom3d(points []Vec3, segments Number) []Vec3 {
     var n = Size(points)
     assert n >= 2, "CatmullRom3d requires at least 2 points"
 

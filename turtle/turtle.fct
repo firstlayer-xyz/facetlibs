@@ -36,10 +36,10 @@ var Curves = lib "github.com/firstlayer-xyz/facetlibs/curves@main"
 # =========================================================================
 
 struct Turtle2d {
-    Vec2 pos
-    Angle heading
-    Bool pen
-    Vec2[] path
+    pos Vec2
+    heading Angle
+    pen Bool
+    path []Vec2
 }
 
 # Creates a new 2D turtle at the origin, heading up (90 deg), pen down.
@@ -54,7 +54,7 @@ fn Turtle2d() Turtle2d {
 }
 
 # Moves forward by `dist` in the current heading direction.
-fn Turtle2d.Forward(Length dist) {
+fn Turtle2d.Forward(dist Length) {
     var nx = self.pos.x + Cos(self.heading) * dist
     var ny = self.pos.y + Sin(self.heading) * dist
     var np = Vec2(nx, ny)
@@ -65,21 +65,21 @@ fn Turtle2d.Forward(Length dist) {
 }
 
 # Moves backward by `dist`.
-fn Turtle2d.Back(Length dist) {
+fn Turtle2d.Back(dist Length) {
     self.Forward(-dist)
 }
 
 # Turns by angle `a`. Positive = counterclockwise, negative = clockwise.
-fn Turtle2d.Turn(Angle a) {
+fn Turtle2d.Turn(a Angle) {
     self.heading = self.heading + a
 }
 
 # Jumps to absolute position (x, y). Appends to path if pen is down.
-fn Turtle2d.GoTo(Length x, y) {
+fn Turtle2d.GoTo(x, y Length) {
     self.GoTo(Vec2(x, y))
 }
 
-fn Turtle2d.GoTo(Vec2 pos) {
+fn Turtle2d.GoTo(pos Vec2) {
     self.pos = pos
     if self.pen {
         self.path = self.path + pos
@@ -92,7 +92,7 @@ fn Turtle2d.GoTo(Vec2 pos) {
 # @param cp2    Second control point (tangent direction arriving at end)
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
-fn Turtle2d.BezierTo(Vec2 cp1, cp2, end, Number steps) {
+fn Turtle2d.BezierTo(cp1, cp2, end Vec2, steps Number) {
     var pts = Curves.CubicBezier2d(self.pos, cp1, cp2, end, steps)
     var n = Size(pts)
     for i [1:<n] {
@@ -124,12 +124,12 @@ fn Turtle2d.ToSketch() Sketch {
 }
 
 # Extrudes the path into a solid with the given height.
-fn Turtle2d.Extrude(Length h) Solid {
+fn Turtle2d.Extrude(h Length) Solid {
     return Polygon(self.path).Extrude(h)
 }
 
 # Sweeps a cross-section along the 2D path using the native sweep builtin.
-fn Turtle2d.Sweep(Sketch cross) Solid {
+fn Turtle2d.Sweep(cross Sketch) Solid {
     var pts = self.path
     var n = Size(pts)
     assert n >= 2, "Turtle2d.Sweep requires at least 2 path points"
@@ -145,11 +145,11 @@ fn Turtle2d.Sweep(Sketch cross) Solid {
 # =========================================================================
 
 struct Turtle3d {
-    Vec3 pos
-    Angle yaw
-    Angle pitch
-    Bool pen
-    Vec3[] path
+    pos Vec3
+    yaw Angle
+    pitch Angle
+    pen Bool
+    path []Vec3
 }
 
 # Creates a new 3D turtle at the origin, facing +X (yaw=0, pitch=0), pen down.
@@ -165,7 +165,7 @@ fn Turtle3d() Turtle3d {
 }
 
 # Moves forward by `dist` in the current yaw/pitch direction.
-fn Turtle3d.Forward(Length dist) {
+fn Turtle3d.Forward(dist Length) {
     var nx = self.pos.x + Cos(self.pitch) * Cos(self.yaw) * dist
     var ny = self.pos.y + Cos(self.pitch) * Sin(self.yaw) * dist
     var nz = self.pos.z + Sin(self.pitch) * dist
@@ -177,23 +177,23 @@ fn Turtle3d.Forward(Length dist) {
 }
 
 # Moves backward by `dist`.
-fn Turtle3d.Back(Length dist) {
+fn Turtle3d.Back(dist Length) {
     self.Forward(-dist)
 }
 
 # Turns by yaw and pitch. Positive yaw = left, negative = right.
 # Positive pitch = up, negative = down.
-fn Turtle3d.Turn(Angle yaw, pitch) {
+fn Turtle3d.Turn(yaw, pitch Angle) {
     self.yaw = self.yaw + yaw
     self.pitch = self.pitch + pitch
 }
 
 # Jumps to absolute position (x, y, z). Appends to path if pen is down.
-fn Turtle3d.GoTo(Length x, y, z) {
+fn Turtle3d.GoTo(x, y, z Length) {
     self.GoTo(Vec3(x, y, z))
 }
 
-fn Turtle3d.GoTo(Vec3 pos) {
+fn Turtle3d.GoTo(pos Vec3) {
     self.pos = pos
     if self.pen {
         self.path = self.path + pos
@@ -214,7 +214,7 @@ fn Turtle3d.Heading() Vec3 {
 # @param cp2    Second control point
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
-fn Turtle3d.BezierTo(Vec3 cp1, cp2, end, Number steps) {
+fn Turtle3d.BezierTo(cp1, cp2, end Vec3, steps Number) {
     var pts = Curves.CubicBezier3d(self.pos, cp1, cp2, end, steps)
     var n = Size(pts)
     for i [1:<n] {
@@ -244,7 +244,7 @@ fn Turtle3d.PenDown() {
 }
 
 # Sweeps a cross-section along the 3D path using the native sweep builtin.
-fn Turtle3d.Sweep(Sketch cross) Solid {
+fn Turtle3d.Sweep(cross Sketch) Solid {
     var pts = self.path
     var n = Size(pts)
     assert n >= 2, "Turtle3d.Sweep requires at least 2 path points"

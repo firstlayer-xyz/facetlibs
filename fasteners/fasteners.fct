@@ -17,13 +17,13 @@ var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main"
 var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main"
 
 # Hex polygon from across-flats measurement.
-fn HexSketch(Length af) Sketch {
+fn HexSketch(af Length) Sketch {
     return Circle(af / (2 * Cos(30 deg)), 6)
 }
 
 # Re-export Knurl constructor so users can create knurl specs without
 # importing knurling separately.
-fn Knurl(Number count, Length depth, Angle pitch_angle) K.Knurl {
+fn Knurl(count Number, depth Length, pitch_angle Angle) K.Knurl {
     return K.Knurl(count, depth, pitch_angle)
 }
 
@@ -112,7 +112,7 @@ var IMPERIAL = [
 # Looks up a row by diameter — tries METRIC first, then IMPERIAL.
 # Imperial values use `in` suffix and are converted to mm-as-Number before
 # returning, so constructors can use `row[N] * 1 mm` uniformly.
-fn DimRow(Length d) Number[] {
+fn DimRow(d Length) []Number {
     var v = Number(d)
     var m = for i [0:<Size(METRIC)] {
         if METRIC[i][0] == v { yield METRIC[i]; }
@@ -137,13 +137,13 @@ fn DimRow(Length d) Number[] {
 # ---------------------------------------------------------------------------
 
 struct HexNut {
-    T.Thread thread
-    Length hex_af
-    Length nut_h
+    thread T.Thread
+    hex_af Length
+    nut_h Length
 }
 
 # Creates an ISO 4032 hex nut.
-fn HexNut(String size) HexNut {
+fn HexNut(size String) HexNut {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     return HexNut {
@@ -168,14 +168,14 @@ fn HexNut.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct CapNut {
-    T.Thread thread
-    Length hex_af
-    Length base_h
-    Length dome_h
+    thread T.Thread
+    hex_af Length
+    base_h Length
+    dome_h Length
 }
 
 # Creates a DIN 1587 cap nut.
-fn CapNut(String size) CapNut {
+fn CapNut(size String) CapNut {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     var af = row[1] * 1 mm
@@ -220,17 +220,17 @@ fn CapNut.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct WingNut {
-    T.Thread thread
-    Length major_d
-    Length hub_d
-    Length hub_h
-    Length wing_span
-    Length wing_h
-    Length wing_t
+    thread T.Thread
+    major_d Length
+    hub_d Length
+    hub_h Length
+    wing_span Length
+    wing_h Length
+    wing_t Length
 }
 
 # Creates a DIN 315 wing nut. Dimensions derived proportionally.
-fn WingNut(String size) WingNut {
+fn WingNut(size String) WingNut {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     var af = row[1] * 1 mm
@@ -299,13 +299,13 @@ fn WingNut.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct Washer {
-    Length bore_d
-    Length outer_d
-    Length thickness
+    bore_d Length
+    outer_d Length
+    thickness Length
 }
 
 # Creates a DIN 125 flat washer.
-fn Washer(String size) Washer {
+fn Washer(size String) Washer {
     var t = T.Thread(size)
     var md = t.major_diameter
     return Washer {
@@ -330,14 +330,14 @@ fn Washer.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct HexBolt {
-    T.Thread thread
-    Length hex_af
-    Length head_h
-    Length length
+    thread T.Thread
+    hex_af Length
+    head_h Length
+    length Length
 }
 
 # Creates an ISO 4014 hex bolt with the given shaft length.
-fn HexBolt(String size, Length length) HexBolt {
+fn HexBolt(size String, length Length) HexBolt {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     assert row[3] != 0, "HexBolt not available in " + size
@@ -365,15 +365,15 @@ fn HexBolt.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct SocketHeadCapScrew {
-    T.Thread thread
-    Length head_d
-    Length head_h
-    Length socket
-    Length length
+    thread T.Thread
+    head_d Length
+    head_h Length
+    socket Length
+    length Length
 }
 
 # Creates an ISO 4762 socket head cap screw.
-fn SocketHeadCapScrew(String size, Length length) SocketHeadCapScrew {
+fn SocketHeadCapScrew(size String, length Length) SocketHeadCapScrew {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     assert row[4] != 0, "SocketHeadCapScrew not available in " + size
@@ -406,16 +406,16 @@ fn SocketHeadCapScrew.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct ButtonHeadCapScrew {
-    T.Thread thread
-    Length major_d
-    Length head_d
-    Length head_h
-    Length socket
-    Length length
+    thread T.Thread
+    major_d Length
+    head_d Length
+    head_h Length
+    socket Length
+    length Length
 }
 
 # Creates an ISO 7380 button head cap screw.
-fn ButtonHeadCapScrew(String size, Length length) ButtonHeadCapScrew {
+fn ButtonHeadCapScrew(size String, length Length) ButtonHeadCapScrew {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     assert row[7] != 0, "ButtonHeadCapScrew not available in " + size
@@ -459,16 +459,16 @@ fn ButtonHeadCapScrew.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct CountersunkScrew {
-    T.Thread thread
-    Length major_d
-    Length head_d
-    Length head_h
-    Length socket
-    Length length
+    thread T.Thread
+    major_d Length
+    head_d Length
+    head_h Length
+    socket Length
+    length Length
 }
 
 # Creates an ISO 10642 countersunk screw.
-fn CountersunkScrew(String size, Length length) CountersunkScrew {
+fn CountersunkScrew(size String, length Length) CountersunkScrew {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     assert row[10] != 0, "CountersunkScrew not available in " + size
@@ -501,14 +501,14 @@ fn CountersunkScrew.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct SetScrew {
-    T.Thread thread
-    Length major_d
-    Length socket
-    Length length
+    thread T.Thread
+    major_d Length
+    socket Length
+    length Length
 }
 
 # Creates an ISO 4026 set screw.
-fn SetScrew(String size, Length length) SetScrew {
+fn SetScrew(size String, length Length) SetScrew {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     assert row[13] != 0, "SetScrew not available in " + size
@@ -536,15 +536,15 @@ fn SetScrew.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct Thumbscrew {
-    T.Thread thread
-    Length length
-    Length head_h
-    Length head_r
-    K.Knurl knurl
+    thread T.Thread
+    length Length
+    head_h Length
+    head_r Length
+    knurl K.Knurl
 }
 
 # Creates a thumbscrew with default head dimensions and knurling.
-fn Thumbscrew(String size, Length length) Thumbscrew {
+fn Thumbscrew(size String, length Length) Thumbscrew {
     var t = T.Thread(size)
     var d = t.major_diameter
     return Thumbscrew {
@@ -557,7 +557,7 @@ fn Thumbscrew(String size, Length length) Thumbscrew {
 }
 
 # Creates a thumbscrew with custom head dimensions and knurling.
-fn Thumbscrew(String size, Length length, head_h, head_r, K.Knurl knurl) Thumbscrew {
+fn Thumbscrew(size String, length, head_h, head_r Length, knurl K.Knurl) Thumbscrew {
     return Thumbscrew {
         thread: T.Thread(size),
         length: length,
@@ -583,15 +583,15 @@ fn Thumbscrew.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct FlatHeadScrew {
-    T.Thread thread
-    Length head_d
-    Length head_h
-    Length slot_w
-    Length length
+    thread T.Thread
+    head_d Length
+    head_h Length
+    slot_w Length
+    length Length
 }
 
 # Creates an ISO 1580 flat head (slotted) screw.
-fn FlatHeadScrew(String size, Length length) FlatHeadScrew {
+fn FlatHeadScrew(size String, length Length) FlatHeadScrew {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     assert row[14] != 0, "FlatHeadScrew not available in " + size
@@ -625,15 +625,15 @@ fn FlatHeadScrew.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct PhillipsScrew {
-    T.Thread thread
-    Length head_d
-    Length head_h
-    Length phillips_w
-    Length length
+    thread T.Thread
+    head_d Length
+    head_h Length
+    phillips_w Length
+    length Length
 }
 
 # Creates an ISO 7045 Phillips screw.
-fn PhillipsScrew(String size, Length length) PhillipsScrew {
+fn PhillipsScrew(size String, length Length) PhillipsScrew {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     assert row[14] != 0, "PhillipsScrew not available in " + size
@@ -673,14 +673,14 @@ fn PhillipsScrew.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct Standoff {
-    T.Thread thread
-    Length hex_af
-    Length major_d
-    Length length
+    thread T.Thread
+    hex_af Length
+    major_d Length
+    length Length
 }
 
 # Creates a female-female hex standoff.
-fn Standoff(String size, Length length) Standoff {
+fn Standoff(size String, length Length) Standoff {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     return Standoff {
@@ -709,15 +709,15 @@ fn Standoff.Solid() Solid {
 # ---------------------------------------------------------------------------
 
 struct MaleStandoff {
-    T.Thread thread
-    Length hex_af
-    Length major_d
-    Length length
-    Length thread_len
+    thread T.Thread
+    hex_af Length
+    major_d Length
+    length Length
+    thread_len Length
 }
 
 # Creates a male-female hex standoff.
-fn MaleStandoff(String size, Length length, thread_len) MaleStandoff {
+fn MaleStandoff(size String, length, thread_len Length) MaleStandoff {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     return MaleStandoff {
@@ -743,7 +743,7 @@ fn MaleStandoff.Solid() Solid {
 # Showcase — renders one of each fastener type side by side
 # ---------------------------------------------------------------------------
 
-fn Showcase(String size, Length shaft_len, standoff_len) Solid[] {
+fn Showcase(size String, shaft_len, standoff_len Length) []Solid {
     var t = T.Thread(size)
     var row = DimRow(t.major_diameter)
     var sp = row[1] * 1 mm * 2

@@ -211,7 +211,7 @@ fn PentakisDodecahedron() PolyMesh {
 
 # Creates a regular n-gon prism with unit circumradius.
 # @param n  Number of sides (must be >= 3)
-fn Prism(Number n) PolyMesh {
+fn Prism(n Number) PolyMesh {
     var verts = for i [0:<n*2] {
         var a = i % n * (360 deg / n)
         var z = if i < n { return 0.5 mm; } else { return -0.5 mm; }
@@ -238,7 +238,7 @@ fn Prism(Number n) PolyMesh {
 
 # Creates a regular n-gon antiprism with unit circumradius.
 # @param n  Number of sides (must be >= 3)
-fn Antiprism(Number n) PolyMesh {
+fn Antiprism(n Number) PolyMesh {
     var half_twist = 180 deg / n
     var verts = for i [0:<n*2] {
         var ring = if i < n { return 0; } else { return 1; }
@@ -271,7 +271,7 @@ fn Antiprism(Number n) PolyMesh {
 
 # Creates a regular n-gon pyramid with unit circumradius.
 # @param n  Number of base sides (must be >= 3)
-fn Pyramid(Number n) PolyMesh {
+fn Pyramid(n Number) PolyMesh {
     var verts = for i [0:<(n + 1)] {
         if i < n {
             var a = i * (360 deg / n)
@@ -298,7 +298,7 @@ fn Pyramid(Number n) PolyMesh {
 
 # Creates a regular n-gon bipyramid (two pyramids base-to-base) with unit circumradius.
 # @param n  Number of equatorial sides (must be >= 3)
-fn Bipyramid(Number n) PolyMesh {
+fn Bipyramid(n Number) PolyMesh {
     var verts = for i [0:<(n + 2)] {
         if i < n {
             var a = i * (360 deg / n)
@@ -331,7 +331,7 @@ fn Bipyramid(Number n) PolyMesh {
 # Creates a torus (donut) as a Solid.
 # @param major_radius  Distance from center of torus to center of tube
 # @param minor_radius  Radius of the tube
-fn Torus(Length major_radius, minor_radius) Solid {
+fn Torus(major_radius, minor_radius Length) Solid {
     return Circle(minor_radius).Translate(major_radius, 0 mm).Revolve()
 }
 
@@ -339,7 +339,7 @@ fn Torus(Length major_radius, minor_radius) Solid {
 # @param major_radius    Distance from center of torus to center of tube
 # @param minor_radius    Radius of the tube
 # @param tube_segments   Number of segments around the tube cross-section
-fn Torus(Length major_radius, minor_radius, Number tube_segments) Solid {
+fn Torus(major_radius, minor_radius Length, tube_segments Number) Solid {
     return Circle(minor_radius, tube_segments).Translate(major_radius, 0 mm).Revolve()
 }
 
@@ -347,7 +347,7 @@ fn Torus(Length major_radius, minor_radius, Number tube_segments) Solid {
 # @param major_radius  Distance from center of torus to center of tube
 # @param minor_radius  Radius of the tube
 # @param sweep         Arc angle of revolution
-fn Torus(Length major_radius, minor_radius, Angle sweep) Solid {
+fn Torus(major_radius, minor_radius Length, sweep Angle) Solid {
     return Circle(minor_radius).Translate(major_radius, 0 mm).Revolve(sweep)
 }
 
@@ -356,7 +356,7 @@ fn Torus(Length major_radius, minor_radius, Angle sweep) Solid {
 # ---------------------------------------------------------------------------
 
 # Renders all five Platonic solids side by side.
-fn ShowcasePlatonics(Length radius) Solid[] {
+fn ShowcasePlatonics(radius Length) []Solid {
     var sp = radius * 3
     return [
         Tetrahedron().ScaleToRadius(radius).Solid(),
@@ -368,7 +368,7 @@ fn ShowcasePlatonics(Length radius) Solid[] {
 }
 
 # Renders all thirteen Archimedean solids in two rows.
-fn ShowcaseArchimedean(Length radius) Solid[] {
+fn ShowcaseArchimedean(radius Length) []Solid {
     var sp = radius * 3
     return [
         TruncatedTetrahedron().ScaleToRadius(radius).Solid(),
@@ -388,7 +388,7 @@ fn ShowcaseArchimedean(Length radius) Solid[] {
 }
 
 # Renders all eight Catalan solids (duals of Archimedean) in two rows.
-fn ShowcaseCatalans(Length radius) Solid[] {
+fn ShowcaseCatalans(radius Length) []Solid {
     var sp = radius * 3
     return [
         TriakisTetrahedron().ScaleToRadius(radius).Solid(),
@@ -406,7 +406,7 @@ fn ShowcaseCatalans(Length radius) Solid[] {
 # Row 1: Tetrahedron (self-dual)
 # Row 2: Cube ↔ Octahedron
 # Row 3: Icosahedron ↔ Dodecahedron
-fn ShowcaseCanonicalDuals(Length radius) Solid[] {
+fn ShowcaseCanonicalDuals(radius Length) []Solid {
     var sp = radius * 3
     return [
         # Tetrahedron is self-dual

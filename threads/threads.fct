@@ -5,10 +5,10 @@
 # The `tolerance` field is a radial clearance applied to both inside and
 # outside threads — 0.2 mm by default, suitable for FDM 3D printing.
 struct Thread {
-    Length pitch
-    Length major_diameter
-    Number taper
-    Length tolerance
+    pitch Length
+    major_diameter Length
+    taper Number
+    tolerance Length
 }
 
 # ISO metric default pitch table: [diameter, pitch]
@@ -27,7 +27,7 @@ var METRIC_DEFAULT = [
 # Returns the default pitch for a given metric diameter.
 # For standard coarse sizes this is the ISO 261 coarse pitch.
 # For fine-pitch-only sizes this is the most common fine pitch.
-fn MetricDefaultPitch(Length d) Length {
+fn MetricDefaultPitch(d Length) Length {
     var v = Number(d)
     var matches = for i [0:<Size(METRIC_DEFAULT)] {
         if METRIC_DEFAULT[i][0] == v {
@@ -40,10 +40,10 @@ fn MetricDefaultPitch(Length d) Length {
 
 # Imperial thread specification row.
 struct ImperialSpec {
-    String size
-    Number pitch_in
-    Number diameter_in
-    Number taper
+    size String
+    pitch_in Number
+    diameter_in Number
+    taper Number
 }
 
 # Imperial thread table
@@ -82,7 +82,7 @@ var IMPERIAL = ImperialSpec[
 ]
 
 # Looks up an imperial thread by size string.
-fn ImperialThread(String size) Thread {
+fn ImperialThread(size String) Thread {
     var matches = for i [0:<Size(IMPERIAL)] {
         if IMPERIAL[i].size == size {
             yield IMPERIAL[i]
@@ -115,7 +115,7 @@ fn ImperialThread(String size) Thread {
 # `"1/4-28"`, `"5/16-24"`, `"3/8-24"`, `"7/16-20"`, `"1/2-20"`, `"5/8-18"`, `"3/4-16"`
 #
 # **NPT:** `"1/8-npt"`, `"1/4-npt"`, `"3/8-npt"`, `"1/2-npt"`, `"3/4-npt"`, `"1-npt"`
-fn Thread(String size) Thread {
+fn Thread(size String) Thread {
     # --- Metric fine: m<diameter>x<pitch> ---
     var mfine = size.Match(`m(\d+\.?\d*)x([\d.]+)`)
     return if mfine == true {
@@ -142,7 +142,7 @@ fn Thread(String size) Thread {
 # the extrusion scales to the large-end radius.
 #
 # Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
-fn Thread.Outside(Length length) Solid {
+fn Thread.Outside(length Length) Solid {
     var pitch = self.pitch
     var major_d = self.major_diameter
     var taper = self.taper
@@ -208,6 +208,30 @@ fn Thread.Outside(Length length) Solid {
     return tooth.Extrude(length, turns * 80, turns * 360 deg, taper_scale, taper_scale)
 }
 
+# Returns how many degrees the thread rotates per millimetre of axial travel.
+# One full turn (360°) advances exactly one pitch, so this is 360 / pitch_mm.
+#
+# Example:
+# ```
+# var t = Thread("m8")
+# var rot = depth_mm * t.DegPerMM()
+# ```
+fn Thread.DegPerMM() Angle {
+    return 360 deg / Number(self.pitch)
+}
+
+# Returns how many degrees the thread rotates per inch of axial travel.
+# Equivalent to DegPerMM() × 25.4.
+#
+# Example:
+# ```
+# var t = Thread("1/4-20")
+# var rot = depth_in * t.DegPerInch()
+# ```
+fn Thread.DegPerInch() Angle {
+    return self.DegPerMM() * 25.4
+}
+
 # Generates an internal (inside) thread `Solid`.
 #
 # Adds clearance tolerance and uses a sharp V-profile. The radii are shifted
@@ -216,7 +240,7 @@ fn Thread.Outside(Length length) Solid {
 #
 # Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
 # Subtract this from a nut body to create internal threads.
-fn Thread.Inside(Length length) Solid {
+fn Thread.Inside(length Length) Solid {
     var pitch = self.pitch
     var major_d = self.major_diameter
     var taper = self.taper

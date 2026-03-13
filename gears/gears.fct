@@ -4,18 +4,18 @@
 # standard involute tooth geometry.
 
 struct Gear {
-    Number teeth
-    Length module
-    Angle pressure_angle
+    teeth Number
+    module Length
+    pressure_angle Angle
 }
 
 # Creates a gear with the standard 20° pressure angle.
-fn Gear(Number teeth, Length module) Gear {
+fn Gear(teeth Number, module Length) Gear {
     return Gear { teeth: teeth, module: module, pressure_angle: 20 deg }
 }
 
 # Creates a gear with a custom pressure angle.
-fn Gear(Number teeth, Length module, Angle pressure_angle) Gear {
+fn Gear(teeth Number, module Length, pressure_angle Angle) Gear {
     return Gear { teeth: teeth, module: module, pressure_angle: pressure_angle }
 }
 
@@ -43,7 +43,7 @@ fn Gear.DedendumRadius() Length {
 #
 # `n_involute` controls the number of sample points per involute flank.
 # Higher values give smoother tooth curves.
-fn Gear.Profile(Number n_involute = 20) Sketch {
+fn Gear.Profile(n_involute Number = 20) Sketch {
     var N = self.teeth
     var m = self.module
     var alpha = self.pressure_angle
@@ -122,6 +122,6 @@ fn Gear.Profile(Number n_involute = 20) Sketch {
 }
 
 # Extrudes the gear profile to create a spur gear solid.
-fn Gear.Spur(Length width) Solid {
+fn Gear.Spur(width Length) Solid {
     return self.Profile().Extrude(width)
 }
