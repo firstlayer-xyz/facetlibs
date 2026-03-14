@@ -201,9 +201,9 @@ fn CapNut.Solid() Solid {
     var R_num = (fr_num * fr_num + dh_num * dh_num) / (2 * dh_num)
     var R = R_num * 1 mm
     var sphere = Sphere(R)
-        .Translate(0 mm, 0 mm, self.base_h + dh - R)
+        .Translate(Vec3(0 mm, 0 mm, self.base_h + dh - R))
     var clip = Cylinder(flat_r, flat_r, dh)
-        .Translate(0 mm, 0 mm, self.base_h)
+        .Translate(Vec3(0 mm, 0 mm, self.base_h))
     var dome = sphere & clip
 
     # Internal thread — blind hole through hex base only.
@@ -270,22 +270,22 @@ fn WingNut.Solid() Solid {
         Vec2(ws, body_h),
         Vec2(-overlap, body_h)
     ]).Extrude(wt)
-        .Translate(0 mm, 0 mm, -wt / 2)
-        .RotateX(90 deg, 0 mm, 0 mm)
-        .Translate(hr, 0 mm, 0 mm)
+        .Translate(Vec3(0 mm, 0 mm, -wt / 2))
+        .RotateX(90 deg, WorldOrigin)
+        .Translate(Vec3(hr, 0 mm, 0 mm))
 
     # Rounded cap on top of wing
     var cap_cx = hr - overlap + cap_w / 2
     var cap = Cylinder(cap_w / 2, cap_w / 2, wt)
-        .Translate(0 mm, 0 mm, -wt / 2)
-        .RotateX(90 deg, 0 mm, 0 mm)
-        .Translate(cap_cx, 0 mm, body_h)
+        .Translate(Vec3(0 mm, 0 mm, -wt / 2))
+        .RotateX(90 deg, WorldOrigin)
+        .Translate(Vec3(cap_cx, 0 mm, body_h))
     var clip = Cube(cap_w + 1 mm, wt + 1 mm, cap_w / 2)
-        .Translate(cap_cx - (cap_w + 1 mm) / 2, -(wt + 1 mm) / 2, body_h)
+        .Translate(Vec3(cap_cx - (cap_w + 1 mm) / 2, -(wt + 1 mm) / 2, body_h))
     var wing_r = wing_body + (cap & clip)
 
     # Left wing (-X): mirror of right wing around Z axis at origin
-    var wing_l = wing_r.RotateZ(180 deg, 0 mm, 0 mm)
+    var wing_l = wing_r.RotateZ(180 deg, WorldOrigin)
 
     var internal = self.thread.Inside(self.hub_h)
 
@@ -319,7 +319,7 @@ fn Washer(size String) Washer {
 fn Washer.Solid() Solid {
     var outer = Cylinder(self.outer_d / 2, self.outer_d / 2, self.thickness)
     var bore = Cylinder(self.bore_d / 2, self.bore_d / 2, self.thickness + 1 mm)
-        .Translate(0 mm, 0 mm, -0.5 mm)
+        .Translate(Vec3(0 mm, 0 mm, -0.5 mm))
     return outer - bore
 }
 
@@ -353,7 +353,7 @@ fn HexBolt(size String, length Length) HexBolt {
 fn HexBolt.Solid() Solid {
     var head = HexSketch(self.hex_af).Extrude(self.head_h)
     var shaft = self.thread.Outside(self.length)
-        .Translate(0 mm, 0 mm, self.head_h)
+        .Translate(Vec3(0 mm, 0 mm, self.head_h))
     return head + shaft
 }
 
@@ -392,9 +392,9 @@ fn SocketHeadCapScrew.Solid() Solid {
     var head = Cylinder(self.head_d / 2, self.head_d / 2, hh)
     var sock_depth = hh * 0.8
     var socket = HexSketch(self.socket).Extrude(sock_depth + 1 mm)
-        .Translate(0 mm, 0 mm, -1 mm)
+        .Translate(Vec3(0 mm, 0 mm, -1 mm))
     var shaft = self.thread.Outside(self.length)
-        .Translate(0 mm, 0 mm, hh)
+        .Translate(Vec3(0 mm, 0 mm, hh))
     return (head - socket) + shaft
 }
 
@@ -440,14 +440,14 @@ fn ButtonHeadCapScrew.Solid() Solid {
     var R_num = Sqrt(c_num * c_num + d_num * d_num / 4)
     var R = R_num * 1 mm
     var c = c_num * 1 mm
-    var sphere = Sphere(R).Translate(0 mm, 0 mm, c)
+    var sphere = Sphere(R).Translate(Vec3(0 mm, 0 mm, c))
     var clip = Cylinder(d / 2, d / 2, h)
     var dome = sphere & clip
     var sock_depth = h * 0.7
     var socket = HexSketch(self.socket).Extrude(sock_depth + 1 mm)
-        .Translate(0 mm, 0 mm, -1 mm)
+        .Translate(Vec3(0 mm, 0 mm, -1 mm))
     var shaft = self.thread.Outside(self.length)
-        .Translate(0 mm, 0 mm, h)
+        .Translate(Vec3(0 mm, 0 mm, h))
     return (dome - socket) + shaft
 }
 
@@ -487,9 +487,9 @@ fn CountersunkScrew.Solid() Solid {
     var head = Cylinder(self.head_d / 2, self.major_d / 2, self.head_h)
     var sock_depth = self.head_h * 0.7
     var socket = HexSketch(self.socket).Extrude(sock_depth + 1 mm)
-        .Translate(0 mm, 0 mm, -1 mm)
+        .Translate(Vec3(0 mm, 0 mm, -1 mm))
     var shaft = self.thread.Outside(self.length)
-        .Translate(0 mm, 0 mm, self.head_h)
+        .Translate(Vec3(0 mm, 0 mm, self.head_h))
     return (head - socket) + shaft
 }
 
@@ -525,7 +525,7 @@ fn SetScrew.Solid() Solid {
     var body = self.thread.Outside(self.length)
     var sock_depth = self.major_d * 0.6
     var socket = HexSketch(self.socket).Extrude(sock_depth + 1 mm)
-        .Translate(0 mm, 0 mm, -1 mm)
+        .Translate(Vec3(0 mm, 0 mm, -1 mm))
     return body - socket
 }
 
@@ -571,7 +571,7 @@ fn Thumbscrew(size String, length, head_h, head_r Length, knurl K.Knurl) Thumbsc
 fn Thumbscrew.Solid() Solid {
     var head = self.knurl.ApplyZ(Cylinder(self.head_r, self.head_r, self.head_h))
     var shaft = self.thread.Outside(self.length)
-        .Translate(0 mm, 0 mm, self.head_h)
+        .Translate(Vec3(0 mm, 0 mm, self.head_h))
     return head + shaft
 }
 
@@ -611,9 +611,9 @@ fn FlatHeadScrew.Solid() Solid {
     var head = Cylinder(hd / 2, hd / 2, hh)
     var slot_depth = hh * 0.8
     var slot = Cube(hd + 1 mm, self.slot_w, slot_depth + 1 mm)
-        .Translate(-(hd + 1 mm) / 2, -self.slot_w / 2, -1 mm)
+        .Translate(Vec3(-(hd + 1 mm) / 2, -self.slot_w / 2, -1 mm))
     var shaft = self.thread.Outside(self.length)
-        .Translate(0 mm, 0 mm, hh)
+        .Translate(Vec3(0 mm, 0 mm, hh))
     return (head - slot) + shaft
 }
 
@@ -656,12 +656,12 @@ fn PhillipsScrew.Solid() Solid {
     var arm_len = pw * 1.2
     var arm_w = pw * 0.25
     var slot_a = Cube(arm_len, arm_w, recess_depth + 1 mm)
-        .Translate(-arm_len / 2, -arm_w / 2, -1 mm)
+        .Translate(Vec3(-arm_len / 2, -arm_w / 2, -1 mm))
     var slot_b = Cube(arm_w, arm_len, recess_depth + 1 mm)
-        .Translate(-arm_w / 2, -arm_len / 2, -1 mm)
+        .Translate(Vec3(-arm_w / 2, -arm_len / 2, -1 mm))
     var recess = slot_a + slot_b
     var shaft = self.thread.Outside(self.length)
-        .Translate(0 mm, 0 mm, hh)
+        .Translate(Vec3(0 mm, 0 mm, hh))
     return (head - recess) + shaft
 }
 
@@ -696,7 +696,7 @@ fn Standoff.Solid() Solid {
     var body = HexSketch(self.hex_af).Extrude(self.length)
     var thread_depth = Min(self.major_d, self.length / 2)
     var top_thread = self.thread.Inside(thread_depth)
-        .Translate(0 mm, 0 mm, self.length - thread_depth)
+        .Translate(Vec3(0 mm, 0 mm, self.length - thread_depth))
     var bot_thread = self.thread.Inside(thread_depth)
     return body - top_thread - bot_thread
 }
@@ -735,7 +735,7 @@ fn MaleStandoff.Solid() Solid {
     var thread_depth = Min(self.major_d, self.length / 2)
     var bot_thread = self.thread.Inside(thread_depth)
     var male_thread = self.thread.Outside(self.thread_len)
-        .Translate(0 mm, 0 mm, self.length)
+        .Translate(Vec3(0 mm, 0 mm, self.length))
     return (body - bot_thread) + male_thread
 }
 
@@ -749,18 +749,18 @@ fn Showcase(size String, shaft_len, standoff_len Length) []Solid {
     var sp = row[1] * 1 mm * 2
     return [
         HexNut(size).Solid(),
-        CapNut(size).Solid().Translate(sp, 0 mm, 0 mm),
-        WingNut(size).Solid().Translate(sp * 2, 0 mm, 0 mm),
-        Washer(size).Solid().Translate(sp * 3, 0 mm, 0 mm),
-        HexBolt(size, shaft_len).Solid().Translate(sp * 4, 0 mm, 0 mm),
-        SocketHeadCapScrew(size, shaft_len).Solid().Translate(sp * 5, 0 mm, 0 mm),
-        ButtonHeadCapScrew(size, shaft_len).Solid().Translate(sp * 6, 0 mm, 0 mm),
-        CountersunkScrew(size, shaft_len).Solid().Translate(sp * 7, 0 mm, 0 mm),
-        SetScrew(size, shaft_len).Solid().Translate(sp * 8, 0 mm, 0 mm),
-        Thumbscrew(size, shaft_len).Solid().Translate(sp * 9, 0 mm, 0 mm),
-        FlatHeadScrew(size, shaft_len).Solid().Translate(sp * 10, 0 mm, 0 mm),
-        PhillipsScrew(size, shaft_len).Solid().Translate(sp * 11, 0 mm, 0 mm),
-        Standoff(size, standoff_len).Solid().Translate(sp * 12, 0 mm, 0 mm),
-        MaleStandoff(size, standoff_len, shaft_len).Solid().Translate(sp * 13, 0 mm, 0 mm)
+        CapNut(size).Solid().Translate(Vec3(sp, 0 mm, 0 mm)),
+        WingNut(size).Solid().Translate(Vec3(sp * 2, 0 mm, 0 mm)),
+        Washer(size).Solid().Translate(Vec3(sp * 3, 0 mm, 0 mm)),
+        HexBolt(size, shaft_len).Solid().Translate(Vec3(sp * 4, 0 mm, 0 mm)),
+        SocketHeadCapScrew(size, shaft_len).Solid().Translate(Vec3(sp * 5, 0 mm, 0 mm)),
+        ButtonHeadCapScrew(size, shaft_len).Solid().Translate(Vec3(sp * 6, 0 mm, 0 mm)),
+        CountersunkScrew(size, shaft_len).Solid().Translate(Vec3(sp * 7, 0 mm, 0 mm)),
+        SetScrew(size, shaft_len).Solid().Translate(Vec3(sp * 8, 0 mm, 0 mm)),
+        Thumbscrew(size, shaft_len).Solid().Translate(Vec3(sp * 9, 0 mm, 0 mm)),
+        FlatHeadScrew(size, shaft_len).Solid().Translate(Vec3(sp * 10, 0 mm, 0 mm)),
+        PhillipsScrew(size, shaft_len).Solid().Translate(Vec3(sp * 11, 0 mm, 0 mm)),
+        Standoff(size, standoff_len).Solid().Translate(Vec3(sp * 12, 0 mm, 0 mm)),
+        MaleStandoff(size, standoff_len, shaft_len).Solid().Translate(Vec3(sp * 13, 0 mm, 0 mm))
     ]
 }

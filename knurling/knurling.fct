@@ -70,9 +70,9 @@ fn Knurl.ApplyZ(target Solid) Solid {
     # 5. Two crossed helixes, positioned at target Z
     var z_offset = z_lo - margin
     var helix_a = star.Extrude(h, slices, total_twist, 1, 1)
-        .Translate(0 mm, 0 mm, z_offset)
+        .Translate(Vec3(0 mm, 0 mm, z_offset))
     var helix_b = star.Extrude(h, slices, -total_twist, 1, 1)
-        .Translate(0 mm, 0 mm, z_offset)
+        .Translate(Vec3(0 mm, 0 mm, z_offset))
 
     # 6. Diamond pattern via double intersection
     return (target & helix_a) & helix_b
@@ -89,12 +89,12 @@ fn Knurl.Apply(target Solid) Solid {
 
 # Applies knurl around the X axis.
 fn Knurl.ApplyX(target Solid) Solid {
-    return self.ApplyZ(target.Rotate(0 deg, 90 deg, 0 deg))
-              .Rotate(0 deg, -90 deg, 0 deg)
+    return self.ApplyZ(target.Rotate(0 deg, 90 deg, 0 deg, WorldOrigin))
+              .Rotate(0 deg, -90 deg, 0 deg, WorldOrigin)
 }
 
 # Applies knurl around the Y axis.
 fn Knurl.ApplyY(target Solid) Solid {
-    return self.ApplyZ(target.Rotate(90 deg, 0 deg, 0 deg))
-              .Rotate(-90 deg, 0 deg, 0 deg)
+    return self.ApplyZ(target.Rotate(90 deg, 0 deg, 0 deg, WorldOrigin))
+              .Rotate(-90 deg, 0 deg, 0 deg, WorldOrigin)
 }

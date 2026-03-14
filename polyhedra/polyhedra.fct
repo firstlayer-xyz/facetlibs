@@ -332,7 +332,7 @@ fn Bipyramid(n Number) PolyMesh {
 # @param major_radius  Distance from center of torus to center of tube
 # @param minor_radius  Radius of the tube
 fn Torus(major_radius, minor_radius Length) Solid {
-    return Circle(minor_radius).Translate(major_radius, 0 mm).Revolve()
+    return Circle(minor_radius).Translate(Vec2(major_radius, 0 mm)).Revolve()
 }
 
 # Creates a torus with custom tube segment count.
@@ -340,7 +340,7 @@ fn Torus(major_radius, minor_radius Length) Solid {
 # @param minor_radius    Radius of the tube
 # @param tube_segments   Number of segments around the tube cross-section
 fn Torus(major_radius, minor_radius Length, tube_segments Number) Solid {
-    return Circle(minor_radius, tube_segments).Translate(major_radius, 0 mm).Revolve()
+    return Circle(minor_radius, tube_segments).Translate(Vec2(major_radius, 0 mm)).Revolve()
 }
 
 # Creates a partial torus (arc).
@@ -348,7 +348,7 @@ fn Torus(major_radius, minor_radius Length, tube_segments Number) Solid {
 # @param minor_radius  Radius of the tube
 # @param sweep         Arc angle of revolution
 fn Torus(major_radius, minor_radius Length, sweep Angle) Solid {
-    return Circle(minor_radius).Translate(major_radius, 0 mm).Revolve(sweep)
+    return Circle(minor_radius).Translate(Vec2(major_radius, 0 mm)).Revolve(sweep)
 }
 
 # ---------------------------------------------------------------------------
@@ -360,10 +360,10 @@ fn ShowcasePlatonics(radius Length) []Solid {
     var sp = radius * 3
     return [
         Tetrahedron().ScaleToRadius(radius).Solid(),
-        Octahedron().ScaleToRadius(radius).Solid().Translate(sp, 0 mm, 0 mm),
-        PlatoCube().ScaleToRadius(radius).Solid().Translate(sp * 2, 0 mm, 0 mm),
-        Icosahedron().ScaleToRadius(radius).Solid().Translate(sp * 3, 0 mm, 0 mm),
-        Dodecahedron().ScaleToRadius(radius).Solid().Translate(sp * 4, 0 mm, 0 mm),
+        Octahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp, 0 mm, 0 mm)),
+        PlatoCube().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 2, 0 mm, 0 mm)),
+        Icosahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 3, 0 mm, 0 mm)),
+        Dodecahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 4, 0 mm, 0 mm)),
     ]
 }
 
@@ -372,18 +372,18 @@ fn ShowcaseArchimedean(radius Length) []Solid {
     var sp = radius * 3
     return [
         TruncatedTetrahedron().ScaleToRadius(radius).Solid(),
-        Cuboctahedron().ScaleToRadius(radius).Solid().Translate(sp, 0 mm, 0 mm),
-        TruncatedCube().ScaleToRadius(radius).Solid().Translate(sp * 2, 0 mm, 0 mm),
-        TruncatedOctahedron().ScaleToRadius(radius).Solid().Translate(sp * 3, 0 mm, 0 mm),
-        Rhombicuboctahedron().ScaleToRadius(radius).Solid().Translate(sp * 4, 0 mm, 0 mm),
-        SnubCube().ScaleToRadius(radius).Solid().Translate(sp * 5, 0 mm, 0 mm),
-        Icosidodecahedron().ScaleToRadius(radius).Solid().Translate(0 mm, sp, 0 mm),
-        TruncatedIcosahedron().ScaleToRadius(radius).Solid().Translate(sp, sp, 0 mm),
-        TruncatedDodecahedron().ScaleToRadius(radius).Solid().Translate(sp * 2, sp, 0 mm),
-        Rhombicosidodecahedron().ScaleToRadius(radius).Solid().Translate(sp * 3, sp, 0 mm),
-        SnubDodecahedron().ScaleToRadius(radius).Solid().Translate(sp * 4, sp, 0 mm),
-        TruncatedCuboctahedron().ScaleToRadius(radius).Solid().Translate(sp * 5, sp, 0 mm),
-        TruncatedIcosidodecahedron().ScaleToRadius(radius).Solid().Translate(0 mm, sp * 2, 0 mm),
+        Cuboctahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp, 0 mm, 0 mm)),
+        TruncatedCube().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 2, 0 mm, 0 mm)),
+        TruncatedOctahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 3, 0 mm, 0 mm)),
+        Rhombicuboctahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 4, 0 mm, 0 mm)),
+        SnubCube().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 5, 0 mm, 0 mm)),
+        Icosidodecahedron().ScaleToRadius(radius).Solid().Translate(Vec3(0 mm, sp, 0 mm)),
+        TruncatedIcosahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp, sp, 0 mm)),
+        TruncatedDodecahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 2, sp, 0 mm)),
+        Rhombicosidodecahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 3, sp, 0 mm)),
+        SnubDodecahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 4, sp, 0 mm)),
+        TruncatedCuboctahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 5, sp, 0 mm)),
+        TruncatedIcosidodecahedron().ScaleToRadius(radius).Solid().Translate(Vec3(0 mm, sp * 2, 0 mm)),
     ]
 }
 
@@ -392,13 +392,13 @@ fn ShowcaseCatalans(radius Length) []Solid {
     var sp = radius * 3
     return [
         TriakisTetrahedron().ScaleToRadius(radius).Solid(),
-        RhombicDodecahedron().ScaleToRadius(radius).Solid().Translate(sp, 0 mm, 0 mm),
-        TriakisOctahedron().ScaleToRadius(radius).Solid().Translate(sp * 2, 0 mm, 0 mm),
-        TetrakisHexahedron().ScaleToRadius(radius).Solid().Translate(sp * 3, 0 mm, 0 mm),
-        DeltoidalIcositetrahedron().ScaleToRadius(radius).Solid().Translate(0 mm, sp, 0 mm),
-        PentagonalIcositetrahedron().ScaleToRadius(radius).Solid().Translate(sp, sp, 0 mm),
-        RhombicTriacontahedron().ScaleToRadius(radius).Solid().Translate(sp * 2, sp, 0 mm),
-        PentakisDodecahedron().ScaleToRadius(radius).Solid().Translate(sp * 3, sp, 0 mm),
+        RhombicDodecahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp, 0 mm, 0 mm)),
+        TriakisOctahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 2, 0 mm, 0 mm)),
+        TetrakisHexahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 3, 0 mm, 0 mm)),
+        DeltoidalIcositetrahedron().ScaleToRadius(radius).Solid().Translate(Vec3(0 mm, sp, 0 mm)),
+        PentagonalIcositetrahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp, sp, 0 mm)),
+        RhombicTriacontahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 2, sp, 0 mm)),
+        PentakisDodecahedron().ScaleToRadius(radius).Solid().Translate(Vec3(sp * 3, sp, 0 mm)),
     ]
 }
 
@@ -411,14 +411,14 @@ fn ShowcaseCanonicalDuals(radius Length) []Solid {
     return [
         # Tetrahedron is self-dual
         Tetrahedron().ScaleToRadius(radius).Solid(),
-        Tetrahedron().Dual().ScaleToRadius(radius).Solid().Translate(sp, 0 mm, 0 mm),
+        Tetrahedron().Dual().ScaleToRadius(radius).Solid().Translate(Vec3(sp, 0 mm, 0 mm)),
 
         # Cube ↔ Octahedron
-        PlatoCube().ScaleToRadius(radius).Solid().Translate(0 mm, sp, 0 mm),
-        PlatoCube().Dual().ScaleToRadius(radius).Solid().Translate(sp, sp, 0 mm),
+        PlatoCube().ScaleToRadius(radius).Solid().Translate(Vec3(0 mm, sp, 0 mm)),
+        PlatoCube().Dual().ScaleToRadius(radius).Solid().Translate(Vec3(sp, sp, 0 mm)),
 
         # Icosahedron ↔ Dodecahedron
-        Icosahedron().ScaleToRadius(radius).Solid().Translate(0 mm, sp * 2, 0 mm),
-        Icosahedron().Dual().ScaleToRadius(radius).Solid().Translate(sp, sp * 2, 0 mm),
+        Icosahedron().ScaleToRadius(radius).Solid().Translate(Vec3(0 mm, sp * 2, 0 mm)),
+        Icosahedron().Dual().ScaleToRadius(radius).Solid().Translate(Vec3(sp, sp * 2, 0 mm)),
     ]
 }

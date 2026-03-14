@@ -11,11 +11,11 @@ fn Pill(length, width Length) Sketch {
 }
 
 fn Oval(width, height Length) Sketch {
-    return Circle(width / 2).Scale(1, height / width);
+    return Circle(width / 2).Scale(1, height / width, Vec2(0 mm, 0 mm));
 }
 
 fn Oval(width, height Length, segments Number) Sketch {
-    return Circle(width / 2, segments).Scale(1, height / width);
+    return Circle(width / 2, segments).Scale(1, height / width, Vec2(0 mm, 0 mm));
 }
 
 fn RegularPolygon(radius Length, sides Number) Sketch {
@@ -47,7 +47,7 @@ fn Star(outerRadius, innerRadius Length, points Number) Sketch {
 }
 
 fn Semicircle(radius Length) Sketch {
-    return Circle(radius) & Square(radius * 2, radius).Translate(-radius, 0 mm);
+    return Circle(radius) & Square(radius * 2, radius).Translate(Vec2(-radius, 0 mm));
 }
 
 # 3D Shapes (→ Solid)
@@ -55,7 +55,7 @@ fn Semicircle(radius Length) Sketch {
 fn RoundedCube(x, y, z, r Length) Solid {
     var s = Sphere(r);
     return Hull(for cx [r, x - r], cy [r, y - r], cz [r, z - r] {
-        yield s.Translate(cx, cy, cz);
+        yield s.Translate(Vec3(cx, cy, cz));
     });
 }
 
@@ -66,8 +66,8 @@ fn RoundedCube(size Vec3, radius Length) Solid {
 fn Capsule(radius, height Length) Solid {
     var s = Sphere(radius);
     return Hull([
-        s.Translate(0 mm, 0 mm, radius),
-        s.Translate(0 mm, 0 mm, height - radius)
+        s.Translate(Vec3(0 mm, 0 mm, radius)),
+        s.Translate(Vec3(0 mm, 0 mm, height - radius))
     ]);
 }
 
@@ -80,7 +80,7 @@ fn Pill3d(size Vec3) Solid {
 }
 
 fn Torus(majorRadius, minorRadius Length) Solid {
-    return Circle(minorRadius).Translate(majorRadius, 0 mm).Revolve();
+    return Circle(minorRadius).Translate(Vec2(majorRadius, 0 mm)).Revolve();
 }
 
 fn Tube(outerRadius, innerRadius, height Length) Solid {
@@ -92,5 +92,5 @@ fn Cone(radius, height Length) Solid {
 }
 
 fn Dome(radius Length) Solid {
-    return Sphere(radius) & Cube(radius * 2, radius * 2, radius).Translate(-radius, -radius, 0 mm);
+    return Sphere(radius) & Cube(radius * 2, radius * 2, radius).Translate(Vec3(-radius, -radius, 0 mm));
 }
