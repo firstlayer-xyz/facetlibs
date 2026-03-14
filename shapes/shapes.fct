@@ -40,7 +40,7 @@ fn Star(outerRadius, innerRadius Length, points Number) Sketch {
     var n = points * 2;
     var verts = for i [0:<n] {
         var angle = 360 deg * i / n - 90 deg;
-        var r = if i % 2 == 0 { return outerRadius; } else { return innerRadius; };
+        var r = innerRadius; if i % 2 == 0 { r = outerRadius; }
         yield Vec2{r * Cos(angle), r * Sin(angle)};
     };
     return Polygon(verts);

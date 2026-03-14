@@ -214,7 +214,7 @@ fn PentakisDodecahedron() PolyMesh {
 fn Prism(n Number) PolyMesh {
     var verts = for i [0:<n*2] {
         var a = i % n * (360 deg / n)
-        var z = if i < n { return 0.5 mm; } else { return -0.5 mm; }
+        var z = -0.5 mm; if i < n { z = 0.5 mm; }
         yield Vec3{Cos(a) * 1 mm, Sin(a) * 1 mm, z}
     }
     var top = for i [0:<n] { yield i; }
@@ -241,9 +241,9 @@ fn Prism(n Number) PolyMesh {
 fn Antiprism(n Number) PolyMesh {
     var half_twist = 180 deg / n
     var verts = for i [0:<n*2] {
-        var ring = if i < n { return 0; } else { return 1; }
+        var ring = 1; if i < n { ring = 0; }
         var a = i % n * (360 deg / n) + ring * half_twist
-        var z = if ring == 0 { return 0.5 mm; } else { return -0.5 mm; }
+        var z = -0.5 mm; if ring == 0 { z = 0.5 mm; }
         yield Vec3{Cos(a) * 1 mm, Sin(a) * 1 mm, z}
     }
     var top = for i [0:<n] { yield i; }

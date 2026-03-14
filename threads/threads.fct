@@ -118,21 +118,19 @@ fn ImperialThread(size String) Thread {
 fn Thread(size String) Thread {
     # --- Metric fine: m<diameter>x<pitch> ---
     var mfine = size.Match(`m(\d+\.?\d*)x([\d.]+)`)
-    return if mfine == true {
+    if mfine == true {
         var d = Number(mfine[1]) * 1 mm
         var p = Number(mfine[2]) * 1 mm
         return Thread { pitch: p, major_diameter: d, taper: 0, tolerance: 0.1 mm }
-    } else {
+    }
     # --- Metric: m<diameter> (coarse or default fine pitch) ---
     var mcoarse = size.Match(`m(\d+\.?\d*)$`)
-    return if mcoarse == true {
+    if mcoarse == true {
         var d = Number(mcoarse[1]) * 1 mm
         return Thread { pitch: MetricDefaultPitch(d), major_diameter: d, taper: 0, tolerance: 0.1 mm }
-    } else {
+    }
     # --- Imperial: SAE UNC, UNF, NPT ---
     return ImperialThread(size)
-    }
-    }
 }
 
 # Generates an external (outside) thread `Solid`.
@@ -153,7 +151,8 @@ fn Thread.Outside(length Length) Solid {
     var taper_d = length * taper
     var d_small = major_d - taper_d / 2
     var d_large = major_d + taper_d / 2
-    var taper_scale = if taper > 0 { return d_large / d_small; } else { return 1; }
+    var taper_scale = 1;
+    if taper > 0 { taper_scale = d_large / d_small; }
 
     var H = pitch * Sqrt(3) / 2
     # Shrink outside thread by tolerance so printed bolt fits
@@ -250,7 +249,8 @@ fn Thread.Inside(length Length) Solid {
     var taper_d = length * taper
     var d_small = major_d - taper_d / 2
     var d_large = major_d + taper_d / 2
-    var taper_scale = if taper > 0 { return d_large / d_small; } else { return 1; }
+    var taper_scale = 1;
+    if taper > 0 { taper_scale = d_large / d_small; }
 
     var H = pitch * Sqrt(3) / 2
     # Expand inside thread by tolerance so printed nut fits

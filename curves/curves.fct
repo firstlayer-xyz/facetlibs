@@ -136,10 +136,10 @@ fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
     }
 
     return for seg [0:<n - 1] {
-        var p0 = if seg == 0 { return p_first; } else { return points[seg - 1]; }
+        var p0 = p_first; if seg > 0 { p0 = points[seg - 1]; }
         var p1 = points[seg]
         var p2 = points[seg + 1]
-        var p3 = if seg == n - 2 { return p_last; } else { return points[seg + 2]; }
+        var p3 = p_last; if seg < n - 2 { p3 = points[seg + 2]; }
 
         for j [0:<segments] {
             var t = j / segments
@@ -186,10 +186,10 @@ fn CatmullRom3d(points []Vec3, segments Number) []Vec3 {
     }
 
     return for seg [0:<n - 1] {
-        var p0 = if seg == 0 { return p_first; } else { return points[seg - 1]; }
+        var p0 = p_first; if seg > 0 { p0 = points[seg - 1]; }
         var p1 = points[seg]
         var p2 = points[seg + 1]
-        var p3 = if seg == n - 2 { return p_last; } else { return points[seg + 2]; }
+        var p3 = p_last; if seg < n - 2 { p3 = points[seg + 2]; }
 
         for j [0:<segments] {
             var t = j / segments

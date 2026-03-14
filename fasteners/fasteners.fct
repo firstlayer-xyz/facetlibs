@@ -117,16 +117,15 @@ fn DimRow(d Length) []Number {
     var m = for i [0:<Size(METRIC)] {
         if METRIC[i][0] == v { yield METRIC[i]; }
     }
-    return if Size(m) > 0 {
+    if Size(m) > 0 {
         return m[0]
-    } else {
-        var imp = for i [0:<Size(IMPERIAL)] {
-            if Abs(Number(IMPERIAL[i][0]) - v) < 0.025 { yield IMPERIAL[i]; }
-        }
-        assert Size(imp) > 0, "unsupported fastener diameter"
-        var row = imp[0]
-        return for j [0:<Size(row)] { yield Number(row[j]); }
     }
+    var imp = for i [0:<Size(IMPERIAL)] {
+        if Abs(Number(IMPERIAL[i][0]) - v) < 0.025 { yield IMPERIAL[i]; }
+    }
+    assert Size(imp) > 0, "unsupported fastener diameter"
+    var row = imp[0]
+    return for j [0:<Size(row)] { yield Number(row[j]); }
 }
 
 # ---------------------------------------------------------------------------
