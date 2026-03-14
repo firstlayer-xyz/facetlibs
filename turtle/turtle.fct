@@ -35,7 +35,7 @@ var Curves = lib "github.com/firstlayer-xyz/facetlibs/curves@main"
 # Turtle2d — 2D turtle in the XY plane
 # =========================================================================
 
-struct Turtle2d {
+type Turtle2d {
     pos Vec2
     heading Angle
     pen Bool
@@ -44,7 +44,7 @@ struct Turtle2d {
 
 # Creates a new 2D turtle at the origin, heading up (90 deg), pen down.
 fn Turtle2d() Turtle2d {
-    var start = Vec2(0 mm, 0 mm)
+    var start = Vec2{0 mm, 0 mm}
     return Turtle2d {
         pos: start,
         heading: 90 deg,
@@ -57,7 +57,7 @@ fn Turtle2d() Turtle2d {
 fn Turtle2d.Forward(dist Length) {
     var nx = self.pos.x + Cos(self.heading) * dist
     var ny = self.pos.y + Sin(self.heading) * dist
-    var np = Vec2(nx, ny)
+    var np = Vec2{nx, ny}
     self.pos = np
     if self.pen {
         self.path = self.path + np
@@ -76,7 +76,7 @@ fn Turtle2d.Turn(a Angle) {
 
 # Jumps to absolute position (x, y). Appends to path if pen is down.
 fn Turtle2d.GoTo(x, y Length) {
-    self.GoTo(Vec2(x, y))
+    self.GoTo(Vec2{x, y})
 }
 
 fn Turtle2d.GoTo(pos Vec2) {
@@ -135,7 +135,7 @@ fn Turtle2d.Sweep(cross Sketch) Solid {
     assert n >= 2, "Turtle2d.Sweep requires at least 2 path points"
     # Lift 2D path to 3D (Z = 0)
     var path3d = for i [0:<n] {
-        yield Vec3(pts[i].x, pts[i].y, 0 mm)
+        yield Vec3{pts[i].x, pts[i].y, 0 mm}
     }
     return cross.Sweep(path3d)
 }
@@ -144,7 +144,7 @@ fn Turtle2d.Sweep(cross Sketch) Solid {
 # Turtle3d — full 3D turtle with yaw, pitch, roll
 # =========================================================================
 
-struct Turtle3d {
+type Turtle3d {
     pos Vec3
     yaw Angle
     pitch Angle
@@ -154,7 +154,7 @@ struct Turtle3d {
 
 # Creates a new 3D turtle at the origin, facing +X (yaw=0, pitch=0), pen down.
 fn Turtle3d() Turtle3d {
-    var start = Vec3(0 mm, 0 mm, 0 mm)
+    var start = Vec3{0 mm, 0 mm, 0 mm}
     return Turtle3d {
         pos: start,
         yaw: 0 deg,
@@ -169,7 +169,7 @@ fn Turtle3d.Forward(dist Length) {
     var nx = self.pos.x + Cos(self.pitch) * Cos(self.yaw) * dist
     var ny = self.pos.y + Cos(self.pitch) * Sin(self.yaw) * dist
     var nz = self.pos.z + Sin(self.pitch) * dist
-    var np = Vec3(nx, ny, nz)
+    var np = Vec3{nx, ny, nz}
     self.pos = np
     if self.pen {
         self.path = self.path + np
@@ -190,7 +190,7 @@ fn Turtle3d.Turn(yaw, pitch Angle) {
 
 # Jumps to absolute position (x, y, z). Appends to path if pen is down.
 fn Turtle3d.GoTo(x, y, z Length) {
-    self.GoTo(Vec3(x, y, z))
+    self.GoTo(Vec3{x, y, z})
 }
 
 fn Turtle3d.GoTo(pos Vec3) {
@@ -202,11 +202,11 @@ fn Turtle3d.GoTo(pos Vec3) {
 
 # Returns the forward direction as a unit-length Vec3.
 fn Turtle3d.Heading() Vec3 {
-    return Vec3(
+    return Vec3{
         Cos(self.pitch) * Cos(self.yaw) * 1 mm,
         Cos(self.pitch) * Sin(self.yaw) * 1 mm,
         Sin(self.pitch) * 1 mm
-    )
+    }
 }
 
 # Draws a cubic bezier curve from the current position to `end`.
