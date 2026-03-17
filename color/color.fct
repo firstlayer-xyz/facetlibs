@@ -1,0 +1,200 @@
+# color — named colors, color helpers, and paint tools
+
+# ---------------------------------------------------------------------------
+# Named Colors
+# ---------------------------------------------------------------------------
+
+var Red       = Color("#FF0000")
+var Green     = Color("#00CC00")
+var Blue      = Color("#0066FF")
+var Yellow    = Color("#FFCC00")
+var Orange    = Color("#FF6600")
+var Purple    = Color("#9933FF")
+var Cyan      = Color("#00CCCC")
+var Magenta   = Color("#CC00CC")
+var White     = Color("#FFFFFF")
+var Black     = Color("#222222")
+var Gray      = Color("#888888")
+var Pink      = Color("#FF6699")
+var Brown     = Color("#8B4513")
+var Lime      = Color("#88CC00")
+var Teal      = Color("#008888")
+var Indigo    = Color("#4B0082")
+var Gold      = Color("#FFD700")
+var Silver    = Color("#C0C0C0")
+
+# ---------------------------------------------------------------------------
+# Material Colors
+# ---------------------------------------------------------------------------
+
+# 3D printing filament
+var PLA_White  = Color("#F5F5F0")
+var PLA_Black  = Color("#1A1A1A")
+var PLA_Red    = Color("#CC2222")
+var PLA_Blue   = Color("#2255CC")
+var PLA_Green  = Color("#22AA44")
+var PLA_Yellow = Color("#DDCC11")
+var PLA_Orange = Color("#DD6611")
+var PLA_Gray   = Color("#808080")
+
+# Metals
+var Steel     = Color("#8899AA")
+var Aluminum  = Color("#B0B8C0")
+var Copper    = Color("#B87333")
+var Brass     = Color("#B5A642")
+var Bronze    = Color("#CD7F32")
+var Titanium  = Color("#878681")
+var Iron      = Color("#48494B")
+
+# Wood
+var Oak       = Color("#C49A6C")
+var Walnut    = Color("#5C4033")
+var Maple     = Color("#E8D4A2")
+var Cherry    = Color("#9B111E")
+var Pine      = Color("#DEB887")
+
+# ---------------------------------------------------------------------------
+# Color Constructors
+# ---------------------------------------------------------------------------
+
+# Creates a Color from RGB values (0-255 each).
+fn RGB(r, g, b Number) Color {
+    return Color(r / 255, g / 255, b / 255)
+}
+
+# Creates a Color from HSL values. h: 0-360, s: 0-1, l: 0-1.
+fn HSL(h, s, l Number) Color {
+    var c = (1 - Abs(2 * l - 1)) * s
+    var x = c * (1 - Abs((h / 60) % 2 - 1))
+    var m = l - c / 2
+
+    var r1 = 0
+    var g1 = 0
+    var b1 = 0
+
+    if h < 60 {
+        r1 = c; g1 = x; b1 = 0
+    } else if h < 120 {
+        r1 = x; g1 = c; b1 = 0
+    } else if h < 180 {
+        r1 = 0; g1 = c; b1 = x
+    } else if h < 240 {
+        r1 = 0; g1 = x; b1 = c
+    } else if h < 300 {
+        r1 = x; g1 = 0; b1 = c
+    } else {
+        r1 = c; g1 = 0; b1 = x
+    }
+
+    return Color(r1 + m, g1 + m, b1 + m)
+}
+
+# Generates `count` evenly-spaced hues. Great for distinguishing parts.
+fn Palette(count Number, s, l Number) []Color {
+    return for i [0:<count] {
+        yield HSL(i * 360 / count, s, l)
+    }
+}
+
+fn Palette(count Number) []Color {
+    return Palette(count, 0.7, 0.5)
+}
+
+# Linearly interpolate between two colors.
+fn Blend(a, b Color, t Number) Color {
+    return Color(
+        Lerp(a.r, b.r, t),
+        Lerp(a.g, b.g, t),
+        Lerp(a.b, b.b, t),
+        Lerp(a.a, b.a, t)
+    )
+}
+
+# ---------------------------------------------------------------------------
+# Color Primitives
+# ---------------------------------------------------------------------------
+
+# A cube with each face a different color (red, green, blue, yellow, orange, purple).
+fn ColorCube(size Length) Solid {
+    var h = size / 2
+    var pts = [
+        Vec3{-h, -h, 0 mm}, Vec3{ h, -h, 0 mm},
+        Vec3{ h,  h, 0 mm}, Vec3{-h,  h, 0 mm},
+        Vec3{0 mm, 0 mm, h}
+    ]
+    var pyr = Hull(pts)
+    var center = Vec3{0 mm, 0 mm, h}
+
+    var bottom = pyr.Color("#FF0000")
+    var top    = pyr.Rotate(180 deg, 0 deg, 0 deg, center).Color("#00CC00")
+    var front  = pyr.Rotate(-90 deg, 0 deg, 0 deg, center).Color("#0066FF")
+    var back   = pyr.Rotate( 90 deg, 0 deg, 0 deg, center).Color("#FFCC00")
+    var left   = pyr.Rotate(0 deg,  90 deg, 0 deg, center).Color("#FF6600")
+    var right  = pyr.Rotate(0 deg, -90 deg, 0 deg, center).Color("#9933FF")
+
+    return bottom + top + front + back + left + right
+}
+
+# A sphere with latitude bands in rainbow colors.
+fn ColorSphere(radius Length, bands Number) Solid {
+    var colors = Palette(bands)
+    var step = radius * 2 / bands
+
+    return fold acc, i [0:<bands] {
+        var zLow = -radius + i * step
+        var zHigh = zLow + step
+        var band = Sphere(radius)
+            & Cube({radius * 3, radius * 3, step})
+                .Move(Vec3{-radius * 1.5, -radius * 1.5, zLow})
+        yield acc + band.Color(colors[i])
+    }
+}
+
+fn ColorSphere(radius Length) Solid {
+    return ColorSphere(radius, 6)
+}
+
+# ---------------------------------------------------------------------------
+# Paint — Apply color to a region of a solid
+# ---------------------------------------------------------------------------
+
+# Paint applies `color` to the region of `target` that overlaps with `brush`.
+# The brush defines WHERE to paint — its geometry is not added to the result.
+#
+#   var box = Cube({20 mm, 20 mm, 20 mm})
+#   var top = Cube({20 mm, 20 mm, 5 mm}).MoveZ(15 mm)
+#   var result = Paint(box, top, C.Red)
+fn Paint(target, brush Solid, color Color) Solid {
+    var painted = (target & brush).Color(color)
+    var unpainted = target - brush
+    return unpainted + painted
+}
+
+# Paint the entire solid a single color.
+fn Paint(target Solid, color Color) Solid {
+    return target.Color(color)
+}
+
+# Paint everything above `height` on the Z axis.
+fn PaintAbove(target Solid, height Length, color Color) Solid {
+    var b = target.Bounds()
+    var brush = Cube({b.Width() + 2 mm, b.Depth() + 2 mm, b.Top() - height + 1 mm})
+        .Move(Vec3{b.min.x - 1 mm, b.min.y - 1 mm, height})
+    return Paint(target, brush, color)
+}
+
+# Paint everything below `height` on the Z axis.
+fn PaintBelow(target Solid, height Length, color Color) Solid {
+    var b = target.Bounds()
+    var brush = Cube({b.Width() + 2 mm, b.Depth() + 2 mm, height - b.Bottom() + 1 mm})
+        .Move(Vec3{b.min.x - 1 mm, b.min.y - 1 mm, b.min.z - 1 mm})
+    return Paint(target, brush, color)
+}
+
+# Paint a horizontal band between zLow and zHigh.
+fn PaintBand(target Solid, zLow, zHigh Length, color Color) Solid {
+    var b = target.Bounds()
+    var brush = Cube({b.Width() + 2 mm, b.Depth() + 2 mm, zHigh - zLow})
+        .Move(Vec3{b.min.x - 1 mm, b.min.y - 1 mm, zLow})
+    return Paint(target, brush, color)
+}
