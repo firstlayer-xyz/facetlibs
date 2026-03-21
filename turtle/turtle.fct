@@ -29,7 +29,7 @@
 # fn Main() { return t.Sweep(Circle(1 mm)); }
 # ```
 
-var Curves = lib "github.com/firstlayer-xyz/facetlibs/curves@main"
+var Curves = lib "github.com/firstlayer-xyz/facetlibs/curves@named-params"
 
 # =========================================================================
 # Turtle2d — 2D turtle in the XY plane
