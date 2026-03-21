@@ -53,10 +53,10 @@ fn Turtle2d() Turtle2d {
     }
 }
 
-# Moves forward by `dist` in the current heading direction.
-fn Turtle2d.Forward(dist Length) {
-    var nx = self.pos.x + Cos(a: self.heading) * dist
-    var ny = self.pos.y + Sin(a: self.heading) * dist
+# Moves forward by `by` in the current heading direction.
+fn Turtle2d.Forward(by Length) {
+    var nx = self.pos.x + Cos(a: self.heading) * by
+    var ny = self.pos.y + Sin(a: self.heading) * by
     var np = Vec2{x: nx, y: ny}
     self.pos = np
     if self.pen {
@@ -64,9 +64,9 @@ fn Turtle2d.Forward(dist Length) {
     }
 }
 
-# Moves backward by `dist`.
-fn Turtle2d.Back(dist Length) {
-    self.Forward(dist: -dist)
+# Moves backward by `by`.
+fn Turtle2d.Back(by Length) {
+    self.Forward(by: -by)
 }
 
 # Turns by angle `a`. Positive = counterclockwise, negative = clockwise.
@@ -93,7 +93,7 @@ fn Turtle2d.GoTo(pos Vec2) {
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
 fn Turtle2d.BezierTo(cp1, cp2, end Vec2, steps Number) {
-    var pts = Curves.CubicBezier2d(p0: self.pos, p1: cp1, p2: cp2, p3: end, steps: steps)
+    var pts = Curves.CubicBezier2d(start: self.pos, ctrl1: cp1, ctrl2: cp2, end: end, steps: steps)
     var n = Size(a: pts)
     for i [1:<n] {
         self.pos = pts[i]
@@ -124,8 +124,8 @@ fn Turtle2d.ToSketch() Sketch {
 }
 
 # Extrudes the path into a solid with the given height.
-fn Turtle2d.Extrude(h Length) Solid {
-    return Polygon(points: self.path).Extrude(height: h)
+fn Turtle2d.Extrude(height Length) Solid {
+    return Polygon(points: self.path).Extrude(height: height)
 }
 
 # Sweeps a cross-section along the 2D path using the native sweep builtin.
@@ -164,11 +164,11 @@ fn Turtle3d() Turtle3d {
     }
 }
 
-# Moves forward by `dist` in the current yaw/pitch direction.
-fn Turtle3d.Forward(dist Length) {
-    var nx = self.pos.x + Cos(a: self.pitch) * Cos(a: self.yaw) * dist
-    var ny = self.pos.y + Cos(a: self.pitch) * Sin(a: self.yaw) * dist
-    var nz = self.pos.z + Sin(a: self.pitch) * dist
+# Moves forward by `by` in the current yaw/pitch direction.
+fn Turtle3d.Forward(by Length) {
+    var nx = self.pos.x + Cos(a: self.pitch) * Cos(a: self.yaw) * by
+    var ny = self.pos.y + Cos(a: self.pitch) * Sin(a: self.yaw) * by
+    var nz = self.pos.z + Sin(a: self.pitch) * by
     var np = Vec3{x: nx, y: ny, z: nz}
     self.pos = np
     if self.pen {
@@ -176,9 +176,9 @@ fn Turtle3d.Forward(dist Length) {
     }
 }
 
-# Moves backward by `dist`.
-fn Turtle3d.Back(dist Length) {
-    self.Forward(dist: -dist)
+# Moves backward by `by`.
+fn Turtle3d.Back(by Length) {
+    self.Forward(by: -by)
 }
 
 # Turns by yaw and pitch. Positive yaw = left, negative = right.
@@ -215,7 +215,7 @@ fn Turtle3d.Heading() Vec3 {
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
 fn Turtle3d.BezierTo(cp1, cp2, end Vec3, steps Number) {
-    var pts = Curves.CubicBezier3d(p0: self.pos, p1: cp1, p2: cp2, p3: end, steps: steps)
+    var pts = Curves.CubicBezier3d(start: self.pos, ctrl1: cp1, ctrl2: cp2, end: end, steps: steps)
     var n = Size(a: pts)
     for i [1:<n] {
         self.pos = pts[i]

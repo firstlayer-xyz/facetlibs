@@ -101,12 +101,12 @@ fn Palette(count Number) []Color {
 }
 
 # Linearly interpolate between two colors.
-fn Blend(a, b Color, t Number) Color {
+fn Blend(from, to Color, t Number) Color {
     return Color(
-        r: Lerp(a: a.r, b: b.r, t: t),
-        g: Lerp(a: a.g, b: b.g, t: t),
-        b: Lerp(a: a.b, b: b.b, t: t),
-        a: Lerp(a: a.a, b: b.a, t: t)
+        r: Lerp(from: from.r, to: to.r, t: t),
+        g: Lerp(from: from.g, to: to.g, t: t),
+        b: Lerp(from: from.b, to: to.b, t: t),
+        a: Lerp(from: from.a, to: to.a, t: t)
     )
 }
 

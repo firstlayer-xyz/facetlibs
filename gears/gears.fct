@@ -41,9 +41,9 @@ fn Gear.DedendumRadius() Length {
 
 # Generates a 2D involute gear profile.
 #
-# `n_involute` controls the number of sample points per involute flank.
+# `steps` controls the number of sample points per involute flank.
 # Higher values give smoother tooth curves.
-fn Gear.Profile(n_involute = 20 Number) Sketch {
+fn Gear.Profile(steps = 20 Number) Sketch {
     var N = self.teeth
     var m = self.module
     var alpha = self.pressure_angle
@@ -70,7 +70,7 @@ fn Gear.Profile(n_involute = 20 Number) Sketch {
 
     # Samples for tip and root arcs
     var n_arc = 3
-    var n_per_tooth = n_involute * 2 + n_arc * 2
+    var n_per_tooth = steps * 2 + n_arc * 2
     var n_total = N * n_per_tooth
 
     # Angular pitch per tooth (radians)
@@ -81,27 +81,27 @@ fn Gear.Profile(n_involute = 20 Number) Sketch {
         var tooth_idx = (idx - j) / n_per_tooth
         var tooth_rot = tooth_idx * pitch_angle
 
-        if j < n_involute {
+        if j < steps {
             # Right involute flank (base to tip)
-            var t = t_max * j / (n_involute - 1)
+            var t = t_max * j / (steps - 1)
             var inv_t = Tan(a: t * 1 rad) - t
             var r = r_b / Cos(a: t * 1 rad)
             var theta = (half_tooth - inv_t + tooth_rot) * 1 rad
             yield Vec2{x: r * Cos(a: theta), y: r * Sin(a: theta)}
 
-        } else if j < n_involute + n_arc {
+        } else if j < steps + n_arc {
             # Tip arc at addendum radius
-            var k = j - n_involute
+            var k = j - steps
             var theta_right = half_tooth - inv_max + tooth_rot
             var theta_left = 0 - half_tooth + inv_max + tooth_rot
             var frac = k / (n_arc - 1)
             var theta = (theta_right + (theta_left - theta_right) * frac) * 1 rad
             yield Vec2{x: r_a * Cos(a: theta), y: r_a * Sin(a: theta)}
 
-        } else if j < n_involute * 2 + n_arc {
+        } else if j < steps * 2 + n_arc {
             # Left involute flank (mirrored, tip to base)
-            var k = j - n_involute - n_arc
-            var t = t_max * (1 - k / (n_involute - 1))
+            var k = j - steps - n_arc
+            var t = t_max * (1 - k / (steps - 1))
             var inv_t = Tan(a: t * 1 rad) - t
             var r = r_b / Cos(a: t * 1 rad)
             var theta = (0 - half_tooth + inv_t + tooth_rot) * 1 rad
@@ -109,7 +109,7 @@ fn Gear.Profile(n_involute = 20 Number) Sketch {
 
         } else {
             # Root arc at dedendum radius
-            var k = j - n_involute * 2 - n_arc
+            var k = j - steps * 2 - n_arc
             var theta_start = 0 - half_tooth + tooth_rot
             var theta_end = half_tooth + pitch_angle + tooth_rot
             var frac = k / (n_arc - 1)

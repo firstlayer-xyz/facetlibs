@@ -27,8 +27,8 @@ const METRIC_DEFAULT = [
 # Returns the default pitch for a given metric diameter.
 # For standard coarse sizes this is the ISO 261 coarse pitch.
 # For fine-pitch-only sizes this is the most common fine pitch.
-fn MetricDefaultPitch(d Length) Length {
-    var v = Number(a: d)
+fn MetricDefaultPitch(dia Length) Length {
+    var v = Number(a: dia)
     var matches = for i [0:<Size(a: METRIC_DEFAULT)] {
         if METRIC_DEFAULT[i][0] == v {
             yield METRIC_DEFAULT[i][1]
@@ -127,7 +127,7 @@ fn Thread(size String) Thread {
     var mcoarse = size.Match(pattern: `m(\d+\.?\d*)$`)
     if mcoarse == true {
         var d = Number(a: mcoarse[1]) * 1 mm
-        return Thread { pitch: MetricDefaultPitch(d: d), major_diameter: d, taper: 0, tolerance: 0.1 mm }
+        return Thread { pitch: MetricDefaultPitch(dia: d), major_diameter: d, taper: 0, tolerance: 0.1 mm }
     }
     # --- Imperial: SAE UNC, UNF, NPT ---
     return ImperialThread(size: size)
@@ -204,7 +204,7 @@ fn Thread.Outside(length Length) Solid {
     }
 
     var tooth = Polygon(points: points)
-    return tooth.Extrude(height: length, slices: turns * 80, twist: turns * 360 deg, scaleX: taper_scale, scaleY: taper_scale)
+    return tooth.Extrude(height: length, slices: turns * 80, twist: turns * 360 deg, taperX: taper_scale, taperY: taper_scale)
 }
 
 # Returns how many degrees the thread rotates per millimetre of axial travel.
@@ -301,5 +301,5 @@ fn Thread.Inside(length Length) Solid {
     }
 
     var tooth = Polygon(points: points)
-    return tooth.Extrude(height: length, slices: turns * 80, twist: turns * 360 deg, scaleX: taper_scale, scaleY: taper_scale)
+    return tooth.Extrude(height: length, slices: turns * 80, twist: turns * 360 deg, taperX: taper_scale, taperY: taper_scale)
 }

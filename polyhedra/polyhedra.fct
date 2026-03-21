@@ -210,24 +210,24 @@ fn PentakisDodecahedron() PolyMesh {
 # ---------------------------------------------------------------------------
 
 # Creates a regular n-gon prism with unit circumradius.
-# @param n  Number of sides (must be >= 3)
-fn Prism(n Number) PolyMesh {
-    var verts = for i [0:<n*2] {
-        var a = i % n * (360 deg / n)
-        var z = -0.5 mm; if i < n { z = 0.5 mm; }
+# @param sides  Number of sides (must be >= 3)
+fn Prism(sides Number) PolyMesh {
+    var verts = for i [0:<sides*2] {
+        var a = i % sides * (360 deg / sides)
+        var z = -0.5 mm; if i < sides { z = 0.5 mm; }
         yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: z}
     }
-    var top = for i [0:<n] { yield i; }
-    var bot = for i [0:<n] { yield n + (n - 1 - i); }
-    var faces = for i [0:<(n + 2)] {
+    var top = for i [0:<sides] { yield i; }
+    var bot = for i [0:<sides] { yield sides + (sides - 1 - i); }
+    var faces = for i [0:<(sides + 2)] {
         if i == 0 {
             yield top
         } else if i == 1 {
             yield bot
         } else {
             var j = i - 2
-            var k = (j + 1) % n
-            yield [j, k, n + k, n + j]
+            var k = (j + 1) % sides
+            yield [j, k, sides + k, sides + j]
         }
     }
     return PolyMesh {
@@ -237,30 +237,30 @@ fn Prism(n Number) PolyMesh {
 }
 
 # Creates a regular n-gon antiprism with unit circumradius.
-# @param n  Number of sides (must be >= 3)
-fn Antiprism(n Number) PolyMesh {
-    var half_twist = 180 deg / n
-    var verts = for i [0:<n*2] {
-        var ring = 1; if i < n { ring = 0; }
-        var a = i % n * (360 deg / n) + ring * half_twist
+# @param sides  Number of sides (must be >= 3)
+fn Antiprism(sides Number) PolyMesh {
+    var half_twist = 180 deg / sides
+    var verts = for i [0:<sides*2] {
+        var ring = 1; if i < sides { ring = 0; }
+        var a = i % sides * (360 deg / sides) + ring * half_twist
         var z = -0.5 mm; if ring == 0 { z = 0.5 mm; }
         yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: z}
     }
-    var top = for i [0:<n] { yield i; }
-    var bot = for i [0:<n] { yield n + (n - 1 - i); }
-    var faces = for i [0:<(2 * n + 2)] {
+    var top = for i [0:<sides] { yield i; }
+    var bot = for i [0:<sides] { yield sides + (sides - 1 - i); }
+    var faces = for i [0:<(2 * sides + 2)] {
         if i == 0 {
             yield top
         } else if i == 1 {
             yield bot
-        } else if i < n + 2 {
+        } else if i < sides + 2 {
             var j = i - 2
-            var k = (j + 1) % n
-            yield [j, k, n + j]
+            var k = (j + 1) % sides
+            yield [j, k, sides + j]
         } else {
-            var j = i - n - 2
-            var k = (j + 1) % n
-            yield [n + j, k, n + k]
+            var j = i - sides - 2
+            var k = (j + 1) % sides
+            yield [sides + j, k, sides + k]
         }
     }
     return PolyMesh {
@@ -270,24 +270,24 @@ fn Antiprism(n Number) PolyMesh {
 }
 
 # Creates a regular n-gon pyramid with unit circumradius.
-# @param n  Number of base sides (must be >= 3)
-fn Pyramid(n Number) PolyMesh {
-    var verts = for i [0:<(n + 1)] {
-        if i < n {
-            var a = i * (360 deg / n)
+# @param sides  Number of base sides (must be >= 3)
+fn Pyramid(sides Number) PolyMesh {
+    var verts = for i [0:<(sides + 1)] {
+        if i < sides {
+            var a = i * (360 deg / sides)
             yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: 0 mm}
         } else {
             yield Vec3{x: 0 mm, y: 0 mm, z: 1 mm}
         }
     }
-    var base = for i [0:<n] { yield n - 1 - i; }
-    var faces = for i [0:<(n + 1)] {
+    var base = for i [0:<sides] { yield sides - 1 - i; }
+    var faces = for i [0:<(sides + 1)] {
         if i == 0 {
             yield base
         } else {
             var j = i - 1
-            var k = (j + 1) % n
-            yield [j, k, n]
+            var k = (j + 1) % sides
+            yield [j, k, sides]
         }
     }
     return PolyMesh {
@@ -297,25 +297,25 @@ fn Pyramid(n Number) PolyMesh {
 }
 
 # Creates a regular n-gon bipyramid (two pyramids base-to-base) with unit circumradius.
-# @param n  Number of equatorial sides (must be >= 3)
-fn Bipyramid(n Number) PolyMesh {
-    var verts = for i [0:<(n + 2)] {
-        if i < n {
-            var a = i * (360 deg / n)
+# @param sides  Number of equatorial sides (must be >= 3)
+fn Bipyramid(sides Number) PolyMesh {
+    var verts = for i [0:<(sides + 2)] {
+        if i < sides {
+            var a = i * (360 deg / sides)
             yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: 0 mm}
-        } else if i == n {
+        } else if i == sides {
             yield Vec3{x: 0 mm, y: 0 mm, z: 1 mm}
         } else {
             yield Vec3{x: 0 mm, y: 0 mm, z: -1 mm}
         }
     }
-    var faces = for i [0:<(2 * n)] {
-        var j = i % n
-        var k = (j + 1) % n
-        if i < n {
-            yield [j, k, n]
+    var faces = for i [0:<(2 * sides)] {
+        var j = i % sides
+        var k = (j + 1) % sides
+        if i < sides {
+            yield [j, k, sides]
         } else {
-            yield [k, j, n + 1]
+            yield [k, j, sides + 1]
         }
     }
     return PolyMesh {

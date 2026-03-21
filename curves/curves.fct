@@ -30,38 +30,38 @@
 # =========================================================================
 
 # Quadratic bezier curve (3 control points).
-# @param p0     Start point
-# @param p1     Control point
-# @param p2     End point
+# @param start  Start point
+# @param ctrl   Control point
+# @param end    End point
 # @param steps  Number of line segments
 # @return       Array of Vec2 along the curve
-fn QuadBezier2d(p0, p1, p2 Vec2, steps Number) []Vec2 {
+fn QuadBezier2d(start, ctrl, end Vec2, steps Number) []Vec2 {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
         yield Vec2{
-            x: u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
-            y: u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y
+            x: u * u * start.x + 2 * u * t * ctrl.x + t * t * end.x,
+            y: u * u * start.y + 2 * u * t * ctrl.y + t * t * end.y
         }
     }
 }
 
 # Cubic bezier curve (4 control points).
-# @param p0     Start point
-# @param p1     First control point (tangent at start)
-# @param p2     Second control point (tangent at end)
-# @param p3     End point
+# @param start  Start point
+# @param ctrl1  First control point (tangent at start)
+# @param ctrl2  Second control point (tangent at end)
+# @param end    End point
 # @param steps  Number of line segments
 # @return       Array of Vec2 along the curve
-fn CubicBezier2d(p0, p1, p2, p3 Vec2, steps Number) []Vec2 {
+fn CubicBezier2d(start, ctrl1, ctrl2, end Vec2, steps Number) []Vec2 {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
         var u2 = u * u
         var t2 = t * t
         yield Vec2{
-            x: u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
-            y: u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y
+            x: u2 * u * start.x + 3 * u2 * t * ctrl1.x + 3 * u * t2 * ctrl2.x + t2 * t * end.x,
+            y: u2 * u * start.y + 3 * u2 * t * ctrl1.y + 3 * u * t2 * ctrl2.y + t2 * t * end.y
         }
     }
 }
@@ -71,40 +71,40 @@ fn CubicBezier2d(p0, p1, p2, p3 Vec2, steps Number) []Vec2 {
 # =========================================================================
 
 # Quadratic bezier curve in 3D.
-# @param p0     Start point
-# @param p1     Control point
-# @param p2     End point
+# @param start  Start point
+# @param ctrl   Control point
+# @param end    End point
 # @param steps  Number of line segments
 # @return       Array of Vec3 along the curve
-fn QuadBezier3d(p0, p1, p2 Vec3, steps Number) []Vec3 {
+fn QuadBezier3d(start, ctrl, end Vec3, steps Number) []Vec3 {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
         yield Vec3{
-            x: u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
-            y: u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
-            z: u * u * p0.z + 2 * u * t * p1.z + t * t * p2.z
+            x: u * u * start.x + 2 * u * t * ctrl.x + t * t * end.x,
+            y: u * u * start.y + 2 * u * t * ctrl.y + t * t * end.y,
+            z: u * u * start.z + 2 * u * t * ctrl.z + t * t * end.z
         }
     }
 }
 
 # Cubic bezier curve in 3D.
-# @param p0     Start point
-# @param p1     First control point
-# @param p2     Second control point
-# @param p3     End point
+# @param start  Start point
+# @param ctrl1  First control point
+# @param ctrl2  Second control point
+# @param end    End point
 # @param steps  Number of line segments
 # @return       Array of Vec3 along the curve
-fn CubicBezier3d(p0, p1, p2, p3 Vec3, steps Number) []Vec3 {
+fn CubicBezier3d(start, ctrl1, ctrl2, end Vec3, steps Number) []Vec3 {
     return for i [0:steps] {
         var t = i / steps
         var u = 1 - t
         var u2 = u * u
         var t2 = t * t
         yield Vec3{
-            x: u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
-            y: u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y,
-            z: u2 * u * p0.z + 3 * u2 * t * p1.z + 3 * u * t2 * p2.z + t2 * t * p3.z
+            x: u2 * u * start.x + 3 * u2 * t * ctrl1.x + 3 * u * t2 * ctrl2.x + t2 * t * end.x,
+            y: u2 * u * start.y + 3 * u2 * t * ctrl1.y + 3 * u * t2 * ctrl2.y + t2 * t * end.y,
+            z: u2 * u * start.z + 3 * u2 * t * ctrl1.z + 3 * u * t2 * ctrl2.z + t2 * t * end.z
         }
     }
 }

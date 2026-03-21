@@ -84,11 +84,11 @@ fn Torus(majorRadius, minorRadius Length) Solid {
 }
 
 fn Tube(outerRadius, innerRadius, height Length) Solid {
-    return Cylinder(rLow: outerRadius, rHigh: outerRadius, height: height) - Cylinder(rLow: innerRadius, rHigh: innerRadius, height: height);
+    return Cylinder(bottom: outerRadius, top: outerRadius, height: height) - Cylinder(bottom: innerRadius, top: innerRadius, height: height);
 }
 
 fn Cone(radius, height Length) Solid {
-    return Cylinder(rLow: radius, rHigh: 0 mm, height: height);
+    return Cylinder(bottom: radius, top: 0 mm, height: height);
 }
 
 fn Dome(radius Length) Solid {

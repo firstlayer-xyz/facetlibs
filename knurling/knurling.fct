@@ -16,9 +16,9 @@ type Knurl {
     pitch_angle Angle
 }
 
-# Creates a knurl pattern with the given groove `count`, `depth`, and `pitch_angle`.
-fn Knurl(count Number, depth Length, pitch_angle Angle) Knurl {
-    return Knurl { count: count, depth: depth, pitch_angle: pitch_angle }
+# Creates a knurl pattern with the given groove `count`, `depth`, and `angle`.
+fn Knurl(count Number, depth Length, angle Angle) Knurl {
+    return Knurl { count: count, depth: depth, pitch_angle: angle }
 }
 
 # ---------------------------------------------------------------------------
@@ -69,9 +69,9 @@ fn Knurl.ApplyZ(target Solid) Solid {
 
     # 5. Two crossed helixes, positioned at target Z
     var z_offset = z_lo - margin
-    var helix_a = star.Extrude(height: h, slices: slices, twist: total_twist, scaleX: 1, scaleY: 1)
+    var helix_a = star.Extrude(height: h, slices: slices, twist: total_twist, taperX: 1, taperY: 1)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: z_offset})
-    var helix_b = star.Extrude(height: h, slices: slices, twist: -total_twist, scaleX: 1, scaleY: 1)
+    var helix_b = star.Extrude(height: h, slices: slices, twist: -total_twist, taperX: 1, taperY: 1)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: z_offset})
 
     # 6. Diamond pattern via double intersection
