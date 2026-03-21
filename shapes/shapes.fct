@@ -3,36 +3,36 @@
 # 2D Shapes (→ Sketch)
 
 fn RoundedRect(width, height, radius Length) Sketch {
-    return Square(width, height).Fillet(radius);
+    return Square(x: width, y: height).Fillet(radius: radius);
 }
 
 fn Pill(length, width Length) Sketch {
-    return Square(length, width).Fillet(width / 2);
+    return Square(x: length, y: width).Fillet(radius: width / 2);
 }
 
 fn Oval(width, height Length) Sketch {
-    return Circle(width / 2).Scale(1, height / width, Vec2{0 mm, 0 mm});
+    return Circle(radius: width / 2).Scale(x: 1, y: height / width, pivot: Vec2{x: 0 mm, y: 0 mm});
 }
 
 fn Oval(width, height Length, segments Number) Sketch {
-    return Circle(width / 2, segments).Scale(1, height / width, Vec2{0 mm, 0 mm});
+    return Circle(radius: width / 2, segments: segments).Scale(x: 1, y: height / width, pivot: Vec2{x: 0 mm, y: 0 mm});
 }
 
 fn RegularPolygon(radius Length, sides Number) Sketch {
-    return Circle(radius, sides);
+    return Circle(radius: radius, segments: sides);
 }
 
 fn Ring(outerRadius, innerRadius Length) Sketch {
-    return Circle(outerRadius) - Circle(innerRadius);
+    return Circle(radius: outerRadius) - Circle(radius: innerRadius);
 }
 
 fn Trapezoid(topWidth, bottomWidth, height Length) Sketch {
     var tx = (bottomWidth - topWidth) / 2;
-    return Polygon([
-        Vec2{0 mm, 0 mm},
-        Vec2{bottomWidth, 0 mm},
-        Vec2{tx + topWidth, height},
-        Vec2{tx, height}
+    return Polygon(points: [
+        Vec2{x: 0 mm, y: 0 mm},
+        Vec2{x: bottomWidth, y: 0 mm},
+        Vec2{x: tx + topWidth, y: height},
+        Vec2{x: tx, y: height}
     ]);
 }
 
@@ -41,56 +41,56 @@ fn Star(outerRadius, innerRadius Length, points Number) Sketch {
     var verts = for i [0:<n] {
         var angle = 360 deg * i / n - 90 deg;
         var r = innerRadius; if i % 2 == 0 { r = outerRadius; }
-        yield Vec2{r * Cos(angle), r * Sin(angle)};
+        yield Vec2{x: r * Cos(a: angle), y: r * Sin(a: angle)};
     };
-    return Polygon(verts);
+    return Polygon(points: verts);
 }
 
 fn Semicircle(radius Length) Sketch {
-    return Circle(radius) & Square(radius * 2, radius).Translate(Vec2{-radius, 0 mm});
+    return Circle(radius: radius) & Square(x: radius * 2, y: radius).Translate(v: Vec2{x: -radius, y: 0 mm});
 }
 
 # 3D Shapes (→ Solid)
 
 fn RoundedCube(x, y, z, r Length) Solid {
-    var s = Sphere(r);
-    return Hull(for cx [r, x - r], cy [r, y - r], cz [r, z - r] {
-        yield s.Translate(Vec3{cx, cy, cz});
+    var s = Sphere(radius: r);
+    return Hull(arr: for cx [r, x - r], cy [r, y - r], cz [r, z - r] {
+        yield s.Translate(v: Vec3{x: cx, y: cy, z: cz});
     });
 }
 
 fn RoundedCube(size Vec3, radius Length) Solid {
-    return RoundedCube(size.x, size.y, size.z, radius);
+    return RoundedCube(x: size.x, y: size.y, z: size.z, r: radius);
 }
 
 fn Capsule(radius, height Length) Solid {
-    var s = Sphere(radius);
-    return Hull([
-        s.Translate(Vec3{0 mm, 0 mm, radius}),
-        s.Translate(Vec3{0 mm, 0 mm, height - radius})
+    var s = Sphere(radius: radius);
+    return Hull(arr: [
+        s.Translate(v: Vec3{x: 0 mm, y: 0 mm, z: radius}),
+        s.Translate(v: Vec3{x: 0 mm, y: 0 mm, z: height - radius})
     ]);
 }
 
 fn Pill3d(length, width, height Length) Solid {
-    return RoundedCube(length, width, height, width / 2);
+    return RoundedCube(x: length, y: width, z: height, r: width / 2);
 }
 
 fn Pill3d(size Vec3) Solid {
-    return RoundedCube(size.x, size.y, size.z, size.y / 2);
+    return RoundedCube(x: size.x, y: size.y, z: size.z, r: size.y / 2);
 }
 
 fn Torus(majorRadius, minorRadius Length) Solid {
-    return Circle(minorRadius).Translate(Vec2{majorRadius, 0 mm}).Revolve();
+    return Circle(radius: minorRadius).Translate(v: Vec2{x: majorRadius, y: 0 mm}).Revolve();
 }
 
 fn Tube(outerRadius, innerRadius, height Length) Solid {
-    return Cylinder(outerRadius, height) - Cylinder(innerRadius, height);
+    return Cylinder(rLow: outerRadius, rHigh: outerRadius, height: height) - Cylinder(rLow: innerRadius, rHigh: innerRadius, height: height);
 }
 
 fn Cone(radius, height Length) Solid {
-    return Cylinder(radius, 0 mm, height);
+    return Cylinder(rLow: radius, rHigh: 0 mm, height: height);
 }
 
 fn Dome(radius Length) Solid {
-    return Sphere(radius) & Cube({radius * 2, radius * 2, radius}).Translate(Vec3{-radius, -radius, 0 mm});
+    return Sphere(radius: radius) & Cube(size: Vec3{x: radius * 2, y: radius * 2, z: radius}).Translate(v: Vec3{x: -radius, y: -radius, z: 0 mm});
 }

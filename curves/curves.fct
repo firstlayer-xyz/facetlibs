@@ -40,8 +40,8 @@ fn QuadBezier2d(p0, p1, p2 Vec2, steps Number) []Vec2 {
         var t = i / steps
         var u = 1 - t
         yield Vec2{
-            u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
-            u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y
+            x: u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+            y: u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y
         }
     }
 }
@@ -60,8 +60,8 @@ fn CubicBezier2d(p0, p1, p2, p3 Vec2, steps Number) []Vec2 {
         var u2 = u * u
         var t2 = t * t
         yield Vec2{
-            u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
-            u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y
+            x: u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
+            y: u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y
         }
     }
 }
@@ -81,9 +81,9 @@ fn QuadBezier3d(p0, p1, p2 Vec3, steps Number) []Vec3 {
         var t = i / steps
         var u = 1 - t
         yield Vec3{
-            u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
-            u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
-            u * u * p0.z + 2 * u * t * p1.z + t * t * p2.z
+            x: u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+            y: u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
+            z: u * u * p0.z + 2 * u * t * p1.z + t * t * p2.z
         }
     }
 }
@@ -102,9 +102,9 @@ fn CubicBezier3d(p0, p1, p2, p3 Vec3, steps Number) []Vec3 {
         var u2 = u * u
         var t2 = t * t
         yield Vec3{
-            u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
-            u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y,
-            u2 * u * p0.z + 3 * u2 * t * p1.z + 3 * u * t2 * p2.z + t2 * t * p3.z
+            x: u2 * u * p0.x + 3 * u2 * t * p1.x + 3 * u * t2 * p2.x + t2 * t * p3.x,
+            y: u2 * u * p0.y + 3 * u2 * t * p1.y + 3 * u * t2 * p2.y + t2 * t * p3.y,
+            z: u2 * u * p0.z + 3 * u2 * t * p1.z + 3 * u * t2 * p2.z + t2 * t * p3.z
         }
     }
 }
@@ -122,17 +122,17 @@ fn CubicBezier3d(p0, p1, p2, p3 Vec3, steps Number) []Vec3 {
 # @param segments   Number of line segments between each pair of points
 # @return           Array of Vec2 along the smooth curve
 fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
-    var n = Size(points)
+    var n = Size(a: points)
     assert n >= 2, "CatmullRom2d requires at least 2 points"
 
     # Mirror first and last points to create virtual endpoints
     var p_first = Vec2{
-        2 * points[0].x - points[1].x,
-        2 * points[0].y - points[1].y
+        x: 2 * points[0].x - points[1].x,
+        y: 2 * points[0].y - points[1].y
     }
     var p_last = Vec2{
-        2 * points[n - 1].x - points[n - 2].x,
-        2 * points[n - 1].y - points[n - 2].y
+        x: 2 * points[n - 1].x - points[n - 2].x,
+        y: 2 * points[n - 1].y - points[n - 2].y
     }
 
     return for seg [0:<n - 1] {
@@ -153,8 +153,8 @@ fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
             var c3 = 0.5 * t3 - 0.5 * t2
 
             yield Vec2{
-                c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
-                c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y
+                x: c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
+                y: c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y
             }
         }
 
@@ -171,18 +171,18 @@ fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
 # @param segments   Number of line segments between each pair of points
 # @return           Array of Vec3 along the smooth curve
 fn CatmullRom3d(points []Vec3, segments Number) []Vec3 {
-    var n = Size(points)
+    var n = Size(a: points)
     assert n >= 2, "CatmullRom3d requires at least 2 points"
 
     var p_first = Vec3{
-        2 * points[0].x - points[1].x,
-        2 * points[0].y - points[1].y,
-        2 * points[0].z - points[1].z
+        x: 2 * points[0].x - points[1].x,
+        y: 2 * points[0].y - points[1].y,
+        z: 2 * points[0].z - points[1].z
     }
     var p_last = Vec3{
-        2 * points[n - 1].x - points[n - 2].x,
-        2 * points[n - 1].y - points[n - 2].y,
-        2 * points[n - 1].z - points[n - 2].z
+        x: 2 * points[n - 1].x - points[n - 2].x,
+        y: 2 * points[n - 1].y - points[n - 2].y,
+        z: 2 * points[n - 1].z - points[n - 2].z
     }
 
     return for seg [0:<n - 1] {
@@ -202,9 +202,9 @@ fn CatmullRom3d(points []Vec3, segments Number) []Vec3 {
             var c3 = 0.5 * t3 - 0.5 * t2
 
             yield Vec3{
-                c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
-                c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y,
-                c0 * p0.z + c1 * p1.z + c2 * p2.z + c3 * p3.z
+                x: c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
+                y: c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y,
+                z: c0 * p0.z + c1 * p1.z + c2 * p2.z + c3 * p3.z
             }
         }
 

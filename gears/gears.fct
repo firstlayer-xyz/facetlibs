@@ -26,7 +26,7 @@ fn Gear.PitchRadius() Length {
 
 # Returns the base radius: r_p * cos(α).
 fn Gear.BaseRadius() Length {
-    return self.module * self.teeth / 2 * Cos(self.pressure_angle)
+    return self.module * self.teeth / 2 * Cos(a: self.pressure_angle)
 }
 
 # Returns the addendum (outer tip) radius: r_p + m.
@@ -43,13 +43,13 @@ fn Gear.DedendumRadius() Length {
 #
 # `n_involute` controls the number of sample points per involute flank.
 # Higher values give smoother tooth curves.
-fn Gear.Profile(n_involute Number = 20) Sketch {
+fn Gear.Profile(n_involute = 20 Number) Sketch {
     var N = self.teeth
     var m = self.module
     var alpha = self.pressure_angle
 
     var r_p = m * N / 2
-    var r_b = r_p * Cos(alpha)
+    var r_b = r_p * Cos(a: alpha)
     var r_a = r_p + m
     var r_d = r_p - 1.25 * m
 
@@ -57,16 +57,16 @@ fn Gear.Profile(n_involute Number = 20) Sketch {
     var alpha_rad = alpha / (1 rad)
 
     # Involute function value at pressure angle: inv(α) = tan(α) - α
-    var inv_alpha = Tan(alpha) - alpha_rad
+    var inv_alpha = Tan(a: alpha) - alpha_rad
 
     # Angular half-tooth width at base circle (radians)
     var half_tooth = PI / (2 * N) + inv_alpha
 
     # Max pressure angle at addendum circle
-    var t_max = Acos(r_b / r_a) / (1 rad)
+    var t_max = Acos(n: r_b / r_a) / (1 rad)
 
     # Involute angle offset at tip
-    var inv_max = Tan(t_max * 1 rad) - t_max
+    var inv_max = Tan(a: t_max * 1 rad) - t_max
 
     # Samples for tip and root arcs
     var n_arc = 3
@@ -84,10 +84,10 @@ fn Gear.Profile(n_involute Number = 20) Sketch {
         if j < n_involute {
             # Right involute flank (base to tip)
             var t = t_max * j / (n_involute - 1)
-            var inv_t = Tan(t * 1 rad) - t
-            var r = r_b / Cos(t * 1 rad)
+            var inv_t = Tan(a: t * 1 rad) - t
+            var r = r_b / Cos(a: t * 1 rad)
             var theta = (half_tooth - inv_t + tooth_rot) * 1 rad
-            yield Vec2{r * Cos(theta), r * Sin(theta)}
+            yield Vec2{x: r * Cos(a: theta), y: r * Sin(a: theta)}
 
         } else if j < n_involute + n_arc {
             # Tip arc at addendum radius
@@ -96,16 +96,16 @@ fn Gear.Profile(n_involute Number = 20) Sketch {
             var theta_left = 0 - half_tooth + inv_max + tooth_rot
             var frac = k / (n_arc - 1)
             var theta = (theta_right + (theta_left - theta_right) * frac) * 1 rad
-            yield Vec2{r_a * Cos(theta), r_a * Sin(theta)}
+            yield Vec2{x: r_a * Cos(a: theta), y: r_a * Sin(a: theta)}
 
         } else if j < n_involute * 2 + n_arc {
             # Left involute flank (mirrored, tip to base)
             var k = j - n_involute - n_arc
             var t = t_max * (1 - k / (n_involute - 1))
-            var inv_t = Tan(t * 1 rad) - t
-            var r = r_b / Cos(t * 1 rad)
+            var inv_t = Tan(a: t * 1 rad) - t
+            var r = r_b / Cos(a: t * 1 rad)
             var theta = (0 - half_tooth + inv_t + tooth_rot) * 1 rad
-            yield Vec2{r * Cos(theta), r * Sin(theta)}
+            yield Vec2{x: r * Cos(a: theta), y: r * Sin(a: theta)}
 
         } else {
             # Root arc at dedendum radius
@@ -114,14 +114,14 @@ fn Gear.Profile(n_involute Number = 20) Sketch {
             var theta_end = half_tooth + pitch_angle + tooth_rot
             var frac = k / (n_arc - 1)
             var theta = (theta_start + (theta_end - theta_start) * frac) * 1 rad
-            yield Vec2{r_d * Cos(theta), r_d * Sin(theta)}
+            yield Vec2{x: r_d * Cos(a: theta), y: r_d * Sin(a: theta)}
         }
     }
 
-    return Polygon(points)
+    return Polygon(points: points)
 }
 
 # Extrudes the gear profile to create a spur gear solid.
 fn Gear.Spur(width Length) Solid {
-    return self.Profile().Extrude(width)
+    return self.Profile().Extrude(height: width)
 }

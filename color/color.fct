@@ -4,68 +4,68 @@
 # Named Colors
 # ---------------------------------------------------------------------------
 
-var Red       = Color("#FF0000")
-var Green     = Color("#00CC00")
-var Blue      = Color("#0066FF")
-var Yellow    = Color("#FFCC00")
-var Orange    = Color("#FF6600")
-var Purple    = Color("#9933FF")
-var Cyan      = Color("#00CCCC")
-var Magenta   = Color("#CC00CC")
-var White     = Color("#FFFFFF")
-var Black     = Color("#222222")
-var Gray      = Color("#888888")
-var Pink      = Color("#FF6699")
-var Brown     = Color("#8B4513")
-var Lime      = Color("#88CC00")
-var Teal      = Color("#008888")
-var Indigo    = Color("#4B0082")
-var Gold      = Color("#FFD700")
-var Silver    = Color("#C0C0C0")
+const Red       = Color(hex: "#FF0000")
+const Green     = Color(hex: "#00CC00")
+const Blue      = Color(hex: "#0066FF")
+const Yellow    = Color(hex: "#FFCC00")
+const Orange    = Color(hex: "#FF6600")
+const Purple    = Color(hex: "#9933FF")
+const Cyan      = Color(hex: "#00CCCC")
+const Magenta   = Color(hex: "#CC00CC")
+const White     = Color(hex: "#FFFFFF")
+const Black     = Color(hex: "#222222")
+const Gray      = Color(hex: "#888888")
+const Pink      = Color(hex: "#FF6699")
+const Brown     = Color(hex: "#8B4513")
+const Lime      = Color(hex: "#88CC00")
+const Teal      = Color(hex: "#008888")
+const Indigo    = Color(hex: "#4B0082")
+const Gold      = Color(hex: "#FFD700")
+const Silver    = Color(hex: "#C0C0C0")
 
 # ---------------------------------------------------------------------------
 # Material Colors
 # ---------------------------------------------------------------------------
 
 # 3D printing filament
-var PLA_White  = Color("#F5F5F0")
-var PLA_Black  = Color("#1A1A1A")
-var PLA_Red    = Color("#CC2222")
-var PLA_Blue   = Color("#2255CC")
-var PLA_Green  = Color("#22AA44")
-var PLA_Yellow = Color("#DDCC11")
-var PLA_Orange = Color("#DD6611")
-var PLA_Gray   = Color("#808080")
+const PLA_White  = Color(hex: "#F5F5F0")
+const PLA_Black  = Color(hex: "#1A1A1A")
+const PLA_Red    = Color(hex: "#CC2222")
+const PLA_Blue   = Color(hex: "#2255CC")
+const PLA_Green  = Color(hex: "#22AA44")
+const PLA_Yellow = Color(hex: "#DDCC11")
+const PLA_Orange = Color(hex: "#DD6611")
+const PLA_Gray   = Color(hex: "#808080")
 
 # Metals
-var Steel     = Color("#8899AA")
-var Aluminum  = Color("#B0B8C0")
-var Copper    = Color("#B87333")
-var Brass     = Color("#B5A642")
-var Bronze    = Color("#CD7F32")
-var Titanium  = Color("#878681")
-var Iron      = Color("#48494B")
+const Steel     = Color(hex: "#8899AA")
+const Aluminum  = Color(hex: "#B0B8C0")
+const Copper    = Color(hex: "#B87333")
+const Brass     = Color(hex: "#B5A642")
+const Bronze    = Color(hex: "#CD7F32")
+const Titanium  = Color(hex: "#878681")
+const Iron      = Color(hex: "#48494B")
 
 # Wood
-var Oak       = Color("#C49A6C")
-var Walnut    = Color("#5C4033")
-var Maple     = Color("#E8D4A2")
-var Cherry    = Color("#9B111E")
-var Pine      = Color("#DEB887")
+const Oak       = Color(hex: "#C49A6C")
+const Walnut    = Color(hex: "#5C4033")
+const Maple     = Color(hex: "#E8D4A2")
+const Cherry    = Color(hex: "#9B111E")
+const Pine      = Color(hex: "#DEB887")
 
 # ---------------------------------------------------------------------------
 # Color Constructors
 # ---------------------------------------------------------------------------
 
 # Creates a Color from RGB values (0-255 each).
-fn RGB(r, g, b Number) Color {
-    return Color(r / 255, g / 255, b / 255)
+fn RGB255(r, g, b Number) Color {
+    return Color(r: r / 255, g: g / 255, b: b / 255)
 }
 
 # Creates a Color from HSL values. h: 0-360, s: 0-1, l: 0-1.
 fn HSL(h, s, l Number) Color {
-    var c = (1 - Abs(2 * l - 1)) * s
-    var x = c * (1 - Abs((h / 60) % 2 - 1))
+    var c = (1 - Abs(a: 2 * l - 1)) * s
+    var x = c * (1 - Abs(a: (h / 60) % 2 - 1))
     var m = l - c / 2
 
     var r1 = 0
@@ -86,27 +86,27 @@ fn HSL(h, s, l Number) Color {
         r1 = c; g1 = 0; b1 = x
     }
 
-    return Color(r1 + m, g1 + m, b1 + m)
+    return Color(r: r1 + m, g: g1 + m, b: b1 + m)
 }
 
 # Generates `count` evenly-spaced hues. Great for distinguishing parts.
 fn Palette(count Number, s, l Number) []Color {
     return for i [0:<count] {
-        yield HSL(i * 360 / count, s, l)
+        yield HSL(h: i * 360 / count, s: s, l: l)
     }
 }
 
 fn Palette(count Number) []Color {
-    return Palette(count, 0.7, 0.5)
+    return Palette(count: count, s: 0.7, l: 0.5)
 }
 
 # Linearly interpolate between two colors.
 fn Blend(a, b Color, t Number) Color {
     return Color(
-        Lerp(a.r, b.r, t),
-        Lerp(a.g, b.g, t),
-        Lerp(a.b, b.b, t),
-        Lerp(a.a, b.a, t)
+        r: Lerp(a: a.r, b: b.r, t: t),
+        g: Lerp(a: a.g, b: b.g, t: t),
+        b: Lerp(a: a.b, b: b.b, t: t),
+        a: Lerp(a: a.a, b: b.a, t: t)
     )
 }
 
@@ -118,40 +118,40 @@ fn Blend(a, b Color, t Number) Color {
 fn ColorCube(size Length) Solid {
     var h = size / 2
     var pts = [
-        Vec3{-h, -h, 0 mm}, Vec3{ h, -h, 0 mm},
-        Vec3{ h,  h, 0 mm}, Vec3{-h,  h, 0 mm},
-        Vec3{0 mm, 0 mm, h}
+        Vec3{x: -h, y: -h, z: 0 mm}, Vec3{x:  h, y: -h, z: 0 mm},
+        Vec3{x:  h, y:  h, z: 0 mm}, Vec3{x: -h, y:  h, z: 0 mm},
+        Vec3{x: 0 mm, y: 0 mm, z: h}
     ]
-    var pyr = Hull(pts)
-    var center = Vec3{0 mm, 0 mm, h}
+    var pyr = Hull(arr: pts)
+    var center = Vec3{x: 0 mm, y: 0 mm, z: h}
 
-    var bottom = pyr.Color("#FF0000")
-    var top    = pyr.Rotate(180 deg, 0 deg, 0 deg, center).Color("#00CC00")
-    var front  = pyr.Rotate(-90 deg, 0 deg, 0 deg, center).Color("#0066FF")
-    var back   = pyr.Rotate( 90 deg, 0 deg, 0 deg, center).Color("#FFCC00")
-    var left   = pyr.Rotate(0 deg,  90 deg, 0 deg, center).Color("#FF6600")
-    var right  = pyr.Rotate(0 deg, -90 deg, 0 deg, center).Color("#9933FF")
+    var bottom = pyr.Color(c: Color(hex: "#FF0000"))
+    var top    = pyr.Rotate(rx: 180 deg, ry: 0 deg, rz: 0 deg, pivot: center).Color(c: Color(hex: "#00CC00"))
+    var front  = pyr.Rotate(rx: -90 deg, ry: 0 deg, rz: 0 deg, pivot: center).Color(c: Color(hex: "#0066FF"))
+    var back   = pyr.Rotate(rx:  90 deg, ry: 0 deg, rz: 0 deg, pivot: center).Color(c: Color(hex: "#FFCC00"))
+    var left   = pyr.Rotate(rx: 0 deg, ry:  90 deg, rz: 0 deg, pivot: center).Color(c: Color(hex: "#FF6600"))
+    var right  = pyr.Rotate(rx: 0 deg, ry: -90 deg, rz: 0 deg, pivot: center).Color(c: Color(hex: "#9933FF"))
 
     return bottom + top + front + back + left + right
 }
 
 # A sphere with latitude bands in rainbow colors.
 fn ColorSphere(radius Length, bands Number) Solid {
-    var colors = Palette(bands)
+    var colors = Palette(count: bands)
     var step = radius * 2 / bands
 
     return fold acc, i [0:<bands] {
         var zLow = -radius + i * step
         var zHigh = zLow + step
-        var band = Sphere(radius)
-            & Cube({radius * 3, radius * 3, step})
-                .Move(Vec3{-radius * 1.5, -radius * 1.5, zLow})
-        yield acc + band.Color(colors[i])
+        var band = Sphere(radius: radius)
+            & Cube(size: Vec3{x: radius * 3, y: radius * 3, z: step})
+                .Move(v: Vec3{x: -radius * 1.5, y: -radius * 1.5, z: zLow})
+        yield acc + band.Color(c: colors[i])
     }
 }
 
 fn ColorSphere(radius Length) Solid {
-    return ColorSphere(radius, 6)
+    return ColorSphere(radius: radius, bands: 6)
 }
 
 # ---------------------------------------------------------------------------
@@ -165,36 +165,36 @@ fn ColorSphere(radius Length) Solid {
 #   var top = Cube({20 mm, 20 mm, 5 mm}).MoveZ(15 mm)
 #   var result = Paint(box, top, C.Red)
 fn Paint(target, brush Solid, color Color) Solid {
-    var painted = (target & brush).Color(color)
+    var painted = (target & brush).Color(c: color)
     var unpainted = target - brush
     return unpainted + painted
 }
 
 # Paint the entire solid a single color.
 fn Paint(target Solid, color Color) Solid {
-    return target.Color(color)
+    return target.Color(c: color)
 }
 
 # Paint everything above `height` on the Z axis.
 fn PaintAbove(target Solid, height Length, color Color) Solid {
     var b = target.Bounds()
-    var brush = Cube({b.Width() + 2 mm, b.Depth() + 2 mm, b.Top() - height + 1 mm})
-        .Move(Vec3{b.min.x - 1 mm, b.min.y - 1 mm, height})
-    return Paint(target, brush, color)
+    var brush = Cube(size: Vec3{x: b.Width() + 2 mm, y: b.Depth() + 2 mm, z: b.Top() - height + 1 mm})
+        .Move(v: Vec3{x: b.min.x - 1 mm, y: b.min.y - 1 mm, z: height})
+    return Paint(target: target, brush: brush, color: color)
 }
 
 # Paint everything below `height` on the Z axis.
 fn PaintBelow(target Solid, height Length, color Color) Solid {
     var b = target.Bounds()
-    var brush = Cube({b.Width() + 2 mm, b.Depth() + 2 mm, height - b.Bottom() + 1 mm})
-        .Move(Vec3{b.min.x - 1 mm, b.min.y - 1 mm, b.min.z - 1 mm})
-    return Paint(target, brush, color)
+    var brush = Cube(size: Vec3{x: b.Width() + 2 mm, y: b.Depth() + 2 mm, z: height - b.Bottom() + 1 mm})
+        .Move(v: Vec3{x: b.min.x - 1 mm, y: b.min.y - 1 mm, z: b.min.z - 1 mm})
+    return Paint(target: target, brush: brush, color: color)
 }
 
 # Paint a horizontal band between zLow and zHigh.
 fn PaintBand(target Solid, zLow, zHigh Length, color Color) Solid {
     var b = target.Bounds()
-    var brush = Cube({b.Width() + 2 mm, b.Depth() + 2 mm, zHigh - zLow})
-        .Move(Vec3{b.min.x - 1 mm, b.min.y - 1 mm, zLow})
-    return Paint(target, brush, color)
+    var brush = Cube(size: Vec3{x: b.Width() + 2 mm, y: b.Depth() + 2 mm, z: zHigh - zLow})
+        .Move(v: Vec3{x: b.min.x - 1 mm, y: b.min.y - 1 mm, z: zLow})
+    return Paint(target: target, brush: brush, color: color)
 }
