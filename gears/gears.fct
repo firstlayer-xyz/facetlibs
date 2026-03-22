@@ -43,7 +43,7 @@ fn Gear.DedendumRadius() Length {
 #
 # `steps` controls the number of sample points per involute flank.
 # Higher values give smoother tooth curves.
-fn Gear.Profile(steps = 20 Number) Sketch {
+fn Gear.Profile(steps Number = 20) Sketch {
     var N = self.teeth
     var m = self.module
     var alpha = self.pressure_angle
