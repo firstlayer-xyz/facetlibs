@@ -122,7 +122,7 @@ fn CubicBezier3d(start, ctrl1, ctrl2, end Vec3, steps Number) []Vec3 {
 # @param segments   Number of line segments between each pair of points
 # @return           Array of Vec2 along the smooth curve
 fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
-    var n = Size(a: points)
+    var n = Size(of: points)
     assert n >= 2, "CatmullRom2d requires at least 2 points"
 
     # Mirror first and last points to create virtual endpoints
@@ -171,7 +171,7 @@ fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
 # @param segments   Number of line segments between each pair of points
 # @return           Array of Vec3 along the smooth curve
 fn CatmullRom3d(points []Vec3, segments Number) []Vec3 {
-    var n = Size(a: points)
+    var n = Size(of: points)
     assert n >= 2, "CatmullRom3d requires at least 2 points"
 
     var p_first = Vec3{

@@ -113,19 +113,19 @@ const IMPERIAL = [
 # Imperial values use `in` suffix and are converted to mm-as-Number before
 # returning, so constructors can use `row[N] * 1 mm` uniformly.
 fn DimRow(d Length) []Number {
-    var v = Number(a: d)
-    var m = for i [0:<Size(a: METRIC)] {
+    var v = Number(from: d)
+    var m = for i [0:<Size(of: METRIC)] {
         if METRIC[i][0] == v { yield METRIC[i]; }
     }
-    if Size(a: m) > 0 {
+    if Size(of: m) > 0 {
         return m[0]
     }
-    var imp = for i [0:<Size(a: IMPERIAL)] {
-        if Abs(a: Number(a: IMPERIAL[i][0]) - v) < 0.025 { yield IMPERIAL[i]; }
+    var imp = for i [0:<Size(of: IMPERIAL)] {
+        if Abs(a: Number(from: IMPERIAL[i][0]) - v) < 0.025 { yield IMPERIAL[i]; }
     }
-    assert Size(a: imp) > 0, "unsupported fastener diameter"
+    assert Size(of: imp) > 0, "unsupported fastener diameter"
     var row = imp[0]
-    return for j [0:<Size(a: row)] { yield Number(a: row[j]); }
+    return for j [0:<Size(of: row)] { yield Number(from: row[j]); }
 }
 
 # ---------------------------------------------------------------------------
@@ -551,7 +551,7 @@ fn Thumbscrew(size String, length Length) Thumbscrew {
         length: length,
         head_h: d * 0.8,
         head_r: d * 1.2,
-        knurl: K.Knurl(count: Number(a: d) * 6, depth: 0.3 mm, angle: 30 deg)
+        knurl: K.Knurl(count: Number(from: d) * 6, depth: 0.3 mm, angle: 30 deg)
     }
 }
 

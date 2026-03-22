@@ -94,7 +94,7 @@ fn Turtle2d.GoTo(pos Vec2) {
 # @param steps  Number of line segments to approximate the curve
 fn Turtle2d.BezierTo(cp1, cp2, end Vec2, steps Number) {
     var pts = Curves.CubicBezier2d(start: self.pos, ctrl1: cp1, ctrl2: cp2, end: end, steps: steps)
-    var n = Size(a: pts)
+    var n = Size(of: pts)
     for i [1:<n] {
         self.pos = pts[i]
         if self.pen {
@@ -104,7 +104,7 @@ fn Turtle2d.BezierTo(cp1, cp2, end Vec2, steps Number) {
     # Update heading to match the curve's exit tangent
     var dx = end.x - cp2.x
     var dy = end.y - cp2.y
-    self.heading = Atan2(y: Number(a: dy), x: Number(a: dx))
+    self.heading = Atan2(y: Number(from: dy), x: Number(from: dx))
 }
 
 # Lifts the pen — movement will not add to the path.
@@ -131,7 +131,7 @@ fn Turtle2d.Extrude(height Length) Solid {
 # Sweeps a cross-section along the 2D path using the native sweep builtin.
 fn Turtle2d.Sweep(cross Sketch) Solid {
     var pts = self.path
-    var n = Size(a: pts)
+    var n = Size(of: pts)
     assert n >= 2, "Turtle2d.Sweep requires at least 2 path points"
     # Lift 2D path to 3D (Z = 0)
     var path3d = for i [0:<n] {
@@ -216,7 +216,7 @@ fn Turtle3d.Heading() Vec3 {
 # @param steps  Number of line segments to approximate the curve
 fn Turtle3d.BezierTo(cp1, cp2, end Vec3, steps Number) {
     var pts = Curves.CubicBezier3d(start: self.pos, ctrl1: cp1, ctrl2: cp2, end: end, steps: steps)
-    var n = Size(a: pts)
+    var n = Size(of: pts)
     for i [1:<n] {
         self.pos = pts[i]
         if self.pen {
@@ -227,9 +227,9 @@ fn Turtle3d.BezierTo(cp1, cp2, end Vec3, steps Number) {
     var dx = end.x - cp2.x
     var dy = end.y - cp2.y
     var dz = end.z - cp2.z
-    var xyLen = Sqrt(n: Number(a: dx) * Number(a: dx) + Number(a: dy) * Number(a: dy))
-    self.yaw = Atan2(y: Number(a: dy), x: Number(a: dx))
-    self.pitch = Atan2(y: Number(a: dz), x: xyLen)
+    var xyLen = Sqrt(n: Number(from: dx) * Number(from: dx) + Number(from: dy) * Number(from: dy))
+    self.yaw = Atan2(y: Number(from: dy), x: Number(from: dx))
+    self.pitch = Atan2(y: Number(from: dz), x: xyLen)
 }
 
 # Lifts the pen.
@@ -246,7 +246,7 @@ fn Turtle3d.PenDown() {
 # Sweeps a cross-section along the 3D path using the native sweep builtin.
 fn Turtle3d.Sweep(cross Sketch) Solid {
     var pts = self.path
-    var n = Size(a: pts)
+    var n = Size(of: pts)
     assert n >= 2, "Turtle3d.Sweep requires at least 2 path points"
     return cross.Sweep(path: pts)
 }
