@@ -117,10 +117,10 @@ fn Blend(from, to Color, t Number) Color {
 # A cube with each face a different color (red, green, blue, yellow, orange, purple).
 fn ColorCube(size Length) Solid {
     var h = size / 2
-    var pts = [
-        Vec3{x: -h, y: -h, z: 0 mm}, Vec3{x:  h, y: -h, z: 0 mm},
-        Vec3{x:  h, y:  h, z: 0 mm}, Vec3{x: -h, y:  h, z: 0 mm},
-        Vec3{x: 0 mm, y: 0 mm, z: h}
+    var pts = Vec3[
+        {x: -h, y: -h, z: 0 mm}, {x:  h, y: -h, z: 0 mm},
+        {x:  h, y:  h, z: 0 mm}, {x: -h, y:  h, z: 0 mm},
+        {x: 0 mm, y: 0 mm, z: h}
     ]
     var pyr = Hull(arr: pts)
     var center = Vec3{x: 0 mm, y: 0 mm, z: h}

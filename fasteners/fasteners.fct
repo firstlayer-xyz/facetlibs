@@ -321,11 +321,11 @@ fn WingNut.Solid() Solid {
     # extends slightly over the hub at the top.
     # Profile in XY (X = radial from hub surface, Y = height),
     # extruded in Z for thickness, then rotated upright.
-    var wing_body = Polygon(points: [
-        Vec2{x: 0 mm, y: 0 mm},
-        Vec2{x: base_w, y: 0 mm},
-        Vec2{x: ws, y: body_h},
-        Vec2{x: -overlap, y: body_h}
+    var wing_body = Polygon(points: Vec2[
+        {x: 0 mm, y: 0 mm},
+        {x: base_w, y: 0 mm},
+        {x: ws, y: body_h},
+        {x: -overlap, y: body_h}
     ]).Extrude(height: wt)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: -wt / 2})
         .RotateX(angle: 90 deg, pivot: WorldOrigin)
@@ -804,7 +804,7 @@ fn Showcase(size String, shaft_len, standoff_len Length) []Solid {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
     var sp = row.hex_af * 1 mm * 2
-    return [
+    return Solid[
         HexNut(size: size).Solid(),
         CapNut(size: size).Solid().Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
         WingNut(size: size).Solid().Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),
