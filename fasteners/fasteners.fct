@@ -28,104 +28,162 @@ fn Knurl(count Number, depth Length, angle Angle) K.Knurl {
 }
 
 # ---------------------------------------------------------------------------
-# ISO Metric Dimension Table
-#
-# Columns:
-#   0: diameter     1: hex_af       2: nut_h        3: bolt_head_h
-#   4: shcs_head_d  5: shcs_head_h  6: shcs_socket
-#   7: bhcs_head_d  8: bhcs_head_h  9: bhcs_socket
-#  10: fhcs_head_d 11: fhcs_head_h 12: fhcs_socket
-#  13: set_socket
-#  14: pan_head_d  15: pan_head_h
-#  16: slot_w      17: phillips_w
+# Fastener dimension struct — one row per diameter size.
 # ---------------------------------------------------------------------------
 
-const METRIC = [
-    #  dia   hex_af nut_h  bolt_h shcs_d shcs_h shcs_s bhcs_d bhcs_h bhcs_s fhcs_d  fhcs_h fhcs_s set_s  pan_d  pan_h  slot_w phil_w
-    [ 2,    4.0,  1.6,  1.4,  3.8,   2.0,   1.5,  3.8,   1.3,   1.3,  3.8,    1.2,   1.3,  0.9,   4.0,   1.3,  0.5,  1.4  ],
-    [ 2.5,  5.0,  2.0,  1.7,  4.5,   2.5,   2.0,  4.7,   1.5,   1.5,  4.7,    1.5,   1.5,  1.3,   5.0,   1.7,  0.6,  1.8  ],
-    [ 3,    5.5,  2.4,  2.0,  5.5,   3.0,   2.5,  5.7,   1.65,  2.0,  5.54,   1.86,  2.0,  1.5,   6.0,   2.0,  0.8,  2.1  ],
-    [ 3.5,  6.0,  2.8,  2.4,  0,     0,     0,    0,     0,     0,    0,       0,     0,    0,     7.0,   2.1,  1.0,  0    ],
-    [ 4,    7.0,  3.2,  2.8,  7.0,   4.0,   3.0,  7.6,   2.2,   2.5,  7.53,   2.48,  2.5,  2.0,   8.0,   2.6,  1.0,  2.6  ],
-    [ 5,    8.0,  4.7,  3.5,  8.5,   5.0,   4.0,  9.5,   2.75,  3.0,  9.43,   3.1,   3.0,  2.5,  10.0,   3.3,  1.2,  3.3  ],
-    [ 6,   10.0,  5.2,  4.0, 10.0,   6.0,   5.0, 10.5,   3.3,   4.0, 11.34,   3.72,  4.0,  3.0,  12.0,   3.9,  1.6,  4.1  ],
-    [ 8,   13.0,  6.8,  5.3, 13.0,   8.0,   6.0, 14.0,   4.4,   5.0, 15.24,   4.96,  5.0,  4.0,  16.0,   5.0,  2.0,  5.1  ],
-    [10,   16.0,  8.4,  6.4, 16.0,  10.0,   8.0, 17.5,   5.5,   6.0, 19.22,   6.2,   6.0,  5.0,  20.0,   6.0,  2.5,  6.1  ],
-    [12,   18.0, 10.8,  7.5, 18.0,  12.0,  10.0, 21.0,   6.6,   8.0, 23.12,   7.44,  8.0,  6.0,  24.0,   7.0,  3.0,  7.1  ],
-    [14,   21.0, 12.8,  8.8, 21.0,  14.0,  12.0,  0,     0,     0,   27.0,    7.0,  10.0,  6.0,   0,     0,    0,    0    ],
-    [16,   24.0, 14.8, 10.0, 24.0,  16.0,  14.0, 28.0,   8.8,  10.0, 29.01,   8.8,  10.0,  8.0,  30.0,   8.8,  4.0,  0    ],
-    [18,   27.0, 15.8, 11.5, 27.0,  18.0,  14.0,  0,     0,     0,   33.0,    8.0,  12.0, 10.0,   0,     0,    0,    0    ],
-    [20,   30.0, 18.0, 12.5, 30.0,  20.0,  17.0,  0,     0,     0,   36.05,  10.16, 12.0, 10.0,  36.0,  10.0,  5.0,  0    ],
-    [22,   34.0, 19.4, 14.0, 33.0,  22.0,  17.0,  0,     0,     0,   36.0,   13.1,  14.0, 12.0,   0,     0,    0,    0    ],
-    [24,   36.0, 21.5, 15.0, 36.0,  24.0,  18.0,  0,     0,     0,   39.0,   14.0,  14.0, 12.0,  44.0,  12.0,  6.0,  0    ],
-    [25,   41.0, 22.0, 16.0, 37.5,  25.0,  19.0,  0,     0,     0,    0,      0,     0,   12.0,   0,     0,    0,    0    ],
-    [26,   41.0, 22.5, 16.5, 39.0,  26.0,  19.0,  0,     0,     0,    0,      0,     0,   14.0,   0,     0,    0,    0    ],
-    [27,   41.0, 23.8, 17.0, 40.0,  27.0,  19.0,  0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
-    [28,   41.0, 24.0, 18.0, 42.0,  28.0,  19.0,  0,     0,     0,    0,      0,     0,   14.0,   0,     0,    0,    0    ],
-    [30,   46.0, 25.6, 19.0, 45.0,  30.0,  22.0,  0,     0,     0,    0,      0,     0,   15.0,   0,     0,    0,    0    ],
-    [32,   50.0, 27.0, 20.0, 48.0,  32.0,  22.0,  0,     0,     0,    0,      0,     0,   17.0,   0,     0,    0,    0    ],
-    [33,   50.0, 28.7, 21.0, 50.0,  33.0,  24.0,  0,     0,     0,    0,      0,     0,    0,     0,     0,    0,    0    ],
-    [35,   55.0, 30.0, 22.0, 52.0,  35.0,  24.0,  0,     0,     0,    0,      0,     0,   17.0,   0,     0,    0,    0    ],
-    [36,   55.0, 31.0, 23.0, 54.0,  36.0,  27.0,  0,     0,     0,    0,      0,     0,   18.0,   0,     0,    0,    0    ],
-    [38,   60.0, 32.0, 24.0, 57.0,  38.0,  27.0,  0,     0,     0,    0,      0,     0,   19.0,   0,     0,    0,    0    ],
-    [39,   60.0, 33.4, 25.0, 58.5,  39.0,  27.0,  0,     0,     0,    0,      0,     0,   19.0,   0,     0,    0,    0    ],
-    [40,   65.0, 34.0, 25.5, 60.0,  40.0,  27.0,  0,     0,     0,    0,      0,     0,   19.0,   0,     0,    0,    0    ],
-    [42,   65.0, 34.0, 26.0, 63.0,  42.0,  32.0,  0,     0,     0,    0,      0,     0,   21.0,   0,     0,    0,    0    ],
-    [45,   70.0, 36.0, 28.0, 67.5,  45.0,  32.0,  0,     0,     0,    0,      0,     0,   22.0,   0,     0,    0,    0    ],
-    [48,   75.0, 38.0, 30.0, 72.0,  48.0,  36.0,  0,     0,     0,    0,      0,     0,   24.0,   0,     0,    0,    0    ],
-    [50,   75.0, 40.0, 31.0, 75.0,  50.0,  36.0,  0,     0,     0,    0,      0,     0,   24.0,   0,     0,    0,    0    ],
-    [52,   80.0, 41.0, 33.0, 78.0,  52.0,  36.0,  0,     0,     0,    0,      0,     0,   27.0,   0,     0,    0,    0    ],
-    [55,   85.0, 43.0, 34.0, 82.5,  55.0,  41.0,  0,     0,     0,    0,      0,     0,   27.0,   0,     0,    0,    0    ],
-    [56,   85.0, 45.0, 35.0, 84.0,  56.0,  41.0,  0,     0,     0,    0,      0,     0,   28.0,   0,     0,    0,    0    ],
-    [58,   90.0, 46.0, 36.0, 87.0,  58.0,  41.0,  0,     0,     0,    0,      0,     0,   28.0,   0,     0,    0,    0    ],
-    [60,   90.0, 46.0, 38.0, 90.0,  60.0,  46.0,  0,     0,     0,    0,      0,     0,   32.0,   0,     0,    0,    0    ],
-    [62,   95.0, 49.0, 39.0, 93.0,  62.0,  46.0,  0,     0,     0,    0,      0,     0,   32.0,   0,     0,    0,    0    ],
-    [64,   95.0, 51.0, 40.0, 96.0,  64.0,  46.0,  0,     0,     0,    0,      0,     0,   32.0,   0,     0,    0,    0    ],
-    [65,   95.0, 52.0, 41.0, 97.5,  65.0,  46.0,  0,     0,     0,    0,      0,     0,   32.0,   0,     0,    0,    0    ],
-    [68,  105.0, 54.4, 44.0,102.0,  68.0,  46.0,  0,     0,     0,    0,      0,     0,   36.0,   0,     0,    0,    0    ]
+type FastenerDims {
+    dia    Number
+    hex_af Number
+    nut_h  Number
+    bolt_h Number
+    shcs_d Number
+    shcs_h Number
+    shcs_s Number
+    bhcs_d Number
+    bhcs_h Number
+    bhcs_s Number
+    fhcs_d Number
+    fhcs_h Number
+    fhcs_s Number
+    set_s  Number
+    pan_d  Number
+    pan_h  Number
+    slot_w Number
+    phil_w Number
+}
+
+# ---------------------------------------------------------------------------
+# ISO Metric Dimension Table
+# ---------------------------------------------------------------------------
+
+const METRIC = FastenerDims[
+    { dia: 2,    hex_af: 4.0,  nut_h: 1.6,  bolt_h: 1.4,  shcs_d: 3.8,   shcs_h: 2.0,   shcs_s: 1.5,  bhcs_d: 3.8,   bhcs_h: 1.3,   bhcs_s: 1.3,  fhcs_d: 3.8,    fhcs_h: 1.2,   fhcs_s: 1.3,  set_s: 0.9,   pan_d: 4.0,   pan_h: 1.3,  slot_w: 0.5,  phil_w: 1.4  },
+    { dia: 2.5,  hex_af: 5.0,  nut_h: 2.0,  bolt_h: 1.7,  shcs_d: 4.5,   shcs_h: 2.5,   shcs_s: 2.0,  bhcs_d: 4.7,   bhcs_h: 1.5,   bhcs_s: 1.5,  fhcs_d: 4.7,    fhcs_h: 1.5,   fhcs_s: 1.5,  set_s: 1.3,   pan_d: 5.0,   pan_h: 1.7,  slot_w: 0.6,  phil_w: 1.8  },
+    { dia: 3,    hex_af: 5.5,  nut_h: 2.4,  bolt_h: 2.0,  shcs_d: 5.5,   shcs_h: 3.0,   shcs_s: 2.5,  bhcs_d: 5.7,   bhcs_h: 1.65,  bhcs_s: 2.0,  fhcs_d: 5.54,   fhcs_h: 1.86,  fhcs_s: 2.0,  set_s: 1.5,   pan_d: 6.0,   pan_h: 2.0,  slot_w: 0.8,  phil_w: 2.1  },
+    { dia: 3.5,  hex_af: 6.0,  nut_h: 2.8,  bolt_h: 2.4,  shcs_d: 0,     shcs_h: 0,     shcs_s: 0,    bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,       fhcs_h: 0,     fhcs_s: 0,    set_s: 0,     pan_d: 7.0,   pan_h: 2.1,  slot_w: 1.0,  phil_w: 0    },
+    { dia: 4,    hex_af: 7.0,  nut_h: 3.2,  bolt_h: 2.8,  shcs_d: 7.0,   shcs_h: 4.0,   shcs_s: 3.0,  bhcs_d: 7.6,   bhcs_h: 2.2,   bhcs_s: 2.5,  fhcs_d: 7.53,   fhcs_h: 2.48,  fhcs_s: 2.5,  set_s: 2.0,   pan_d: 8.0,   pan_h: 2.6,  slot_w: 1.0,  phil_w: 2.6  },
+    { dia: 5,    hex_af: 8.0,  nut_h: 4.7,  bolt_h: 3.5,  shcs_d: 8.5,   shcs_h: 5.0,   shcs_s: 4.0,  bhcs_d: 9.5,   bhcs_h: 2.75,  bhcs_s: 3.0,  fhcs_d: 9.43,   fhcs_h: 3.1,   fhcs_s: 3.0,  set_s: 2.5,   pan_d: 10.0,  pan_h: 3.3,  slot_w: 1.2,  phil_w: 3.3  },
+    { dia: 6,    hex_af: 10.0, nut_h: 5.2,  bolt_h: 4.0,  shcs_d: 10.0,  shcs_h: 6.0,   shcs_s: 5.0,  bhcs_d: 10.5,  bhcs_h: 3.3,   bhcs_s: 4.0,  fhcs_d: 11.34,  fhcs_h: 3.72,  fhcs_s: 4.0,  set_s: 3.0,   pan_d: 12.0,  pan_h: 3.9,  slot_w: 1.6,  phil_w: 4.1  },
+    { dia: 8,    hex_af: 13.0, nut_h: 6.8,  bolt_h: 5.3,  shcs_d: 13.0,  shcs_h: 8.0,   shcs_s: 6.0,  bhcs_d: 14.0,  bhcs_h: 4.4,   bhcs_s: 5.0,  fhcs_d: 15.24,  fhcs_h: 4.96,  fhcs_s: 5.0,  set_s: 4.0,   pan_d: 16.0,  pan_h: 5.0,  slot_w: 2.0,  phil_w: 5.1  },
+    { dia: 10,   hex_af: 16.0, nut_h: 8.4,  bolt_h: 6.4,  shcs_d: 16.0,  shcs_h: 10.0,  shcs_s: 8.0,  bhcs_d: 17.5,  bhcs_h: 5.5,   bhcs_s: 6.0,  fhcs_d: 19.22,  fhcs_h: 6.2,   fhcs_s: 6.0,  set_s: 5.0,   pan_d: 20.0,  pan_h: 6.0,  slot_w: 2.5,  phil_w: 6.1  },
+    { dia: 12,   hex_af: 18.0, nut_h: 10.8, bolt_h: 7.5,  shcs_d: 18.0,  shcs_h: 12.0,  shcs_s: 10.0, bhcs_d: 21.0,  bhcs_h: 6.6,   bhcs_s: 8.0,  fhcs_d: 23.12,  fhcs_h: 7.44,  fhcs_s: 8.0,  set_s: 6.0,   pan_d: 24.0,  pan_h: 7.0,  slot_w: 3.0,  phil_w: 7.1  },
+    { dia: 14,   hex_af: 21.0, nut_h: 12.8, bolt_h: 8.8,  shcs_d: 21.0,  shcs_h: 14.0,  shcs_s: 12.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 27.0,   fhcs_h: 7.0,   fhcs_s: 10.0, set_s: 6.0,   pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 16,   hex_af: 24.0, nut_h: 14.8, bolt_h: 10.0, shcs_d: 24.0,  shcs_h: 16.0,  shcs_s: 14.0, bhcs_d: 28.0,  bhcs_h: 8.8,   bhcs_s: 10.0, fhcs_d: 29.01,  fhcs_h: 8.8,   fhcs_s: 10.0, set_s: 8.0,   pan_d: 30.0,  pan_h: 8.8,  slot_w: 4.0,  phil_w: 0    },
+    { dia: 18,   hex_af: 27.0, nut_h: 15.8, bolt_h: 11.5, shcs_d: 27.0,  shcs_h: 18.0,  shcs_s: 14.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 33.0,   fhcs_h: 8.0,   fhcs_s: 12.0, set_s: 10.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 20,   hex_af: 30.0, nut_h: 18.0, bolt_h: 12.5, shcs_d: 30.0,  shcs_h: 20.0,  shcs_s: 17.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 36.05,  fhcs_h: 10.16, fhcs_s: 12.0, set_s: 10.0,  pan_d: 36.0,  pan_h: 10.0, slot_w: 5.0,  phil_w: 0    },
+    { dia: 22,   hex_af: 34.0, nut_h: 19.4, bolt_h: 14.0, shcs_d: 33.0,  shcs_h: 22.0,  shcs_s: 17.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 36.0,   fhcs_h: 13.1,  fhcs_s: 14.0, set_s: 12.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 24,   hex_af: 36.0, nut_h: 21.5, bolt_h: 15.0, shcs_d: 36.0,  shcs_h: 24.0,  shcs_s: 18.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 39.0,   fhcs_h: 14.0,  fhcs_s: 14.0, set_s: 12.0,  pan_d: 44.0,  pan_h: 12.0, slot_w: 6.0,  phil_w: 0    },
+    { dia: 25,   hex_af: 41.0, nut_h: 22.0, bolt_h: 16.0, shcs_d: 37.5,  shcs_h: 25.0,  shcs_s: 19.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 12.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 26,   hex_af: 41.0, nut_h: 22.5, bolt_h: 16.5, shcs_d: 39.0,  shcs_h: 26.0,  shcs_s: 19.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 14.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 27,   hex_af: 41.0, nut_h: 23.8, bolt_h: 17.0, shcs_d: 40.0,  shcs_h: 27.0,  shcs_s: 19.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 0,     pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 28,   hex_af: 41.0, nut_h: 24.0, bolt_h: 18.0, shcs_d: 42.0,  shcs_h: 28.0,  shcs_s: 19.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 14.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 30,   hex_af: 46.0, nut_h: 25.6, bolt_h: 19.0, shcs_d: 45.0,  shcs_h: 30.0,  shcs_s: 22.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 15.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 32,   hex_af: 50.0, nut_h: 27.0, bolt_h: 20.0, shcs_d: 48.0,  shcs_h: 32.0,  shcs_s: 22.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 17.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 33,   hex_af: 50.0, nut_h: 28.7, bolt_h: 21.0, shcs_d: 50.0,  shcs_h: 33.0,  shcs_s: 24.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 0,     pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 35,   hex_af: 55.0, nut_h: 30.0, bolt_h: 22.0, shcs_d: 52.0,  shcs_h: 35.0,  shcs_s: 24.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 17.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 36,   hex_af: 55.0, nut_h: 31.0, bolt_h: 23.0, shcs_d: 54.0,  shcs_h: 36.0,  shcs_s: 27.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 18.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 38,   hex_af: 60.0, nut_h: 32.0, bolt_h: 24.0, shcs_d: 57.0,  shcs_h: 38.0,  shcs_s: 27.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 19.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 39,   hex_af: 60.0, nut_h: 33.4, bolt_h: 25.0, shcs_d: 58.5,  shcs_h: 39.0,  shcs_s: 27.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 19.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 40,   hex_af: 65.0, nut_h: 34.0, bolt_h: 25.5, shcs_d: 60.0,  shcs_h: 40.0,  shcs_s: 27.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 19.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 42,   hex_af: 65.0, nut_h: 34.0, bolt_h: 26.0, shcs_d: 63.0,  shcs_h: 42.0,  shcs_s: 32.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 21.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 45,   hex_af: 70.0, nut_h: 36.0, bolt_h: 28.0, shcs_d: 67.5,  shcs_h: 45.0,  shcs_s: 32.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 22.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 48,   hex_af: 75.0, nut_h: 38.0, bolt_h: 30.0, shcs_d: 72.0,  shcs_h: 48.0,  shcs_s: 36.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 24.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 50,   hex_af: 75.0, nut_h: 40.0, bolt_h: 31.0, shcs_d: 75.0,  shcs_h: 50.0,  shcs_s: 36.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 24.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 52,   hex_af: 80.0, nut_h: 41.0, bolt_h: 33.0, shcs_d: 78.0,  shcs_h: 52.0,  shcs_s: 36.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 27.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 55,   hex_af: 85.0, nut_h: 43.0, bolt_h: 34.0, shcs_d: 82.5,  shcs_h: 55.0,  shcs_s: 41.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 27.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 56,   hex_af: 85.0, nut_h: 45.0, bolt_h: 35.0, shcs_d: 84.0,  shcs_h: 56.0,  shcs_s: 41.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 28.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 58,   hex_af: 90.0, nut_h: 46.0, bolt_h: 36.0, shcs_d: 87.0,  shcs_h: 58.0,  shcs_s: 41.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 28.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 60,   hex_af: 90.0, nut_h: 46.0, bolt_h: 38.0, shcs_d: 90.0,  shcs_h: 60.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 32.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 62,   hex_af: 95.0, nut_h: 49.0, bolt_h: 39.0, shcs_d: 93.0,  shcs_h: 62.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 32.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 64,   hex_af: 95.0, nut_h: 51.0, bolt_h: 40.0, shcs_d: 96.0,  shcs_h: 64.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 32.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 65,   hex_af: 95.0, nut_h: 52.0, bolt_h: 41.0, shcs_d: 97.5,  shcs_h: 65.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 32.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
+    { dia: 68,   hex_af: 105.0, nut_h: 54.4, bolt_h: 44.0, shcs_d: 102.0, shcs_h: 68.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 36.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    }
 ]
+
+# ---------------------------------------------------------------------------
+# Imperial dimension struct — same fields as FastenerDims but typed as Length.
+# DimRow() converts to FastenerDims (mm-as-Number) before returning.
+# ---------------------------------------------------------------------------
+
+type ImperialDims {
+    dia    Length
+    hex_af Length
+    nut_h  Length
+    bolt_h Length
+    shcs_d Length
+    shcs_h Length
+    shcs_s Length
+    bhcs_d Length
+    bhcs_h Length
+    bhcs_s Length
+    fhcs_d Length
+    fhcs_h Length
+    fhcs_s Length
+    set_s  Length
+    pan_d  Length
+    pan_h  Length
+    slot_w Length
+    phil_w Length
+}
 
 # ---------------------------------------------------------------------------
 # Imperial Dimension Table (ASME B18.2.1, B18.2.2, B18.3, B18.6.3)
 #
-# Same 18-column layout as METRIC.
 # All dimensions use `in` suffix; DimRow() converts to mm-as-Number via Number().
 # Numbered sizes (#4-#10) have no hex bolts (bolt_head_h=0).
 # 7/16-3/4 have no pan head screws.
 # ---------------------------------------------------------------------------
 
-const IMPERIAL = [
-    #  dia        hex_af    nut_h     bolt_h    shcs_d    shcs_h    shcs_s    bhcs_d    bhcs_h    bhcs_s    fhcs_d    fhcs_h    fhcs_s    set_s     pan_d     pan_h     slot_w    phil_w
-    [ 0.112 in,  1/4 in,   3/32 in,  0,        0.183 in, 0.112 in, 3/32 in,  0.225 in, 0.075 in, 5/64 in,  0.225 in, 0.060 in, 5/64 in,  0.050 in, 0.219 in, 0.093 in, 0.039 in, 0.059 in ],
-    [ 0.138 in,  5/16 in,  7/64 in,  0,        0.226 in, 0.138 in, 7/64 in,  0.279 in, 0.093 in, 7/64 in,  0.279 in, 0.073 in, 7/64 in,  1/16 in,  0.262 in, 0.110 in, 0.048 in, 0.071 in ],
-    [ 0.164 in,  11/32 in, 1/8 in,   0,        0.270 in, 0.164 in, 9/64 in,  0.332 in, 0.110 in, 9/64 in,  0.332 in, 0.087 in, 9/64 in,  5/64 in,  0.306 in, 0.128 in, 0.054 in, 0.083 in ],
-    [ 0.190 in,  3/8 in,   1/8 in,   0,        0.312 in, 0.190 in, 5/32 in,  0.385 in, 0.128 in, 5/32 in,  0.385 in, 0.100 in, 5/32 in,  3/32 in,  0.350 in, 0.144 in, 0.060 in, 0.091 in ],
-    [ 1/4 in,    7/16 in,  7/32 in,  11/64 in, 3/8 in,   1/4 in,   3/16 in,  1/2 in,   5/32 in,  5/32 in,  0.452 in, 0.117 in, 5/32 in,  1/8 in,   0.492 in, 0.175 in, 0.075 in, 0        ],
-    [ 5/16 in,   1/2 in,   17/64 in, 7/32 in,  7/16 in,  5/16 in,  1/4 in,   5/8 in,   13/64 in, 3/16 in,  0.531 in, 0.151 in, 3/16 in,  5/32 in,  0.615 in, 0.218 in, 0.084 in, 0        ],
-    [ 3/8 in,    9/16 in,  21/64 in, 1/4 in,   9/16 in,  3/8 in,   5/16 in,  3/4 in,   15/64 in, 7/32 in,  0.656 in, 0.185 in, 7/32 in,  3/16 in,  0.740 in, 0.261 in, 0.094 in, 0        ],
-    [ 7/16 in,   11/16 in, 3/8 in,   19/64 in, 5/8 in,   7/16 in,  3/8 in,   7/8 in,   17/64 in, 1/4 in,   3/4 in,   0.210 in, 1/4 in,   7/32 in,  0,        0,        0,        0        ],
-    [ 1/2 in,    3/4 in,   7/16 in,  11/32 in, 3/4 in,   1/2 in,   3/8 in,   1 in,     5/16 in,  5/16 in,  0.812 in, 0.223 in, 5/16 in,  1/4 in,   0,        0,        0,        0        ],
-    [ 5/8 in,    15/16 in, 35/64 in, 27/64 in, 7/8 in,   5/8 in,   1/2 in,   5/4 in,   3/8 in,   3/8 in,   1 in,     0.283 in, 3/8 in,   5/16 in,  0,        0,        0,        0        ],
-    [ 3/4 in,    9/8 in,   41/64 in, 1/2 in,   9/8 in,   3/4 in,   5/8 in,   3/2 in,   7/16 in,  7/16 in,  9/8 in,   0.335 in, 7/16 in,  3/8 in,   0,        0,        0,        0        ]
+const IMPERIAL = ImperialDims[
+    { dia: 0.112 in, hex_af: 1/4 in,   nut_h: 3/32 in,  bolt_h: 0 in,     shcs_d: 0.183 in, shcs_h: 0.112 in, shcs_s: 3/32 in,  bhcs_d: 0.225 in, bhcs_h: 0.075 in, bhcs_s: 5/64 in,  fhcs_d: 0.225 in, fhcs_h: 0.060 in, fhcs_s: 5/64 in,  set_s: 0.050 in, pan_d: 0.219 in, pan_h: 0.093 in, slot_w: 0.039 in, phil_w: 0.059 in },
+    { dia: 0.138 in, hex_af: 5/16 in,  nut_h: 7/64 in,  bolt_h: 0 in,     shcs_d: 0.226 in, shcs_h: 0.138 in, shcs_s: 7/64 in,  bhcs_d: 0.279 in, bhcs_h: 0.093 in, bhcs_s: 7/64 in,  fhcs_d: 0.279 in, fhcs_h: 0.073 in, fhcs_s: 7/64 in,  set_s: 1/16 in,  pan_d: 0.262 in, pan_h: 0.110 in, slot_w: 0.048 in, phil_w: 0.071 in },
+    { dia: 0.164 in, hex_af: 11/32 in, nut_h: 1/8 in,   bolt_h: 0 in,     shcs_d: 0.270 in, shcs_h: 0.164 in, shcs_s: 9/64 in,  bhcs_d: 0.332 in, bhcs_h: 0.110 in, bhcs_s: 9/64 in,  fhcs_d: 0.332 in, fhcs_h: 0.087 in, fhcs_s: 9/64 in,  set_s: 5/64 in,  pan_d: 0.306 in, pan_h: 0.128 in, slot_w: 0.054 in, phil_w: 0.083 in },
+    { dia: 0.190 in, hex_af: 3/8 in,   nut_h: 1/8 in,   bolt_h: 0 in,     shcs_d: 0.312 in, shcs_h: 0.190 in, shcs_s: 5/32 in,  bhcs_d: 0.385 in, bhcs_h: 0.128 in, bhcs_s: 5/32 in,  fhcs_d: 0.385 in, fhcs_h: 0.100 in, fhcs_s: 5/32 in,  set_s: 3/32 in,  pan_d: 0.350 in, pan_h: 0.144 in, slot_w: 0.060 in, phil_w: 0.091 in },
+    { dia: 1/4 in,   hex_af: 7/16 in,  nut_h: 7/32 in,  bolt_h: 11/64 in, shcs_d: 3/8 in,   shcs_h: 1/4 in,   shcs_s: 3/16 in,  bhcs_d: 1/2 in,   bhcs_h: 5/32 in,  bhcs_s: 5/32 in,  fhcs_d: 0.452 in, fhcs_h: 0.117 in, fhcs_s: 5/32 in,  set_s: 1/8 in,   pan_d: 0.492 in, pan_h: 0.175 in, slot_w: 0.075 in, phil_w: 0 in     },
+    { dia: 5/16 in,  hex_af: 1/2 in,   nut_h: 17/64 in, bolt_h: 7/32 in,  shcs_d: 7/16 in,  shcs_h: 5/16 in,  shcs_s: 1/4 in,   bhcs_d: 5/8 in,   bhcs_h: 13/64 in, bhcs_s: 3/16 in,  fhcs_d: 0.531 in, fhcs_h: 0.151 in, fhcs_s: 3/16 in,  set_s: 5/32 in,  pan_d: 0.615 in, pan_h: 0.218 in, slot_w: 0.084 in, phil_w: 0 in     },
+    { dia: 3/8 in,   hex_af: 9/16 in,  nut_h: 21/64 in, bolt_h: 1/4 in,   shcs_d: 9/16 in,  shcs_h: 3/8 in,   shcs_s: 5/16 in,  bhcs_d: 3/4 in,   bhcs_h: 15/64 in, bhcs_s: 7/32 in,  fhcs_d: 0.656 in, fhcs_h: 0.185 in, fhcs_s: 7/32 in,  set_s: 3/16 in,  pan_d: 0.740 in, pan_h: 0.261 in, slot_w: 0.094 in, phil_w: 0 in     },
+    { dia: 7/16 in,  hex_af: 11/16 in, nut_h: 3/8 in,   bolt_h: 19/64 in, shcs_d: 5/8 in,   shcs_h: 7/16 in,  shcs_s: 3/8 in,   bhcs_d: 7/8 in,   bhcs_h: 17/64 in, bhcs_s: 1/4 in,   fhcs_d: 3/4 in,   fhcs_h: 0.210 in, fhcs_s: 1/4 in,   set_s: 7/32 in,  pan_d: 0 in,     pan_h: 0 in,     slot_w: 0 in,     phil_w: 0 in     },
+    { dia: 1/2 in,   hex_af: 3/4 in,   nut_h: 7/16 in,  bolt_h: 11/32 in, shcs_d: 3/4 in,   shcs_h: 1/2 in,   shcs_s: 3/8 in,   bhcs_d: 1 in,     bhcs_h: 5/16 in,  bhcs_s: 5/16 in,  fhcs_d: 0.812 in, fhcs_h: 0.223 in, fhcs_s: 5/16 in,  set_s: 1/4 in,   pan_d: 0 in,     pan_h: 0 in,     slot_w: 0 in,     phil_w: 0 in     },
+    { dia: 5/8 in,   hex_af: 15/16 in, nut_h: 35/64 in, bolt_h: 27/64 in, shcs_d: 7/8 in,   shcs_h: 5/8 in,   shcs_s: 1/2 in,   bhcs_d: 5/4 in,   bhcs_h: 3/8 in,   bhcs_s: 3/8 in,   fhcs_d: 1 in,     fhcs_h: 0.283 in, fhcs_s: 3/8 in,   set_s: 5/16 in,  pan_d: 0 in,     pan_h: 0 in,     slot_w: 0 in,     phil_w: 0 in     },
+    { dia: 3/4 in,   hex_af: 9/8 in,   nut_h: 41/64 in, bolt_h: 1/2 in,   shcs_d: 9/8 in,   shcs_h: 3/4 in,   shcs_s: 5/8 in,   bhcs_d: 3/2 in,   bhcs_h: 7/16 in,  bhcs_s: 7/16 in,  fhcs_d: 9/8 in,   fhcs_h: 0.335 in, fhcs_s: 7/16 in,  set_s: 3/8 in,   pan_d: 0 in,     pan_h: 0 in,     slot_w: 0 in,     phil_w: 0 in     }
 ]
 
 # Looks up a row by diameter — tries METRIC first, then IMPERIAL.
 # Imperial values use `in` suffix and are converted to mm-as-Number before
-# returning, so constructors can use `row[N] * 1 mm` uniformly.
-fn DimRow(d Length) []Number {
+# returning, so constructors can use `row.field * 1 mm` uniformly.
+fn DimRow(d Length) FastenerDims {
     var v = Number(from: d)
     var m = for i [0:<Size(of: METRIC)] {
-        if METRIC[i][0] == v { yield METRIC[i]; }
+        if METRIC[i].dia == v { yield METRIC[i]; }
     }
     if Size(of: m) > 0 {
         return m[0]
     }
     var imp = for i [0:<Size(of: IMPERIAL)] {
-        if Abs(a: Number(from: IMPERIAL[i][0]) - v) < 0.025 { yield IMPERIAL[i]; }
+        if Abs(a: Number(from: IMPERIAL[i].dia) - v) < 0.025 { yield IMPERIAL[i]; }
     }
     assert Size(of: imp) > 0, "unsupported fastener diameter"
     var row = imp[0]
-    return for j [0:<Size(of: row)] { yield Number(from: row[j]); }
+    return FastenerDims{
+        dia:    Number(from: row.dia),
+        hex_af: Number(from: row.hex_af),
+        nut_h:  Number(from: row.nut_h),
+        bolt_h: Number(from: row.bolt_h),
+        shcs_d: Number(from: row.shcs_d),
+        shcs_h: Number(from: row.shcs_h),
+        shcs_s: Number(from: row.shcs_s),
+        bhcs_d: Number(from: row.bhcs_d),
+        bhcs_h: Number(from: row.bhcs_h),
+        bhcs_s: Number(from: row.bhcs_s),
+        fhcs_d: Number(from: row.fhcs_d),
+        fhcs_h: Number(from: row.fhcs_h),
+        fhcs_s: Number(from: row.fhcs_s),
+        set_s:  Number(from: row.set_s),
+        pan_d:  Number(from: row.pan_d),
+        pan_h:  Number(from: row.pan_h),
+        slot_w: Number(from: row.slot_w),
+        phil_w: Number(from: row.phil_w)
+    }
 }
 
 # ---------------------------------------------------------------------------
@@ -147,8 +205,8 @@ fn HexNut(size String) HexNut {
     var row = DimRow(d: t.major_diameter)
     return HexNut {
         thread: t,
-        hex_af: row[1] * 1 mm,
-        nut_h: row[2] * 1 mm
+        hex_af: row.hex_af * 1 mm,
+        nut_h: row.nut_h * 1 mm
     }
 }
 
@@ -177,11 +235,11 @@ type CapNut {
 fn CapNut(size String) CapNut {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    var af = row[1] * 1 mm
+    var af = row.hex_af * 1 mm
     return CapNut {
         thread: t,
         hex_af: af,
-        base_h: row[2] * 1 mm,
+        base_h: row.nut_h * 1 mm,
         dome_h: af * 0.45
     }
 }
@@ -232,8 +290,8 @@ type WingNut {
 fn WingNut(size String) WingNut {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    var af = row[1] * 1 mm
-    var nh = row[2] * 1 mm
+    var af = row.hex_af * 1 mm
+    var nh = row.nut_h * 1 mm
     var md = t.major_diameter
     return WingNut {
         thread: t,
@@ -339,11 +397,11 @@ type HexBolt {
 fn HexBolt(size String, length Length) HexBolt {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row[3] != 0, "HexBolt not available in " + size
+    assert row.bolt_h != 0, "HexBolt not available in " + size
     return HexBolt {
         thread: t,
-        hex_af: row[1] * 1 mm,
-        head_h: row[3] * 1 mm,
+        hex_af: row.hex_af * 1 mm,
+        head_h: row.bolt_h * 1 mm,
         length: length
     }
 }
@@ -375,12 +433,12 @@ type SocketHeadCapScrew {
 fn SocketHeadCapScrew(size String, length Length) SocketHeadCapScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row[4] != 0, "SocketHeadCapScrew not available in " + size
+    assert row.shcs_d != 0, "SocketHeadCapScrew not available in " + size
     return SocketHeadCapScrew {
         thread: t,
-        head_d: row[4] * 1 mm,
-        head_h: row[5] * 1 mm,
-        socket: row[6] * 1 mm,
+        head_d: row.shcs_d * 1 mm,
+        head_h: row.shcs_h * 1 mm,
+        socket: row.shcs_s * 1 mm,
         length: length
     }
 }
@@ -417,13 +475,13 @@ type ButtonHeadCapScrew {
 fn ButtonHeadCapScrew(size String, length Length) ButtonHeadCapScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row[7] != 0, "ButtonHeadCapScrew not available in " + size
+    assert row.bhcs_d != 0, "ButtonHeadCapScrew not available in " + size
     return ButtonHeadCapScrew {
         thread: t,
         major_d: t.major_diameter,
-        head_d: row[7] * 1 mm,
-        head_h: row[8] * 1 mm,
-        socket: row[9] * 1 mm,
+        head_d: row.bhcs_d * 1 mm,
+        head_h: row.bhcs_h * 1 mm,
+        socket: row.bhcs_s * 1 mm,
         length: length
     }
 }
@@ -470,13 +528,13 @@ type CountersunkScrew {
 fn CountersunkScrew(size String, length Length) CountersunkScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row[10] != 0, "CountersunkScrew not available in " + size
+    assert row.fhcs_d != 0, "CountersunkScrew not available in " + size
     return CountersunkScrew {
         thread: t,
         major_d: t.major_diameter,
-        head_d: row[10] * 1 mm,
-        head_h: row[11] * 1 mm,
-        socket: row[12] * 1 mm,
+        head_d: row.fhcs_d * 1 mm,
+        head_h: row.fhcs_h * 1 mm,
+        socket: row.fhcs_s * 1 mm,
         length: length
     }
 }
@@ -510,11 +568,11 @@ type SetScrew {
 fn SetScrew(size String, length Length) SetScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row[13] != 0, "SetScrew not available in " + size
+    assert row.set_s != 0, "SetScrew not available in " + size
     return SetScrew {
         thread: t,
         major_d: t.major_diameter,
-        socket: row[13] * 1 mm,
+        socket: row.set_s * 1 mm,
         length: length
     }
 }
@@ -593,12 +651,12 @@ type FlatHeadScrew {
 fn FlatHeadScrew(size String, length Length) FlatHeadScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row[14] != 0, "FlatHeadScrew not available in " + size
+    assert row.pan_d != 0, "FlatHeadScrew not available in " + size
     return FlatHeadScrew {
         thread: t,
-        head_d: row[14] * 1 mm,
-        head_h: row[15] * 1 mm,
-        slot_w: row[16] * 1 mm,
+        head_d: row.pan_d * 1 mm,
+        head_h: row.pan_h * 1 mm,
+        slot_w: row.slot_w * 1 mm,
         length: length
     }
 }
@@ -635,12 +693,12 @@ type PhillipsScrew {
 fn PhillipsScrew(size String, length Length) PhillipsScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row[14] != 0, "PhillipsScrew not available in " + size
+    assert row.pan_d != 0, "PhillipsScrew not available in " + size
     return PhillipsScrew {
         thread: t,
-        head_d: row[14] * 1 mm,
-        head_h: row[15] * 1 mm,
-        phillips_w: row[17] * 1 mm,
+        head_d: row.pan_d * 1 mm,
+        head_h: row.pan_h * 1 mm,
+        phillips_w: row.phil_w * 1 mm,
         length: length
     }
 }
@@ -684,7 +742,7 @@ fn Standoff(size String, length Length) Standoff {
     var row = DimRow(d: t.major_diameter)
     return Standoff {
         thread: t,
-        hex_af: row[1] * 1 mm,
+        hex_af: row.hex_af * 1 mm,
         major_d: t.major_diameter,
         length: length
     }
@@ -721,7 +779,7 @@ fn MaleStandoff(size String, length, thread_len Length) MaleStandoff {
     var row = DimRow(d: t.major_diameter)
     return MaleStandoff {
         thread: t,
-        hex_af: row[1] * 1 mm,
+        hex_af: row.hex_af * 1 mm,
         major_d: t.major_diameter,
         length: length,
         thread_len: thread_len
@@ -745,7 +803,7 @@ fn MaleStandoff.Solid() Solid {
 fn Showcase(size String, shaft_len, standoff_len Length) []Solid {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    var sp = row[1] * 1 mm * 2
+    var sp = row.hex_af * 1 mm * 2
     return [
         HexNut(size: size).Solid(),
         CapNut(size: size).Solid().Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),

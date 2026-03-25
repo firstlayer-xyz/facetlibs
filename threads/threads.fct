@@ -118,14 +118,14 @@ fn ImperialThread(size String) Thread {
 fn Thread(size String) Thread {
     # --- Metric fine: m<diameter>x<pitch> ---
     var mfine = size.Match(pattern: `m(\d+\.?\d*)x([\d.]+)`)
-    if mfine == true {
+    if Size(of: mfine) > 0 {
         var d = Number(from: mfine[1]) * 1 mm
         var p = Number(from: mfine[2]) * 1 mm
         return Thread { pitch: p, major_diameter: d, taper: 0, tolerance: 0.1 mm }
     }
     # --- Metric: m<diameter> (coarse or default fine pitch) ---
     var mcoarse = size.Match(pattern: `m(\d+\.?\d*)$`)
-    if mcoarse == true {
+    if Size(of: mcoarse) > 0 {
         var d = Number(from: mcoarse[1]) * 1 mm
         return Thread { pitch: MetricDefaultPitch(dia: d), major_diameter: d, taper: 0, tolerance: 0.1 mm }
     }
