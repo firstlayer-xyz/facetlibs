@@ -60,7 +60,7 @@ fn Semicircle(radius Length) Sketch {
 fn RoundedCube(x, y, z, r Length) Solid {
     var s = Sphere(radius: r)
     return Hull(
-        arr: for cx []Length[r, x - r], cy []Length[r, y - r], cz []Length[
+        arr: for cx [r, x - r], cy [r, y - r], cz [
             r,
             z - r
         ] {
@@ -76,7 +76,7 @@ fn RoundedCube(size Vec3, radius Length) Solid {
 fn Capsule(radius, height Length) Solid {
     var s = Sphere(radius: radius)
     return Hull(
-        arr: []Solid[
+        arr: [
             s.Translate(v: Vec3{x: 0 mm, y: 0 mm, z: radius}),
             s.Translate(v: Vec3{x: 0 mm, y: 0 mm, z: height - radius})
         ]

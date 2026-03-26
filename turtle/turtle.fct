@@ -43,7 +43,7 @@ type Turtle2d {
 # Creates a new 2D turtle at the origin, heading up (90 deg), pen down.
 fn Turtle2d() Turtle2d {
     var start = Vec2{x: 0 mm, y: 0 mm}
-    return Turtle2d{pos: start, heading: 90 deg, pen: true, path: []Vec2[start]}
+    return Turtle2d{pos: start, heading: 90 deg, pen: true, path: [start]}
 }
 
 # Moves forward by `by` in the current heading direction.
@@ -159,7 +159,7 @@ fn Turtle3d() Turtle3d {
         yaw: 0 deg,
         pitch: 0 deg,
         pen: true,
-        path: []Vec3[start]
+        path: [start]
     }
 }
 
