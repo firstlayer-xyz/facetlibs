@@ -49,7 +49,7 @@ fn Turtle2d() Turtle2d {
         pos: start,
         heading: 90 deg,
         pen: true,
-        path: Vec2[start,]
+        path: []Vec2[start,]
     }
 }
 
@@ -160,7 +160,7 @@ fn Turtle3d() Turtle3d {
         yaw: 0 deg,
         pitch: 0 deg,
         pen: true,
-        path: Vec3[start,]
+        path: []Vec3[start,]
     }
 }
 

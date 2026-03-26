@@ -56,7 +56,7 @@ type FastenerDims {
 # ISO Metric Dimension Table
 # ---------------------------------------------------------------------------
 
-const METRIC = FastenerDims[
+const METRIC = []FastenerDims[
     { dia: 2,    hex_af: 4.0,  nut_h: 1.6,  bolt_h: 1.4,  shcs_d: 3.8,   shcs_h: 2.0,   shcs_s: 1.5,  bhcs_d: 3.8,   bhcs_h: 1.3,   bhcs_s: 1.3,  fhcs_d: 3.8,    fhcs_h: 1.2,   fhcs_s: 1.3,  set_s: 0.9,   pan_d: 4.0,   pan_h: 1.3,  slot_w: 0.5,  phil_w: 1.4  },
     { dia: 2.5,  hex_af: 5.0,  nut_h: 2.0,  bolt_h: 1.7,  shcs_d: 4.5,   shcs_h: 2.5,   shcs_s: 2.0,  bhcs_d: 4.7,   bhcs_h: 1.5,   bhcs_s: 1.5,  fhcs_d: 4.7,    fhcs_h: 1.5,   fhcs_s: 1.5,  set_s: 1.3,   pan_d: 5.0,   pan_h: 1.7,  slot_w: 0.6,  phil_w: 1.8  },
     { dia: 3,    hex_af: 5.5,  nut_h: 2.4,  bolt_h: 2.0,  shcs_d: 5.5,   shcs_h: 3.0,   shcs_s: 2.5,  bhcs_d: 5.7,   bhcs_h: 1.65,  bhcs_s: 2.0,  fhcs_d: 5.54,   fhcs_h: 1.86,  fhcs_s: 2.0,  set_s: 1.5,   pan_d: 6.0,   pan_h: 2.0,  slot_w: 0.8,  phil_w: 2.1  },
@@ -134,7 +134,7 @@ type ImperialDims {
 # 7/16-3/4 have no pan head screws.
 # ---------------------------------------------------------------------------
 
-const IMPERIAL = ImperialDims[
+const IMPERIAL = []ImperialDims[
     { dia: 0.112 in, hex_af: 1/4 in,   nut_h: 3/32 in,  bolt_h: 0 in,     shcs_d: 0.183 in, shcs_h: 0.112 in, shcs_s: 3/32 in,  bhcs_d: 0.225 in, bhcs_h: 0.075 in, bhcs_s: 5/64 in,  fhcs_d: 0.225 in, fhcs_h: 0.060 in, fhcs_s: 5/64 in,  set_s: 0.050 in, pan_d: 0.219 in, pan_h: 0.093 in, slot_w: 0.039 in, phil_w: 0.059 in },
     { dia: 0.138 in, hex_af: 5/16 in,  nut_h: 7/64 in,  bolt_h: 0 in,     shcs_d: 0.226 in, shcs_h: 0.138 in, shcs_s: 7/64 in,  bhcs_d: 0.279 in, bhcs_h: 0.093 in, bhcs_s: 7/64 in,  fhcs_d: 0.279 in, fhcs_h: 0.073 in, fhcs_s: 7/64 in,  set_s: 1/16 in,  pan_d: 0.262 in, pan_h: 0.110 in, slot_w: 0.048 in, phil_w: 0.071 in },
     { dia: 0.164 in, hex_af: 11/32 in, nut_h: 1/8 in,   bolt_h: 0 in,     shcs_d: 0.270 in, shcs_h: 0.164 in, shcs_s: 9/64 in,  bhcs_d: 0.332 in, bhcs_h: 0.110 in, bhcs_s: 9/64 in,  fhcs_d: 0.332 in, fhcs_h: 0.087 in, fhcs_s: 9/64 in,  set_s: 5/64 in,  pan_d: 0.306 in, pan_h: 0.128 in, slot_w: 0.054 in, phil_w: 0.083 in },
@@ -321,7 +321,7 @@ fn WingNut.Solid() Solid {
     # extends slightly over the hub at the top.
     # Profile in XY (X = radial from hub surface, Y = height),
     # extruded in Z for thickness, then rotated upright.
-    var wing_body = Polygon(points: Vec2[
+    var wing_body = Polygon(points: []Vec2[
         {x: 0 mm, y: 0 mm},
         {x: base_w, y: 0 mm},
         {x: ws, y: body_h},
@@ -804,7 +804,7 @@ fn Showcase(size String, shaft_len, standoff_len Length) []Solid {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
     var sp = row.hex_af * 1 mm * 2
-    return Solid[
+    return []Solid[
         HexNut(size: size).Solid(),
         CapNut(size: size).Solid().Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
         WingNut(size: size).Solid().Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),

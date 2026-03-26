@@ -20,7 +20,7 @@ type MetricPitch {
 # ISO metric default pitch table.
 # Coarse-pitch sizes use their ISO 261 coarse pitch.
 # Fine-pitch-only sizes (M25, M26, M28, etc.) use their most common fine pitch.
-const METRIC_DEFAULT = MetricPitch[
+const METRIC_DEFAULT = []MetricPitch[
     {dia: 2, pitch: 0.4},   {dia: 2.5, pitch: 0.45}, {dia: 3, pitch: 0.5},   {dia: 3.5, pitch: 0.6}, {dia: 4, pitch: 0.7},   {dia: 5, pitch: 0.8},
     {dia: 6, pitch: 1.0},   {dia: 8, pitch: 1.25},   {dia: 10, pitch: 1.5},  {dia: 12, pitch: 1.75}, {dia: 14, pitch: 2.0},  {dia: 16, pitch: 2.0},
     {dia: 18, pitch: 2.5},  {dia: 20, pitch: 2.5},   {dia: 22, pitch: 2.5},  {dia: 24, pitch: 3.0},  {dia: 25, pitch: 2.0},  {dia: 26, pitch: 1.5},
@@ -53,7 +53,7 @@ type ImperialSpec {
 }
 
 # Imperial thread table
-const IMPERIAL = ImperialSpec[
+const IMPERIAL = []ImperialSpec[
     # SAE UNC (coarse)
     ImperialSpec{ size: "#4-40",    pitch_in: 1/40,   diameter_in: 0.112,   taper: 0 },
     ImperialSpec{ size: "#6-32",    pitch_in: 1/32,   diameter_in: 0.138,   taper: 0 },
