@@ -1,18 +1,17 @@
 # Fastener Library
-#
+# 
 # Generates metric and imperial fasteners: hex nuts, cap nuts, wing nuts,
 # washers, hex bolts, socket head cap screws, button head cap screws,
 # countersunk screws, set screws, thumbscrews, flat head (slotted) screws,
 # Phillips screws, and standoffs.
-#
+# 
 # Each fastener type is its own struct with a `Solid()` method.
 # Dimensions are looked up from shared ISO/ASME tables by diameter.
-#
+# 
 # Usage:
 #   var F = lib "github.com/firstlayer-xyz/facetlibs/fasteners@main"
 #   return F.HexBolt("m8", 30 mm).Solid()
 #   return F.HexBolt("1/4-20", 1 in).Solid()
-
 var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main"
 var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main"
 
@@ -30,85 +29,10 @@ fn Knurl(count Number, depth Length, angle Angle) K.Knurl {
 # ---------------------------------------------------------------------------
 # Fastener dimension struct — one row per diameter size.
 # ---------------------------------------------------------------------------
-
 type FastenerDims {
-    dia    Number
-    hex_af Number
-    nut_h  Number
-    bolt_h Number
-    shcs_d Number
-    shcs_h Number
-    shcs_s Number
-    bhcs_d Number
-    bhcs_h Number
-    bhcs_s Number
-    fhcs_d Number
-    fhcs_h Number
-    fhcs_s Number
-    set_s  Number
-    pan_d  Number
-    pan_h  Number
-    slot_w Number
-    phil_w Number
-}
-
-# ---------------------------------------------------------------------------
-# ISO Metric Dimension Table
-# ---------------------------------------------------------------------------
-
-const METRIC = []FastenerDims[
-    { dia: 2,    hex_af: 4.0,  nut_h: 1.6,  bolt_h: 1.4,  shcs_d: 3.8,   shcs_h: 2.0,   shcs_s: 1.5,  bhcs_d: 3.8,   bhcs_h: 1.3,   bhcs_s: 1.3,  fhcs_d: 3.8,    fhcs_h: 1.2,   fhcs_s: 1.3,  set_s: 0.9,   pan_d: 4.0,   pan_h: 1.3,  slot_w: 0.5,  phil_w: 1.4  },
-    { dia: 2.5,  hex_af: 5.0,  nut_h: 2.0,  bolt_h: 1.7,  shcs_d: 4.5,   shcs_h: 2.5,   shcs_s: 2.0,  bhcs_d: 4.7,   bhcs_h: 1.5,   bhcs_s: 1.5,  fhcs_d: 4.7,    fhcs_h: 1.5,   fhcs_s: 1.5,  set_s: 1.3,   pan_d: 5.0,   pan_h: 1.7,  slot_w: 0.6,  phil_w: 1.8  },
-    { dia: 3,    hex_af: 5.5,  nut_h: 2.4,  bolt_h: 2.0,  shcs_d: 5.5,   shcs_h: 3.0,   shcs_s: 2.5,  bhcs_d: 5.7,   bhcs_h: 1.65,  bhcs_s: 2.0,  fhcs_d: 5.54,   fhcs_h: 1.86,  fhcs_s: 2.0,  set_s: 1.5,   pan_d: 6.0,   pan_h: 2.0,  slot_w: 0.8,  phil_w: 2.1  },
-    { dia: 3.5,  hex_af: 6.0,  nut_h: 2.8,  bolt_h: 2.4,  shcs_d: 0,     shcs_h: 0,     shcs_s: 0,    bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,       fhcs_h: 0,     fhcs_s: 0,    set_s: 0,     pan_d: 7.0,   pan_h: 2.1,  slot_w: 1.0,  phil_w: 0    },
-    { dia: 4,    hex_af: 7.0,  nut_h: 3.2,  bolt_h: 2.8,  shcs_d: 7.0,   shcs_h: 4.0,   shcs_s: 3.0,  bhcs_d: 7.6,   bhcs_h: 2.2,   bhcs_s: 2.5,  fhcs_d: 7.53,   fhcs_h: 2.48,  fhcs_s: 2.5,  set_s: 2.0,   pan_d: 8.0,   pan_h: 2.6,  slot_w: 1.0,  phil_w: 2.6  },
-    { dia: 5,    hex_af: 8.0,  nut_h: 4.7,  bolt_h: 3.5,  shcs_d: 8.5,   shcs_h: 5.0,   shcs_s: 4.0,  bhcs_d: 9.5,   bhcs_h: 2.75,  bhcs_s: 3.0,  fhcs_d: 9.43,   fhcs_h: 3.1,   fhcs_s: 3.0,  set_s: 2.5,   pan_d: 10.0,  pan_h: 3.3,  slot_w: 1.2,  phil_w: 3.3  },
-    { dia: 6,    hex_af: 10.0, nut_h: 5.2,  bolt_h: 4.0,  shcs_d: 10.0,  shcs_h: 6.0,   shcs_s: 5.0,  bhcs_d: 10.5,  bhcs_h: 3.3,   bhcs_s: 4.0,  fhcs_d: 11.34,  fhcs_h: 3.72,  fhcs_s: 4.0,  set_s: 3.0,   pan_d: 12.0,  pan_h: 3.9,  slot_w: 1.6,  phil_w: 4.1  },
-    { dia: 8,    hex_af: 13.0, nut_h: 6.8,  bolt_h: 5.3,  shcs_d: 13.0,  shcs_h: 8.0,   shcs_s: 6.0,  bhcs_d: 14.0,  bhcs_h: 4.4,   bhcs_s: 5.0,  fhcs_d: 15.24,  fhcs_h: 4.96,  fhcs_s: 5.0,  set_s: 4.0,   pan_d: 16.0,  pan_h: 5.0,  slot_w: 2.0,  phil_w: 5.1  },
-    { dia: 10,   hex_af: 16.0, nut_h: 8.4,  bolt_h: 6.4,  shcs_d: 16.0,  shcs_h: 10.0,  shcs_s: 8.0,  bhcs_d: 17.5,  bhcs_h: 5.5,   bhcs_s: 6.0,  fhcs_d: 19.22,  fhcs_h: 6.2,   fhcs_s: 6.0,  set_s: 5.0,   pan_d: 20.0,  pan_h: 6.0,  slot_w: 2.5,  phil_w: 6.1  },
-    { dia: 12,   hex_af: 18.0, nut_h: 10.8, bolt_h: 7.5,  shcs_d: 18.0,  shcs_h: 12.0,  shcs_s: 10.0, bhcs_d: 21.0,  bhcs_h: 6.6,   bhcs_s: 8.0,  fhcs_d: 23.12,  fhcs_h: 7.44,  fhcs_s: 8.0,  set_s: 6.0,   pan_d: 24.0,  pan_h: 7.0,  slot_w: 3.0,  phil_w: 7.1  },
-    { dia: 14,   hex_af: 21.0, nut_h: 12.8, bolt_h: 8.8,  shcs_d: 21.0,  shcs_h: 14.0,  shcs_s: 12.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 27.0,   fhcs_h: 7.0,   fhcs_s: 10.0, set_s: 6.0,   pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 16,   hex_af: 24.0, nut_h: 14.8, bolt_h: 10.0, shcs_d: 24.0,  shcs_h: 16.0,  shcs_s: 14.0, bhcs_d: 28.0,  bhcs_h: 8.8,   bhcs_s: 10.0, fhcs_d: 29.01,  fhcs_h: 8.8,   fhcs_s: 10.0, set_s: 8.0,   pan_d: 30.0,  pan_h: 8.8,  slot_w: 4.0,  phil_w: 0    },
-    { dia: 18,   hex_af: 27.0, nut_h: 15.8, bolt_h: 11.5, shcs_d: 27.0,  shcs_h: 18.0,  shcs_s: 14.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 33.0,   fhcs_h: 8.0,   fhcs_s: 12.0, set_s: 10.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 20,   hex_af: 30.0, nut_h: 18.0, bolt_h: 12.5, shcs_d: 30.0,  shcs_h: 20.0,  shcs_s: 17.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 36.05,  fhcs_h: 10.16, fhcs_s: 12.0, set_s: 10.0,  pan_d: 36.0,  pan_h: 10.0, slot_w: 5.0,  phil_w: 0    },
-    { dia: 22,   hex_af: 34.0, nut_h: 19.4, bolt_h: 14.0, shcs_d: 33.0,  shcs_h: 22.0,  shcs_s: 17.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 36.0,   fhcs_h: 13.1,  fhcs_s: 14.0, set_s: 12.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 24,   hex_af: 36.0, nut_h: 21.5, bolt_h: 15.0, shcs_d: 36.0,  shcs_h: 24.0,  shcs_s: 18.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 39.0,   fhcs_h: 14.0,  fhcs_s: 14.0, set_s: 12.0,  pan_d: 44.0,  pan_h: 12.0, slot_w: 6.0,  phil_w: 0    },
-    { dia: 25,   hex_af: 41.0, nut_h: 22.0, bolt_h: 16.0, shcs_d: 37.5,  shcs_h: 25.0,  shcs_s: 19.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 12.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 26,   hex_af: 41.0, nut_h: 22.5, bolt_h: 16.5, shcs_d: 39.0,  shcs_h: 26.0,  shcs_s: 19.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 14.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 27,   hex_af: 41.0, nut_h: 23.8, bolt_h: 17.0, shcs_d: 40.0,  shcs_h: 27.0,  shcs_s: 19.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 0,     pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 28,   hex_af: 41.0, nut_h: 24.0, bolt_h: 18.0, shcs_d: 42.0,  shcs_h: 28.0,  shcs_s: 19.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 14.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 30,   hex_af: 46.0, nut_h: 25.6, bolt_h: 19.0, shcs_d: 45.0,  shcs_h: 30.0,  shcs_s: 22.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 15.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 32,   hex_af: 50.0, nut_h: 27.0, bolt_h: 20.0, shcs_d: 48.0,  shcs_h: 32.0,  shcs_s: 22.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 17.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 33,   hex_af: 50.0, nut_h: 28.7, bolt_h: 21.0, shcs_d: 50.0,  shcs_h: 33.0,  shcs_s: 24.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 0,     pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 35,   hex_af: 55.0, nut_h: 30.0, bolt_h: 22.0, shcs_d: 52.0,  shcs_h: 35.0,  shcs_s: 24.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 17.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 36,   hex_af: 55.0, nut_h: 31.0, bolt_h: 23.0, shcs_d: 54.0,  shcs_h: 36.0,  shcs_s: 27.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 18.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 38,   hex_af: 60.0, nut_h: 32.0, bolt_h: 24.0, shcs_d: 57.0,  shcs_h: 38.0,  shcs_s: 27.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 19.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 39,   hex_af: 60.0, nut_h: 33.4, bolt_h: 25.0, shcs_d: 58.5,  shcs_h: 39.0,  shcs_s: 27.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 19.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 40,   hex_af: 65.0, nut_h: 34.0, bolt_h: 25.5, shcs_d: 60.0,  shcs_h: 40.0,  shcs_s: 27.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 19.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 42,   hex_af: 65.0, nut_h: 34.0, bolt_h: 26.0, shcs_d: 63.0,  shcs_h: 42.0,  shcs_s: 32.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 21.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 45,   hex_af: 70.0, nut_h: 36.0, bolt_h: 28.0, shcs_d: 67.5,  shcs_h: 45.0,  shcs_s: 32.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 22.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 48,   hex_af: 75.0, nut_h: 38.0, bolt_h: 30.0, shcs_d: 72.0,  shcs_h: 48.0,  shcs_s: 36.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 24.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 50,   hex_af: 75.0, nut_h: 40.0, bolt_h: 31.0, shcs_d: 75.0,  shcs_h: 50.0,  shcs_s: 36.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 24.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 52,   hex_af: 80.0, nut_h: 41.0, bolt_h: 33.0, shcs_d: 78.0,  shcs_h: 52.0,  shcs_s: 36.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 27.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 55,   hex_af: 85.0, nut_h: 43.0, bolt_h: 34.0, shcs_d: 82.5,  shcs_h: 55.0,  shcs_s: 41.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 27.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 56,   hex_af: 85.0, nut_h: 45.0, bolt_h: 35.0, shcs_d: 84.0,  shcs_h: 56.0,  shcs_s: 41.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 28.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 58,   hex_af: 90.0, nut_h: 46.0, bolt_h: 36.0, shcs_d: 87.0,  shcs_h: 58.0,  shcs_s: 41.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 28.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 60,   hex_af: 90.0, nut_h: 46.0, bolt_h: 38.0, shcs_d: 90.0,  shcs_h: 60.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 32.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 62,   hex_af: 95.0, nut_h: 49.0, bolt_h: 39.0, shcs_d: 93.0,  shcs_h: 62.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 32.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 64,   hex_af: 95.0, nut_h: 51.0, bolt_h: 40.0, shcs_d: 96.0,  shcs_h: 64.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 32.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 65,   hex_af: 95.0, nut_h: 52.0, bolt_h: 41.0, shcs_d: 97.5,  shcs_h: 65.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 32.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    },
-    { dia: 68,   hex_af: 105.0, nut_h: 54.4, bolt_h: 44.0, shcs_d: 102.0, shcs_h: 68.0,  shcs_s: 46.0, bhcs_d: 0,     bhcs_h: 0,     bhcs_s: 0,    fhcs_d: 0,      fhcs_h: 0,     fhcs_s: 0,    set_s: 36.0,  pan_d: 0,     pan_h: 0,    slot_w: 0,    phil_w: 0    }
-]
-
-# ---------------------------------------------------------------------------
-# Imperial dimension struct — same fields as FastenerDims but typed as Length.
-# DimRow() converts to FastenerDims (mm-as-Number) before returning.
-# ---------------------------------------------------------------------------
-
-type ImperialDims {
-    dia    Length
+    dia Length
     hex_af Length
-    nut_h  Length
+    nut_h Length
     bolt_h Length
     shcs_d Length
     shcs_h Length
@@ -119,80 +43,328 @@ type ImperialDims {
     fhcs_d Length
     fhcs_h Length
     fhcs_s Length
-    set_s  Length
-    pan_d  Length
-    pan_h  Length
+    set_s Length
+    pan_d Length
+    pan_h Length
     slot_w Length
     phil_w Length
 }
 
 # ---------------------------------------------------------------------------
+# ISO Metric Dimension Table
+# ---------------------------------------------------------------------------
+const METRIC = []FastenerDims[
+    {
+        dia: 2 mm, hex_af: 4.0 mm, nut_h: 1.6 mm, bolt_h: 1.4 mm, shcs_d: 3.8 mm,
+        shcs_h: 2.0 mm, shcs_s: 1.5 mm, bhcs_d: 3.8 mm, bhcs_h: 1.3 mm,
+        bhcs_s: 1.3 mm, fhcs_d: 3.8 mm, fhcs_h: 1.2 mm, fhcs_s: 1.3 mm,
+        set_s: 0.9 mm, pan_d: 4.0 mm, pan_h: 1.3 mm, slot_w: 0.5 mm,
+        phil_w: 1.4 mm
+    },
+    {
+        dia: 2.5 mm, hex_af: 5.0 mm, nut_h: 2.0 mm, bolt_h: 1.7 mm,
+        shcs_d: 4.5 mm, shcs_h: 2.5 mm, shcs_s: 2.0 mm, bhcs_d: 4.7 mm,
+        bhcs_h: 1.5 mm, bhcs_s: 1.5 mm, fhcs_d: 4.7 mm, fhcs_h: 1.5 mm,
+        fhcs_s: 1.5 mm, set_s: 1.3 mm, pan_d: 5.0 mm, pan_h: 1.7 mm,
+        slot_w: 0.6 mm, phil_w: 1.8 mm
+    },
+    {
+        dia: 3 mm, hex_af: 5.5 mm, nut_h: 2.4 mm, bolt_h: 2.0 mm, shcs_d: 5.5 mm,
+        shcs_h: 3.0 mm, shcs_s: 2.5 mm, bhcs_d: 5.7 mm, bhcs_h: 1.65 mm,
+        bhcs_s: 2.0 mm, fhcs_d: 5.54 mm, fhcs_h: 1.86 mm, fhcs_s: 2.0 mm,
+        set_s: 1.5 mm, pan_d: 6.0 mm, pan_h: 2.0 mm, slot_w: 0.8 mm,
+        phil_w: 2.1 mm
+    },
+    {
+        dia: 3.5 mm, hex_af: 6.0 mm, nut_h: 2.8 mm, bolt_h: 2.4 mm,
+        pan_d: 7.0 mm, pan_h: 2.1 mm, slot_w: 1.0 mm
+    },
+    {
+        dia: 4 mm, hex_af: 7.0 mm, nut_h: 3.2 mm, bolt_h: 2.8 mm, shcs_d: 7.0 mm,
+        shcs_h: 4.0 mm, shcs_s: 3.0 mm, bhcs_d: 7.6 mm, bhcs_h: 2.2 mm,
+        bhcs_s: 2.5 mm, fhcs_d: 7.53 mm, fhcs_h: 2.48 mm, fhcs_s: 2.5 mm,
+        set_s: 2.0 mm, pan_d: 8.0 mm, pan_h: 2.6 mm, slot_w: 1.0 mm,
+        phil_w: 2.6 mm
+    },
+    {
+        dia: 5 mm, hex_af: 8.0 mm, nut_h: 4.7 mm, bolt_h: 3.5 mm, shcs_d: 8.5 mm,
+        shcs_h: 5.0 mm, shcs_s: 4.0 mm, bhcs_d: 9.5 mm, bhcs_h: 2.75 mm,
+        bhcs_s: 3.0 mm, fhcs_d: 9.43 mm, fhcs_h: 3.1 mm, fhcs_s: 3.0 mm,
+        set_s: 2.5 mm, pan_d: 10.0 mm, pan_h: 3.3 mm, slot_w: 1.2 mm,
+        phil_w: 3.3 mm
+    },
+    {
+        dia: 6 mm, hex_af: 10.0 mm, nut_h: 5.2 mm, bolt_h: 4.0 mm,
+        shcs_d: 10.0 mm, shcs_h: 6.0 mm, shcs_s: 5.0 mm, bhcs_d: 10.5 mm,
+        bhcs_h: 3.3 mm, bhcs_s: 4.0 mm, fhcs_d: 11.34 mm, fhcs_h: 3.72 mm,
+        fhcs_s: 4.0 mm, set_s: 3.0 mm, pan_d: 12.0 mm, pan_h: 3.9 mm,
+        slot_w: 1.6 mm, phil_w: 4.1 mm
+    },
+    {
+        dia: 8 mm, hex_af: 13.0 mm, nut_h: 6.8 mm, bolt_h: 5.3 mm,
+        shcs_d: 13.0 mm, shcs_h: 8.0 mm, shcs_s: 6.0 mm, bhcs_d: 14.0 mm,
+        bhcs_h: 4.4 mm, bhcs_s: 5.0 mm, fhcs_d: 15.24 mm, fhcs_h: 4.96 mm,
+        fhcs_s: 5.0 mm, set_s: 4.0 mm, pan_d: 16.0 mm, pan_h: 5.0 mm,
+        slot_w: 2.0 mm, phil_w: 5.1 mm
+    },
+    {
+        dia: 10 mm, hex_af: 16.0 mm, nut_h: 8.4 mm, bolt_h: 6.4 mm,
+        shcs_d: 16.0 mm, shcs_h: 10.0 mm, shcs_s: 8.0 mm, bhcs_d: 17.5 mm,
+        bhcs_h: 5.5 mm, bhcs_s: 6.0 mm, fhcs_d: 19.22 mm, fhcs_h: 6.2 mm,
+        fhcs_s: 6.0 mm, set_s: 5.0 mm, pan_d: 20.0 mm, pan_h: 6.0 mm,
+        slot_w: 2.5 mm, phil_w: 6.1 mm
+    },
+    {
+        dia: 12 mm, hex_af: 18.0 mm, nut_h: 10.8 mm, bolt_h: 7.5 mm,
+        shcs_d: 18.0 mm, shcs_h: 12.0 mm, shcs_s: 10.0 mm, bhcs_d: 21.0 mm,
+        bhcs_h: 6.6 mm, bhcs_s: 8.0 mm, fhcs_d: 23.12 mm, fhcs_h: 7.44 mm,
+        fhcs_s: 8.0 mm, set_s: 6.0 mm, pan_d: 24.0 mm, pan_h: 7.0 mm,
+        slot_w: 3.0 mm, phil_w: 7.1 mm
+    },
+    {
+        dia: 14 mm, hex_af: 21.0 mm, nut_h: 12.8 mm, bolt_h: 8.8 mm,
+        shcs_d: 21.0 mm, shcs_h: 14.0 mm, shcs_s: 12.0 mm, fhcs_d: 27.0 mm,
+        fhcs_h: 7.0 mm, fhcs_s: 10.0 mm, set_s: 6.0 mm
+    },
+    {
+        dia: 16 mm, hex_af: 24.0 mm, nut_h: 14.8 mm, bolt_h: 10.0 mm,
+        shcs_d: 24.0 mm, shcs_h: 16.0 mm, shcs_s: 14.0 mm, bhcs_d: 28.0 mm,
+        bhcs_h: 8.8 mm, bhcs_s: 10.0 mm, fhcs_d: 29.01 mm, fhcs_h: 8.8 mm,
+        fhcs_s: 10.0 mm, set_s: 8.0 mm, pan_d: 30.0 mm, pan_h: 8.8 mm,
+        slot_w: 4.0 mm
+    },
+    {
+        dia: 18 mm, hex_af: 27.0 mm, nut_h: 15.8 mm, bolt_h: 11.5 mm,
+        shcs_d: 27.0 mm, shcs_h: 18.0 mm, shcs_s: 14.0 mm, fhcs_d: 33.0 mm,
+        fhcs_h: 8.0 mm, fhcs_s: 12.0 mm, set_s: 10.0 mm
+    },
+    {
+        dia: 20 mm, hex_af: 30.0 mm, nut_h: 18.0 mm, bolt_h: 12.5 mm,
+        shcs_d: 30.0 mm, shcs_h: 20.0 mm, shcs_s: 17.0 mm, fhcs_d: 36.05 mm,
+        fhcs_h: 10.16 mm, fhcs_s: 12.0 mm, set_s: 10.0 mm, pan_d: 36.0 mm,
+        pan_h: 10.0 mm, slot_w: 5.0 mm
+    },
+    {
+        dia: 22 mm, hex_af: 34.0 mm, nut_h: 19.4 mm, bolt_h: 14.0 mm,
+        shcs_d: 33.0 mm, shcs_h: 22.0 mm, shcs_s: 17.0 mm, fhcs_d: 36.0 mm,
+        fhcs_h: 13.1 mm, fhcs_s: 14.0 mm, set_s: 12.0 mm
+    },
+    {
+        dia: 24 mm, hex_af: 36.0 mm, nut_h: 21.5 mm, bolt_h: 15.0 mm,
+        shcs_d: 36.0 mm, shcs_h: 24.0 mm, shcs_s: 18.0 mm, fhcs_d: 39.0 mm,
+        fhcs_h: 14.0 mm, fhcs_s: 14.0 mm, set_s: 12.0 mm, pan_d: 44.0 mm,
+        pan_h: 12.0 mm, slot_w: 6.0 mm
+    },
+    {
+        dia: 25 mm, hex_af: 41.0 mm, nut_h: 22.0 mm, bolt_h: 16.0 mm,
+        shcs_d: 37.5 mm, shcs_h: 25.0 mm, shcs_s: 19.0 mm, set_s: 12.0 mm
+    },
+    {
+        dia: 26 mm, hex_af: 41.0 mm, nut_h: 22.5 mm, bolt_h: 16.5 mm,
+        shcs_d: 39.0 mm, shcs_h: 26.0 mm, shcs_s: 19.0 mm, set_s: 14.0 mm
+    },
+    {
+        dia: 27 mm, hex_af: 41.0 mm, nut_h: 23.8 mm, bolt_h: 17.0 mm,
+        shcs_d: 40.0 mm, shcs_h: 27.0 mm, shcs_s: 19.0 mm
+    },
+    {
+        dia: 28 mm, hex_af: 41.0 mm, nut_h: 24.0 mm, bolt_h: 18.0 mm,
+        shcs_d: 42.0 mm, shcs_h: 28.0 mm, shcs_s: 19.0 mm, set_s: 14.0 mm
+    },
+    {
+        dia: 30 mm, hex_af: 46.0 mm, nut_h: 25.6 mm, bolt_h: 19.0 mm,
+        shcs_d: 45.0 mm, shcs_h: 30.0 mm, shcs_s: 22.0 mm, set_s: 15.0 mm
+    },
+    {
+        dia: 32 mm, hex_af: 50.0 mm, nut_h: 27.0 mm, bolt_h: 20.0 mm,
+        shcs_d: 48.0 mm, shcs_h: 32.0 mm, shcs_s: 22.0 mm, set_s: 17.0 mm
+    },
+    {
+        dia: 33 mm, hex_af: 50.0 mm, nut_h: 28.7 mm, bolt_h: 21.0 mm,
+        shcs_d: 50.0 mm, shcs_h: 33.0 mm, shcs_s: 24.0 mm
+    },
+    {
+        dia: 35 mm, hex_af: 55.0 mm, nut_h: 30.0 mm, bolt_h: 22.0 mm,
+        shcs_d: 52.0 mm, shcs_h: 35.0 mm, shcs_s: 24.0 mm, set_s: 17.0 mm
+    },
+    {
+        dia: 36 mm, hex_af: 55.0 mm, nut_h: 31.0 mm, bolt_h: 23.0 mm,
+        shcs_d: 54.0 mm, shcs_h: 36.0 mm, shcs_s: 27.0 mm, set_s: 18.0 mm
+    },
+    {
+        dia: 38 mm, hex_af: 60.0 mm, nut_h: 32.0 mm, bolt_h: 24.0 mm,
+        shcs_d: 57.0 mm, shcs_h: 38.0 mm, shcs_s: 27.0 mm, set_s: 19.0 mm
+    },
+    {
+        dia: 39 mm, hex_af: 60.0 mm, nut_h: 33.4 mm, bolt_h: 25.0 mm,
+        shcs_d: 58.5 mm, shcs_h: 39.0 mm, shcs_s: 27.0 mm, set_s: 19.0 mm
+    },
+    {
+        dia: 40 mm, hex_af: 65.0 mm, nut_h: 34.0 mm, bolt_h: 25.5 mm,
+        shcs_d: 60.0 mm, shcs_h: 40.0 mm, shcs_s: 27.0 mm, set_s: 19.0 mm
+    },
+    {
+        dia: 42 mm, hex_af: 65.0 mm, nut_h: 34.0 mm, bolt_h: 26.0 mm,
+        shcs_d: 63.0 mm, shcs_h: 42.0 mm, shcs_s: 32.0 mm, set_s: 21.0 mm
+    },
+    {
+        dia: 45 mm, hex_af: 70.0 mm, nut_h: 36.0 mm, bolt_h: 28.0 mm,
+        shcs_d: 67.5 mm, shcs_h: 45.0 mm, shcs_s: 32.0 mm, set_s: 22.0 mm
+    },
+    {
+        dia: 48 mm, hex_af: 75.0 mm, nut_h: 38.0 mm, bolt_h: 30.0 mm,
+        shcs_d: 72.0 mm, shcs_h: 48.0 mm, shcs_s: 36.0 mm, set_s: 24.0 mm
+    },
+    {
+        dia: 50 mm, hex_af: 75.0 mm, nut_h: 40.0 mm, bolt_h: 31.0 mm,
+        shcs_d: 75.0 mm, shcs_h: 50.0 mm, shcs_s: 36.0 mm, set_s: 24.0 mm
+    },
+    {
+        dia: 52 mm, hex_af: 80.0 mm, nut_h: 41.0 mm, bolt_h: 33.0 mm,
+        shcs_d: 78.0 mm, shcs_h: 52.0 mm, shcs_s: 36.0 mm, set_s: 27.0 mm
+    },
+    {
+        dia: 55 mm, hex_af: 85.0 mm, nut_h: 43.0 mm, bolt_h: 34.0 mm,
+        shcs_d: 82.5 mm, shcs_h: 55.0 mm, shcs_s: 41.0 mm, set_s: 27.0 mm
+    },
+    {
+        dia: 56 mm, hex_af: 85.0 mm, nut_h: 45.0 mm, bolt_h: 35.0 mm,
+        shcs_d: 84.0 mm, shcs_h: 56.0 mm, shcs_s: 41.0 mm, set_s: 28.0 mm
+    },
+    {
+        dia: 58 mm, hex_af: 90.0 mm, nut_h: 46.0 mm, bolt_h: 36.0 mm,
+        shcs_d: 87.0 mm, shcs_h: 58.0 mm, shcs_s: 41.0 mm, set_s: 28.0 mm
+    },
+    {
+        dia: 60 mm, hex_af: 90.0 mm, nut_h: 46.0 mm, bolt_h: 38.0 mm,
+        shcs_d: 90.0 mm, shcs_h: 60.0 mm, shcs_s: 46.0 mm, set_s: 32.0 mm
+    },
+    {
+        dia: 62 mm, hex_af: 95.0 mm, nut_h: 49.0 mm, bolt_h: 39.0 mm,
+        shcs_d: 93.0 mm, shcs_h: 62.0 mm, shcs_s: 46.0 mm, set_s: 32.0 mm
+    },
+    {
+        dia: 64 mm, hex_af: 95.0 mm, nut_h: 51.0 mm, bolt_h: 40.0 mm,
+        shcs_d: 96.0 mm, shcs_h: 64.0 mm, shcs_s: 46.0 mm, set_s: 32.0 mm
+    },
+    {
+        dia: 65 mm, hex_af: 95.0 mm, nut_h: 52.0 mm, bolt_h: 41.0 mm,
+        shcs_d: 97.5 mm, shcs_h: 65.0 mm, shcs_s: 46.0 mm, set_s: 32.0 mm
+    },
+    {
+        dia: 68 mm, hex_af: 105.0 mm, nut_h: 54.4 mm, bolt_h: 44.0 mm,
+        shcs_d: 102.0 mm, shcs_h: 68.0 mm, shcs_s: 46.0 mm, set_s: 36.0 mm
+    }
+]
+
+# ---------------------------------------------------------------------------
 # Imperial Dimension Table (ASME B18.2.1, B18.2.2, B18.3, B18.6.3)
-#
-# All dimensions use `in` suffix; DimRow() converts to mm-as-Number via Number().
+# 
+# All dimensions use `in` suffix — Length values like the metric table.
 # Numbered sizes (#4-#10) have no hex bolts (bolt_head_h=0).
 # 7/16-3/4 have no pan head screws.
 # ---------------------------------------------------------------------------
-
-const IMPERIAL = []ImperialDims[
-    { dia: 0.112 in, hex_af: 1/4 in,   nut_h: 3/32 in,  bolt_h: 0 in,     shcs_d: 0.183 in, shcs_h: 0.112 in, shcs_s: 3/32 in,  bhcs_d: 0.225 in, bhcs_h: 0.075 in, bhcs_s: 5/64 in,  fhcs_d: 0.225 in, fhcs_h: 0.060 in, fhcs_s: 5/64 in,  set_s: 0.050 in, pan_d: 0.219 in, pan_h: 0.093 in, slot_w: 0.039 in, phil_w: 0.059 in },
-    { dia: 0.138 in, hex_af: 5/16 in,  nut_h: 7/64 in,  bolt_h: 0 in,     shcs_d: 0.226 in, shcs_h: 0.138 in, shcs_s: 7/64 in,  bhcs_d: 0.279 in, bhcs_h: 0.093 in, bhcs_s: 7/64 in,  fhcs_d: 0.279 in, fhcs_h: 0.073 in, fhcs_s: 7/64 in,  set_s: 1/16 in,  pan_d: 0.262 in, pan_h: 0.110 in, slot_w: 0.048 in, phil_w: 0.071 in },
-    { dia: 0.164 in, hex_af: 11/32 in, nut_h: 1/8 in,   bolt_h: 0 in,     shcs_d: 0.270 in, shcs_h: 0.164 in, shcs_s: 9/64 in,  bhcs_d: 0.332 in, bhcs_h: 0.110 in, bhcs_s: 9/64 in,  fhcs_d: 0.332 in, fhcs_h: 0.087 in, fhcs_s: 9/64 in,  set_s: 5/64 in,  pan_d: 0.306 in, pan_h: 0.128 in, slot_w: 0.054 in, phil_w: 0.083 in },
-    { dia: 0.190 in, hex_af: 3/8 in,   nut_h: 1/8 in,   bolt_h: 0 in,     shcs_d: 0.312 in, shcs_h: 0.190 in, shcs_s: 5/32 in,  bhcs_d: 0.385 in, bhcs_h: 0.128 in, bhcs_s: 5/32 in,  fhcs_d: 0.385 in, fhcs_h: 0.100 in, fhcs_s: 5/32 in,  set_s: 3/32 in,  pan_d: 0.350 in, pan_h: 0.144 in, slot_w: 0.060 in, phil_w: 0.091 in },
-    { dia: 1/4 in,   hex_af: 7/16 in,  nut_h: 7/32 in,  bolt_h: 11/64 in, shcs_d: 3/8 in,   shcs_h: 1/4 in,   shcs_s: 3/16 in,  bhcs_d: 1/2 in,   bhcs_h: 5/32 in,  bhcs_s: 5/32 in,  fhcs_d: 0.452 in, fhcs_h: 0.117 in, fhcs_s: 5/32 in,  set_s: 1/8 in,   pan_d: 0.492 in, pan_h: 0.175 in, slot_w: 0.075 in, phil_w: 0 in     },
-    { dia: 5/16 in,  hex_af: 1/2 in,   nut_h: 17/64 in, bolt_h: 7/32 in,  shcs_d: 7/16 in,  shcs_h: 5/16 in,  shcs_s: 1/4 in,   bhcs_d: 5/8 in,   bhcs_h: 13/64 in, bhcs_s: 3/16 in,  fhcs_d: 0.531 in, fhcs_h: 0.151 in, fhcs_s: 3/16 in,  set_s: 5/32 in,  pan_d: 0.615 in, pan_h: 0.218 in, slot_w: 0.084 in, phil_w: 0 in     },
-    { dia: 3/8 in,   hex_af: 9/16 in,  nut_h: 21/64 in, bolt_h: 1/4 in,   shcs_d: 9/16 in,  shcs_h: 3/8 in,   shcs_s: 5/16 in,  bhcs_d: 3/4 in,   bhcs_h: 15/64 in, bhcs_s: 7/32 in,  fhcs_d: 0.656 in, fhcs_h: 0.185 in, fhcs_s: 7/32 in,  set_s: 3/16 in,  pan_d: 0.740 in, pan_h: 0.261 in, slot_w: 0.094 in, phil_w: 0 in     },
-    { dia: 7/16 in,  hex_af: 11/16 in, nut_h: 3/8 in,   bolt_h: 19/64 in, shcs_d: 5/8 in,   shcs_h: 7/16 in,  shcs_s: 3/8 in,   bhcs_d: 7/8 in,   bhcs_h: 17/64 in, bhcs_s: 1/4 in,   fhcs_d: 3/4 in,   fhcs_h: 0.210 in, fhcs_s: 1/4 in,   set_s: 7/32 in,  pan_d: 0 in,     pan_h: 0 in,     slot_w: 0 in,     phil_w: 0 in     },
-    { dia: 1/2 in,   hex_af: 3/4 in,   nut_h: 7/16 in,  bolt_h: 11/32 in, shcs_d: 3/4 in,   shcs_h: 1/2 in,   shcs_s: 3/8 in,   bhcs_d: 1 in,     bhcs_h: 5/16 in,  bhcs_s: 5/16 in,  fhcs_d: 0.812 in, fhcs_h: 0.223 in, fhcs_s: 5/16 in,  set_s: 1/4 in,   pan_d: 0 in,     pan_h: 0 in,     slot_w: 0 in,     phil_w: 0 in     },
-    { dia: 5/8 in,   hex_af: 15/16 in, nut_h: 35/64 in, bolt_h: 27/64 in, shcs_d: 7/8 in,   shcs_h: 5/8 in,   shcs_s: 1/2 in,   bhcs_d: 5/4 in,   bhcs_h: 3/8 in,   bhcs_s: 3/8 in,   fhcs_d: 1 in,     fhcs_h: 0.283 in, fhcs_s: 3/8 in,   set_s: 5/16 in,  pan_d: 0 in,     pan_h: 0 in,     slot_w: 0 in,     phil_w: 0 in     },
-    { dia: 3/4 in,   hex_af: 9/8 in,   nut_h: 41/64 in, bolt_h: 1/2 in,   shcs_d: 9/8 in,   shcs_h: 3/4 in,   shcs_s: 5/8 in,   bhcs_d: 3/2 in,   bhcs_h: 7/16 in,  bhcs_s: 7/16 in,  fhcs_d: 9/8 in,   fhcs_h: 0.335 in, fhcs_s: 7/16 in,  set_s: 3/8 in,   pan_d: 0 in,     pan_h: 0 in,     slot_w: 0 in,     phil_w: 0 in     }
+const IMPERIAL = []FastenerDims[
+    {
+        dia: 0.112 in, hex_af: 1/4 in, nut_h: 3/32 in, shcs_d: 0.183 in,
+        shcs_h: 0.112 in, shcs_s: 3/32 in, bhcs_d: 0.225 in, bhcs_h: 0.075 in,
+        bhcs_s: 5/64 in, fhcs_d: 0.225 in, fhcs_h: 0.060 in, fhcs_s: 5/64 in,
+        set_s: 0.050 in, pan_d: 0.219 in, pan_h: 0.093 in, slot_w: 0.039 in,
+        phil_w: 0.059 in
+    },
+    {
+        dia: 0.138 in, hex_af: 5/16 in, nut_h: 7/64 in, shcs_d: 0.226 in,
+        shcs_h: 0.138 in, shcs_s: 7/64 in, bhcs_d: 0.279 in, bhcs_h: 0.093 in,
+        bhcs_s: 7/64 in, fhcs_d: 0.279 in, fhcs_h: 0.073 in, fhcs_s: 7/64 in,
+        set_s: 1/16 in, pan_d: 0.262 in, pan_h: 0.110 in, slot_w: 0.048 in,
+        phil_w: 0.071 in
+    },
+    {
+        dia: 0.164 in, hex_af: 11/32 in, nut_h: 1/8 in, shcs_d: 0.270 in,
+        shcs_h: 0.164 in, shcs_s: 9/64 in, bhcs_d: 0.332 in, bhcs_h: 0.110 in,
+        bhcs_s: 9/64 in, fhcs_d: 0.332 in, fhcs_h: 0.087 in, fhcs_s: 9/64 in,
+        set_s: 5/64 in, pan_d: 0.306 in, pan_h: 0.128 in, slot_w: 0.054 in,
+        phil_w: 0.083 in
+    },
+    {
+        dia: 0.190 in, hex_af: 3/8 in, nut_h: 1/8 in, shcs_d: 0.312 in,
+        shcs_h: 0.190 in, shcs_s: 5/32 in, bhcs_d: 0.385 in, bhcs_h: 0.128 in,
+        bhcs_s: 5/32 in, fhcs_d: 0.385 in, fhcs_h: 0.100 in, fhcs_s: 5/32 in,
+        set_s: 3/32 in, pan_d: 0.350 in, pan_h: 0.144 in, slot_w: 0.060 in,
+        phil_w: 0.091 in
+    },
+    {
+        dia: 1/4 in, hex_af: 7/16 in, nut_h: 7/32 in, bolt_h: 11/64 in,
+        shcs_d: 3/8 in, shcs_h: 1/4 in, shcs_s: 3/16 in, bhcs_d: 1/2 in,
+        bhcs_h: 5/32 in, bhcs_s: 5/32 in, fhcs_d: 0.452 in, fhcs_h: 0.117 in,
+        fhcs_s: 5/32 in, set_s: 1/8 in, pan_d: 0.492 in, pan_h: 0.175 in,
+        slot_w: 0.075 in
+    },
+    {
+        dia: 5/16 in, hex_af: 1/2 in, nut_h: 17/64 in, bolt_h: 7/32 in,
+        shcs_d: 7/16 in, shcs_h: 5/16 in, shcs_s: 1/4 in, bhcs_d: 5/8 in,
+        bhcs_h: 13/64 in, bhcs_s: 3/16 in, fhcs_d: 0.531 in, fhcs_h: 0.151 in,
+        fhcs_s: 3/16 in, set_s: 5/32 in, pan_d: 0.615 in, pan_h: 0.218 in,
+        slot_w: 0.084 in
+    },
+    {
+        dia: 3/8 in, hex_af: 9/16 in, nut_h: 21/64 in, bolt_h: 1/4 in,
+        shcs_d: 9/16 in, shcs_h: 3/8 in, shcs_s: 5/16 in, bhcs_d: 3/4 in,
+        bhcs_h: 15/64 in, bhcs_s: 7/32 in, fhcs_d: 0.656 in, fhcs_h: 0.185 in,
+        fhcs_s: 7/32 in, set_s: 3/16 in, pan_d: 0.740 in, pan_h: 0.261 in,
+        slot_w: 0.094 in
+    },
+    {
+        dia: 7/16 in, hex_af: 11/16 in, nut_h: 3/8 in, bolt_h: 19/64 in,
+        shcs_d: 5/8 in, shcs_h: 7/16 in, shcs_s: 3/8 in, bhcs_d: 7/8 in,
+        bhcs_h: 17/64 in, bhcs_s: 1/4 in, fhcs_d: 3/4 in, fhcs_h: 0.210 in,
+        fhcs_s: 1/4 in, set_s: 7/32 in
+    },
+    {
+        dia: 1/2 in, hex_af: 3/4 in, nut_h: 7/16 in, bolt_h: 11/32 in,
+        shcs_d: 3/4 in, shcs_h: 1/2 in, shcs_s: 3/8 in, bhcs_d: 1 in,
+        bhcs_h: 5/16 in, bhcs_s: 5/16 in, fhcs_d: 0.812 in, fhcs_h: 0.223 in,
+        fhcs_s: 5/16 in, set_s: 1/4 in
+    },
+    {
+        dia: 5/8 in, hex_af: 15/16 in, nut_h: 35/64 in, bolt_h: 27/64 in,
+        shcs_d: 7/8 in, shcs_h: 5/8 in, shcs_s: 1/2 in, bhcs_d: 5/4 in,
+        bhcs_h: 3/8 in, bhcs_s: 3/8 in, fhcs_d: 1 in, fhcs_h: 0.283 in,
+        fhcs_s: 3/8 in, set_s: 5/16 in
+    },
+    {
+        dia: 3/4 in, hex_af: 9/8 in, nut_h: 41/64 in, bolt_h: 1/2 in,
+        shcs_d: 9/8 in, shcs_h: 3/4 in, shcs_s: 5/8 in, bhcs_d: 3/2 in,
+        bhcs_h: 7/16 in, bhcs_s: 7/16 in, fhcs_d: 9/8 in, fhcs_h: 0.335 in,
+        fhcs_s: 7/16 in, set_s: 3/8 in
+    }
 ]
 
 # Looks up a row by diameter — tries METRIC first, then IMPERIAL.
-# Imperial values use `in` suffix and are converted to mm-as-Number before
-# returning, so constructors can use `row.field * 1 mm` uniformly.
 fn DimRow(d Length) FastenerDims {
-    var v = Number(from: d)
     var m = for i [0:<Size(of: METRIC)] {
-        if METRIC[i].dia == v { yield METRIC[i]; }
+        if METRIC[i].dia == d {
+            yield METRIC[i]
+        }
     }
     if Size(of: m) > 0 {
         return m[0]
     }
     var imp = for i [0:<Size(of: IMPERIAL)] {
-        if Abs(a: Number(from: IMPERIAL[i].dia) - v) < 0.025 { yield IMPERIAL[i]; }
+        if IMPERIAL[i].dia - d < 0.025 mm && d - IMPERIAL[i].dia < 0.025 mm {
+            yield IMPERIAL[i]
+        }
     }
     assert Size(of: imp) > 0, "unsupported fastener diameter"
-    var row = imp[0]
-    return FastenerDims{
-        dia:    Number(from: row.dia),
-        hex_af: Number(from: row.hex_af),
-        nut_h:  Number(from: row.nut_h),
-        bolt_h: Number(from: row.bolt_h),
-        shcs_d: Number(from: row.shcs_d),
-        shcs_h: Number(from: row.shcs_h),
-        shcs_s: Number(from: row.shcs_s),
-        bhcs_d: Number(from: row.bhcs_d),
-        bhcs_h: Number(from: row.bhcs_h),
-        bhcs_s: Number(from: row.bhcs_s),
-        fhcs_d: Number(from: row.fhcs_d),
-        fhcs_h: Number(from: row.fhcs_h),
-        fhcs_s: Number(from: row.fhcs_s),
-        set_s:  Number(from: row.set_s),
-        pan_d:  Number(from: row.pan_d),
-        pan_h:  Number(from: row.pan_h),
-        slot_w: Number(from: row.slot_w),
-        phil_w: Number(from: row.phil_w)
-    }
+    return imp[0]
 }
 
 # ---------------------------------------------------------------------------
 # HexNut — ISO 4032 hex nut
-#
+# 
 # Hex prism body minus internal thread.
 # Centered at origin, body from Z=0 upward (+Z).
 # ---------------------------------------------------------------------------
-
 type HexNut {
     thread T.Thread
     hex_af Length
@@ -203,11 +375,7 @@ type HexNut {
 fn HexNut(size String) HexNut {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    return HexNut {
-        thread: t,
-        hex_af: row.hex_af * 1 mm,
-        nut_h: row.nut_h * 1 mm
-    }
+    return HexNut{thread: t, hex_af: row.hex_af, nut_h: row.nut_h}
 }
 
 # Renders the hex nut as a solid.
@@ -219,11 +387,10 @@ fn HexNut.Solid() Solid {
 
 # ---------------------------------------------------------------------------
 # CapNut — DIN 1587 cap nut (acorn nut)
-#
+# 
 # Hex base with a domed cap covering the bolt end.
 # Centered at origin, body from Z=0 upward (+Z).
 # ---------------------------------------------------------------------------
-
 type CapNut {
     thread T.Thread
     hex_af Length
@@ -235,26 +402,20 @@ type CapNut {
 fn CapNut(size String) CapNut {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    var af = row.hex_af * 1 mm
-    return CapNut {
-        thread: t,
-        hex_af: af,
-        base_h: row.nut_h * 1 mm,
-        dome_h: af * 0.45
-    }
+    var af = row.hex_af
+    return CapNut{thread: t, hex_af: af, base_h: row.nut_h, dome_h: af * 0.45}
 }
 
 # Renders the cap nut as a solid.
 fn CapNut.Solid() Solid {
     var hex = HexSketch(flat: self.hex_af).Extrude(height: self.base_h)
-
     # Dome: sphere section clipped above the hex base.
     # Use the flat-to-flat radius (hex_af/2), not the corner radius,
     # so the dome sits flush with the hex flats.
     var dh = self.dome_h
     var flat_r = self.hex_af / 2
-    var fr_num = flat_r / (1 mm)
-    var dh_num = dh / (1 mm)
+    var fr_num = flat_r / 1 mm
+    var dh_num = dh / 1 mm
     var R_num = (fr_num * fr_num + dh_num * dh_num) / (2 * dh_num)
     var R = R_num * 1 mm
     var sphere = Sphere(radius: R)
@@ -262,20 +423,17 @@ fn CapNut.Solid() Solid {
     var clip = Cylinder(bottom: flat_r, top: flat_r, height: dh)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: self.base_h})
     var dome = sphere & clip
-
     # Internal thread — blind hole through hex base only.
     var internal = self.thread.Inside(length: self.base_h)
-
-    return (hex + dome) - internal
+    return hex + dome - internal
 }
 
 # ---------------------------------------------------------------------------
 # WingNut — DIN 315 wing nut
-#
+# 
 # Central threaded hub with two flat wings.
 # Centered at origin, body from Z=0 upward (+Z).
 # ---------------------------------------------------------------------------
-
 type WingNut {
     thread T.Thread
     major_d Length
@@ -290,24 +448,22 @@ type WingNut {
 fn WingNut(size String) WingNut {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    var af = row.hex_af * 1 mm
-    var nh = row.nut_h * 1 mm
+    var af = row.hex_af
+    var nh = row.nut_h
     var md = t.major_diameter
-    return WingNut {
-        thread: t,
-        major_d: md,
-        hub_d: md * 1.7,
-        hub_h: nh,
-        wing_span: af * 0.9,
-        wing_h: nh * 2.5,
-        wing_t: md * 0.45
+    return WingNut{
+        thread: t, major_d: md, hub_d: md * 1.7, hub_h: nh, wing_span: af * 0.9,
+        wing_h: nh * 2.5, wing_t: md * 0.45
     }
 }
 
 # Renders the wing nut as a solid.
 fn WingNut.Solid() Solid {
-    var hub = Cylinder(bottom: self.hub_d / 2, top: self.hub_d / 2, height: self.hub_h)
-
+    var hub = Cylinder(
+        bottom: self.hub_d / 2,
+        top: self.hub_d / 2,
+        height: self.hub_h
+    )
     var ws = self.wing_span
     var wh = self.wing_h
     var wt = self.wing_t
@@ -316,21 +472,20 @@ fn WingNut.Solid() Solid {
     var overlap = hr * 0.3
     var cap_w = ws + overlap
     var body_h = wh - cap_w / 2
-
     # Right wing (+X): V-shaped profile, narrow at bottom, wide at top,
     # extends slightly over the hub at the top.
     # Profile in XY (X = radial from hub surface, Y = height),
     # extruded in Z for thickness, then rotated upright.
-    var wing_body = Polygon(points: []Vec2[
-        {x: 0 mm, y: 0 mm},
-        {x: base_w, y: 0 mm},
-        {x: ws, y: body_h},
-        {x: -overlap, y: body_h}
-    ]).Extrude(height: wt)
-        .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: -wt / 2})
+    var wing_body = Polygon(
+        points: []Vec2[
+            {x: 0 mm, y: 0 mm},
+            {x: base_w, y: 0 mm},
+            {x: ws, y: body_h},
+            {x: -overlap, y: body_h}
+        ]
+    ).Extrude(height: wt).Translate(v: Vec3{x: 0 mm, y: 0 mm, z: -wt / 2})
         .RotateX(angle: 90 deg, pivot: WorldOrigin)
         .Translate(v: Vec3{x: hr, y: 0 mm, z: 0 mm})
-
     # Rounded cap on top of wing
     var cap_cx = hr - overlap + cap_w / 2
     var cap = Cylinder(bottom: cap_w / 2, top: cap_w / 2, height: wt)
@@ -338,23 +493,21 @@ fn WingNut.Solid() Solid {
         .RotateX(angle: 90 deg, pivot: WorldOrigin)
         .Translate(v: Vec3{x: cap_cx, y: 0 mm, z: body_h})
     var clip = Cube(size: Vec3{x: cap_w + 1 mm, y: wt + 1 mm, z: cap_w / 2})
-        .Translate(v: Vec3{x: cap_cx - (cap_w + 1 mm) / 2, y: -(wt + 1 mm) / 2, z: body_h})
+        .Translate(
+        v: Vec3{x: cap_cx - (cap_w + 1 mm) / 2, y: -(wt + 1 mm) / 2, z: body_h}
+    )
     var wing_r = wing_body + (cap & clip)
-
     # Left wing (-X): mirror of right wing around Z axis at origin
     var wing_l = wing_r.RotateZ(angle: 180 deg, pivot: WorldOrigin)
-
     var internal = self.thread.Inside(length: self.hub_h)
-
-    return (hub + wing_r + wing_l) - internal
+    return hub + wing_r + wing_l - internal
 }
 
 # ---------------------------------------------------------------------------
 # Washer — DIN 125 flat washer
-#
+# 
 # Flat annular ring. Centered at origin, body from Z=0 upward (+Z).
 # ---------------------------------------------------------------------------
-
 type Washer {
     bore_d Length
     outer_d Length
@@ -365,27 +518,29 @@ type Washer {
 fn Washer(size String) Washer {
     var t = T.Thread(size: size)
     var md = t.major_diameter
-    return Washer {
-        bore_d: md * 1.05,
-        outer_d: md * 2,
-        thickness: md * 0.2
-    }
+    return Washer{bore_d: md * 1.05, outer_d: md * 2, thickness: md * 0.2}
 }
 
 # Renders the washer as a solid.
 fn Washer.Solid() Solid {
-    var outer = Cylinder(bottom: self.outer_d / 2, top: self.outer_d / 2, height: self.thickness)
-    var bore = Cylinder(bottom: self.bore_d / 2, top: self.bore_d / 2, height: self.thickness + 1 mm)
-        .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: -0.5 mm})
+    var outer = Cylinder(
+        bottom: self.outer_d / 2,
+        top: self.outer_d / 2,
+        height: self.thickness
+    )
+    var bore = Cylinder(
+        bottom: self.bore_d / 2,
+        top: self.bore_d / 2,
+        height: self.thickness + 1 mm
+    ).Translate(v: Vec3{x: 0 mm, y: 0 mm, z: -0.5 mm})
     return outer - bore
 }
 
 # ---------------------------------------------------------------------------
 # HexBolt — ISO 4014 hex bolt
-#
+# 
 # Head bottom at Z=0, head extends upward (+Z), shaft extends above head.
 # ---------------------------------------------------------------------------
-
 type HexBolt {
     thread T.Thread
     hex_af Length
@@ -397,12 +552,9 @@ type HexBolt {
 fn HexBolt(size String, length Length) HexBolt {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row.bolt_h != 0, "HexBolt not available in " + size
-    return HexBolt {
-        thread: t,
-        hex_af: row.hex_af * 1 mm,
-        head_h: row.bolt_h * 1 mm,
-        length: length
+    assert row.bolt_h != 0 mm, "HexBolt not available in " + size
+    return HexBolt{
+        thread: t, hex_af: row.hex_af, head_h: row.bolt_h, length: length
     }
 }
 
@@ -416,11 +568,10 @@ fn HexBolt.Solid() Solid {
 
 # ---------------------------------------------------------------------------
 # SocketHeadCapScrew — ISO 4762
-#
+# 
 # Cylindrical head with hex socket recess, threaded shaft above.
 # Head at Z=0, shaft extends upward (+Z).
 # ---------------------------------------------------------------------------
-
 type SocketHeadCapScrew {
     thread T.Thread
     head_d Length
@@ -433,12 +584,9 @@ type SocketHeadCapScrew {
 fn SocketHeadCapScrew(size String, length Length) SocketHeadCapScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row.shcs_d != 0, "SocketHeadCapScrew not available in " + size
-    return SocketHeadCapScrew {
-        thread: t,
-        head_d: row.shcs_d * 1 mm,
-        head_h: row.shcs_h * 1 mm,
-        socket: row.shcs_s * 1 mm,
+    assert row.shcs_d != 0 mm, "SocketHeadCapScrew not available in " + size
+    return SocketHeadCapScrew{
+        thread: t, head_d: row.shcs_d, head_h: row.shcs_h, socket: row.shcs_s,
         length: length
     }
 }
@@ -446,22 +594,25 @@ fn SocketHeadCapScrew(size String, length Length) SocketHeadCapScrew {
 # Renders the socket head cap screw as a solid.
 fn SocketHeadCapScrew.Solid() Solid {
     var hh = self.head_h
-    var head = Cylinder(bottom: self.head_d / 2, top: self.head_d / 2, height: hh)
+    var head = Cylinder(
+        bottom: self.head_d / 2,
+        top: self.head_d / 2,
+        height: hh
+    )
     var sock_depth = hh * 0.8
     var socket = HexSketch(flat: self.socket).Extrude(height: sock_depth + 1 mm)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: -1 mm})
     var shaft = self.thread.Outside(length: self.length)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: hh})
-    return (head - socket) + shaft
+    return head - socket + shaft
 }
 
 # ---------------------------------------------------------------------------
 # ButtonHeadCapScrew — ISO 7380
-#
+# 
 # Low-profile dome head with hex socket, threaded shaft above.
 # Head at Z=0, shaft extends upward (+Z).
 # ---------------------------------------------------------------------------
-
 type ButtonHeadCapScrew {
     thread T.Thread
     major_d Length
@@ -475,14 +626,10 @@ type ButtonHeadCapScrew {
 fn ButtonHeadCapScrew(size String, length Length) ButtonHeadCapScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row.bhcs_d != 0, "ButtonHeadCapScrew not available in " + size
-    return ButtonHeadCapScrew {
-        thread: t,
-        major_d: t.major_diameter,
-        head_d: row.bhcs_d * 1 mm,
-        head_h: row.bhcs_h * 1 mm,
-        socket: row.bhcs_s * 1 mm,
-        length: length
+    assert row.bhcs_d != 0 mm, "ButtonHeadCapScrew not available in " + size
+    return ButtonHeadCapScrew{
+        thread: t, major_d: t.major_diameter, head_d: row.bhcs_d,
+        head_h: row.bhcs_h, socket: row.bhcs_s, length: length
     }
 }
 
@@ -490,9 +637,9 @@ fn ButtonHeadCapScrew(size String, length Length) ButtonHeadCapScrew {
 fn ButtonHeadCapScrew.Solid() Solid {
     var d = self.head_d
     var h = self.head_h
-    var d_num = d / (1 mm)
-    var h_num = h / (1 mm)
-    var md_num = self.major_d / (1 mm)
+    var d_num = d / 1 mm
+    var h_num = h / 1 mm
+    var md_num = self.major_d / 1 mm
     var c_num = (h_num * h_num + md_num * md_num / 4 - d_num * d_num / 4) / (2 * h_num)
     var R_num = Sqrt(n: c_num * c_num + d_num * d_num / 4)
     var R = R_num * 1 mm
@@ -505,16 +652,15 @@ fn ButtonHeadCapScrew.Solid() Solid {
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: -1 mm})
     var shaft = self.thread.Outside(length: self.length)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: h})
-    return (dome - socket) + shaft
+    return dome - socket + shaft
 }
 
 # ---------------------------------------------------------------------------
 # CountersunkScrew — ISO 10642
-#
+# 
 # Conical head (flat top flush with surface) with hex socket, threaded shaft.
 # Wide base at Z=0, narrows to shaft diameter at Z=head_h, shaft extends upward.
 # ---------------------------------------------------------------------------
-
 type CountersunkScrew {
     thread T.Thread
     major_d Length
@@ -528,35 +674,34 @@ type CountersunkScrew {
 fn CountersunkScrew(size String, length Length) CountersunkScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row.fhcs_d != 0, "CountersunkScrew not available in " + size
-    return CountersunkScrew {
-        thread: t,
-        major_d: t.major_diameter,
-        head_d: row.fhcs_d * 1 mm,
-        head_h: row.fhcs_h * 1 mm,
-        socket: row.fhcs_s * 1 mm,
-        length: length
+    assert row.fhcs_d != 0 mm, "CountersunkScrew not available in " + size
+    return CountersunkScrew{
+        thread: t, major_d: t.major_diameter, head_d: row.fhcs_d,
+        head_h: row.fhcs_h, socket: row.fhcs_s, length: length
     }
 }
 
 # Renders the countersunk screw as a solid.
 fn CountersunkScrew.Solid() Solid {
-    var head = Cylinder(bottom: self.head_d / 2, top: self.major_d / 2, height: self.head_h)
+    var head = Cylinder(
+        bottom: self.head_d / 2,
+        top: self.major_d / 2,
+        height: self.head_h
+    )
     var sock_depth = self.head_h * 0.7
     var socket = HexSketch(flat: self.socket).Extrude(height: sock_depth + 1 mm)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: -1 mm})
     var shaft = self.thread.Outside(length: self.length)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: self.head_h})
-    return (head - socket) + shaft
+    return head - socket + shaft
 }
 
 # ---------------------------------------------------------------------------
 # SetScrew — ISO 4026 (flat point)
-#
+# 
 # Fully threaded cylinder with hex socket recess on top.
 # Bottom at Z=0, body extends upward (+Z).
 # ---------------------------------------------------------------------------
-
 type SetScrew {
     thread T.Thread
     major_d Length
@@ -568,12 +713,9 @@ type SetScrew {
 fn SetScrew(size String, length Length) SetScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row.set_s != 0, "SetScrew not available in " + size
-    return SetScrew {
-        thread: t,
-        major_d: t.major_diameter,
-        socket: row.set_s * 1 mm,
-        length: length
+    assert row.set_s != 0 mm, "SetScrew not available in " + size
+    return SetScrew{
+        thread: t, major_d: t.major_diameter, socket: row.set_s, length: length
     }
 }
 
@@ -588,10 +730,9 @@ fn SetScrew.Solid() Solid {
 
 # ---------------------------------------------------------------------------
 # Thumbscrew — knurled head + threaded shaft
-#
+# 
 # Head at Z=0, shaft extends upward (+Z).
 # ---------------------------------------------------------------------------
-
 type Thumbscrew {
     thread T.Thread
     length Length
@@ -604,29 +745,30 @@ type Thumbscrew {
 fn Thumbscrew(size String, length Length) Thumbscrew {
     var t = T.Thread(size: size)
     var d = t.major_diameter
-    return Thumbscrew {
-        thread: t,
-        length: length,
-        head_h: d * 0.8,
-        head_r: d * 1.2,
+    return Thumbscrew{
+        thread: t, length: length, head_h: d * 0.8, head_r: d * 1.2,
         knurl: K.Knurl(count: Number(from: d) * 6, depth: 0.3 mm, angle: 30 deg)
     }
 }
 
 # Creates a thumbscrew with custom head dimensions and knurling.
 fn Thumbscrew(size String, length, head_h, head_r Length, knurl K.Knurl) Thumbscrew {
-    return Thumbscrew {
-        thread: T.Thread(size: size),
-        length: length,
-        head_h: head_h,
-        head_r: head_r,
-        knurl: knurl
+    return Thumbscrew{
+        thread: T.Thread(size: size), length: length, head_h: head_h,
+        head_r: head_r, knurl: knurl
     }
 }
 
 # Renders the thumbscrew as a solid.
 fn Thumbscrew.Solid() Solid {
-    var head = self.knurl.ApplyZ(target: Cylinder(bottom: self.head_r, top: self.head_r, height: self.head_h))
+    var head = self.knurl
+        .ApplyZ(
+        target: Cylinder(
+            bottom: self.head_r,
+            top: self.head_r,
+            height: self.head_h
+        )
+    )
     var shaft = self.thread.Outside(length: self.length)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: self.head_h})
     return head + shaft
@@ -634,11 +776,10 @@ fn Thumbscrew.Solid() Solid {
 
 # ---------------------------------------------------------------------------
 # FlatHeadScrew — ISO 1580 slotted pan head
-#
+# 
 # Pan head with a single straight slot across the top, threaded shaft above.
 # Head at Z=0, shaft extends upward (+Z).
 # ---------------------------------------------------------------------------
-
 type FlatHeadScrew {
     thread T.Thread
     head_d Length
@@ -651,12 +792,9 @@ type FlatHeadScrew {
 fn FlatHeadScrew(size String, length Length) FlatHeadScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row.pan_d != 0, "FlatHeadScrew not available in " + size
-    return FlatHeadScrew {
-        thread: t,
-        head_d: row.pan_d * 1 mm,
-        head_h: row.pan_h * 1 mm,
-        slot_w: row.slot_w * 1 mm,
+    assert row.pan_d != 0 mm, "FlatHeadScrew not available in " + size
+    return FlatHeadScrew{
+        thread: t, head_d: row.pan_d, head_h: row.pan_h, slot_w: row.slot_w,
         length: length
     }
 }
@@ -667,20 +805,20 @@ fn FlatHeadScrew.Solid() Solid {
     var hh = self.head_h
     var head = Cylinder(bottom: hd / 2, top: hd / 2, height: hh)
     var slot_depth = hh * 0.8
-    var slot = Cube(size: Vec3{x: hd + 1 mm, y: self.slot_w, z: slot_depth + 1 mm})
-        .Translate(v: Vec3{x: -(hd + 1 mm) / 2, y: -self.slot_w / 2, z: -1 mm})
+    var slot = Cube(
+        size: Vec3{x: hd + 1 mm, y: self.slot_w, z: slot_depth + 1 mm}
+    ).Translate(v: Vec3{x: -(hd + 1 mm) / 2, y: -self.slot_w / 2, z: -1 mm})
     var shaft = self.thread.Outside(length: self.length)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: hh})
-    return (head - slot) + shaft
+    return head - slot + shaft
 }
 
 # ---------------------------------------------------------------------------
 # PhillipsScrew — ISO 7045 Phillips pan head
-#
+# 
 # Pan head with a cross-shaped (Phillips) recess, threaded shaft above.
 # Head at Z=0, shaft extends upward (+Z).
 # ---------------------------------------------------------------------------
-
 type PhillipsScrew {
     thread T.Thread
     head_d Length
@@ -693,12 +831,9 @@ type PhillipsScrew {
 fn PhillipsScrew(size String, length Length) PhillipsScrew {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    assert row.pan_d != 0, "PhillipsScrew not available in " + size
-    return PhillipsScrew {
-        thread: t,
-        head_d: row.pan_d * 1 mm,
-        head_h: row.pan_h * 1 mm,
-        phillips_w: row.phil_w * 1 mm,
+    assert row.pan_d != 0 mm, "PhillipsScrew not available in " + size
+    return PhillipsScrew{
+        thread: t, head_d: row.pan_d, head_h: row.pan_h, phillips_w: row.phil_w,
         length: length
     }
 }
@@ -719,16 +854,15 @@ fn PhillipsScrew.Solid() Solid {
     var recess = slot_a + slot_b
     var shaft = self.thread.Outside(length: self.length)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: hh})
-    return (head - recess) + shaft
+    return head - recess + shaft
 }
 
 # ---------------------------------------------------------------------------
 # Standoff — female-female hex standoff
-#
+# 
 # Hex body with internal threads on both ends.
 # Body spans Z=0 upward (+Z).
 # ---------------------------------------------------------------------------
-
 type Standoff {
     thread T.Thread
     hex_af Length
@@ -740,11 +874,8 @@ type Standoff {
 fn Standoff(size String, length Length) Standoff {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    return Standoff {
-        thread: t,
-        hex_af: row.hex_af * 1 mm,
-        major_d: t.major_diameter,
-        length: length
+    return Standoff{
+        thread: t, hex_af: row.hex_af, major_d: t.major_diameter, length: length
     }
 }
 
@@ -760,11 +891,10 @@ fn Standoff.Solid() Solid {
 
 # ---------------------------------------------------------------------------
 # MaleStandoff — male-female hex standoff
-#
+# 
 # Hex body with internal thread at bottom and external thread protruding above.
 # Hex body spans Z=0 upward (+Z). Male thread extends above the body.
 # ---------------------------------------------------------------------------
-
 type MaleStandoff {
     thread T.Thread
     hex_af Length
@@ -777,11 +907,8 @@ type MaleStandoff {
 fn MaleStandoff(size String, length, thread_len Length) MaleStandoff {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    return MaleStandoff {
-        thread: t,
-        hex_af: row.hex_af * 1 mm,
-        major_d: t.major_diameter,
-        length: length,
+    return MaleStandoff{
+        thread: t, hex_af: row.hex_af, major_d: t.major_diameter, length: length,
         thread_len: thread_len
     }
 }
@@ -793,31 +920,42 @@ fn MaleStandoff.Solid() Solid {
     var bot_thread = self.thread.Inside(length: thread_depth)
     var male_thread = self.thread.Outside(length: self.thread_len)
         .Translate(v: Vec3{x: 0 mm, y: 0 mm, z: self.length})
-    return (body - bot_thread) + male_thread
+    return body - bot_thread + male_thread
 }
 
 # ---------------------------------------------------------------------------
 # Showcase — renders one of each fastener type side by side
 # ---------------------------------------------------------------------------
-
 fn Showcase(size String, shaft_len, standoff_len Length) []Solid {
     var t = T.Thread(size: size)
     var row = DimRow(d: t.major_diameter)
-    var sp = row.hex_af * 1 mm * 2
+    var sp = row.hex_af * 2
     return []Solid[
         HexNut(size: size).Solid(),
         CapNut(size: size).Solid().Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
-        WingNut(size: size).Solid().Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),
-        Washer(size: size).Solid().Translate(v: Vec3{x: sp * 3, y: 0 mm, z: 0 mm}),
-        HexBolt(size: size, length: shaft_len).Solid().Translate(v: Vec3{x: sp * 4, y: 0 mm, z: 0 mm}),
-        SocketHeadCapScrew(size: size, length: shaft_len).Solid().Translate(v: Vec3{x: sp * 5, y: 0 mm, z: 0 mm}),
-        ButtonHeadCapScrew(size: size, length: shaft_len).Solid().Translate(v: Vec3{x: sp * 6, y: 0 mm, z: 0 mm}),
-        CountersunkScrew(size: size, length: shaft_len).Solid().Translate(v: Vec3{x: sp * 7, y: 0 mm, z: 0 mm}),
-        SetScrew(size: size, length: shaft_len).Solid().Translate(v: Vec3{x: sp * 8, y: 0 mm, z: 0 mm}),
-        Thumbscrew(size: size, length: shaft_len).Solid().Translate(v: Vec3{x: sp * 9, y: 0 mm, z: 0 mm}),
-        FlatHeadScrew(size: size, length: shaft_len).Solid().Translate(v: Vec3{x: sp * 10, y: 0 mm, z: 0 mm}),
-        PhillipsScrew(size: size, length: shaft_len).Solid().Translate(v: Vec3{x: sp * 11, y: 0 mm, z: 0 mm}),
-        Standoff(size: size, length: standoff_len).Solid().Translate(v: Vec3{x: sp * 12, y: 0 mm, z: 0 mm}),
-        MaleStandoff(size: size, length: standoff_len, thread_len: shaft_len).Solid().Translate(v: Vec3{x: sp * 13, y: 0 mm, z: 0 mm})
+        WingNut(size: size).Solid()
+            .Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),
+        Washer(size: size).Solid()
+            .Translate(v: Vec3{x: sp * 3, y: 0 mm, z: 0 mm}),
+        HexBolt(size: size, length: shaft_len).Solid()
+            .Translate(v: Vec3{x: sp * 4, y: 0 mm, z: 0 mm}),
+        SocketHeadCapScrew(size: size, length: shaft_len).Solid()
+            .Translate(v: Vec3{x: sp * 5, y: 0 mm, z: 0 mm}),
+        ButtonHeadCapScrew(size: size, length: shaft_len).Solid()
+            .Translate(v: Vec3{x: sp * 6, y: 0 mm, z: 0 mm}),
+        CountersunkScrew(size: size, length: shaft_len).Solid()
+            .Translate(v: Vec3{x: sp * 7, y: 0 mm, z: 0 mm}),
+        SetScrew(size: size, length: shaft_len).Solid()
+            .Translate(v: Vec3{x: sp * 8, y: 0 mm, z: 0 mm}),
+        Thumbscrew(size: size, length: shaft_len).Solid()
+            .Translate(v: Vec3{x: sp * 9, y: 0 mm, z: 0 mm}),
+        FlatHeadScrew(size: size, length: shaft_len).Solid()
+            .Translate(v: Vec3{x: sp * 10, y: 0 mm, z: 0 mm}),
+        PhillipsScrew(size: size, length: shaft_len).Solid()
+            .Translate(v: Vec3{x: sp * 11, y: 0 mm, z: 0 mm}),
+        Standoff(size: size, length: standoff_len).Solid()
+            .Translate(v: Vec3{x: sp * 12, y: 0 mm, z: 0 mm}),
+        MaleStandoff(size: size, length: standoff_len, thread_len: shaft_len)
+            .Solid().Translate(v: Vec3{x: sp * 13, y: 0 mm, z: 0 mm})
     ]
 }

@@ -1,9 +1,9 @@
 # Turtle graphics library for Facet.
-#
+# 
 # Two turtle types:
 # - Turtle2d: moves in the XY plane, produces Sketch or extruded Solid
 # - Turtle3d: moves in 3D space with yaw/pitch/roll, produces Solid via Sweep
-#
+# 
 # Example — 2D square:
 # ```
 # var T = lib "facet/turtle"
@@ -17,7 +17,7 @@
 # t.Forward(20 mm)
 # fn Main() { return t.Extrude(5 mm); }
 # ```
-#
+# 
 # Example — 3D helix:
 # ```
 # var T = lib "facet/turtle"
@@ -28,13 +28,11 @@
 # }
 # fn Main() { return t.Sweep(Circle(1 mm)); }
 # ```
-
 var Curves = lib "github.com/firstlayer-xyz/facetlibs/curves@main"
 
 # =========================================================================
 # Turtle2d — 2D turtle in the XY plane
 # =========================================================================
-
 type Turtle2d {
     pos Vec2
     heading Angle
@@ -45,12 +43,7 @@ type Turtle2d {
 # Creates a new 2D turtle at the origin, heading up (90 deg), pen down.
 fn Turtle2d() Turtle2d {
     var start = Vec2{x: 0 mm, y: 0 mm}
-    return Turtle2d {
-        pos: start,
-        heading: 90 deg,
-        pen: true,
-        path: []Vec2[start,]
-    }
+    return Turtle2d{pos: start, heading: 90 deg, pen: true, path: []Vec2[start]}
 }
 
 # Moves forward by `by` in the current heading direction.
@@ -93,7 +86,14 @@ fn Turtle2d.GoTo(pos Vec2) {
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
 fn Turtle2d.BezierTo(cp1, cp2, end Vec2, steps Number) {
-    var pts = Curves.CubicBezier2d(start: self.pos, ctrl1: cp1, ctrl2: cp2, end: end, steps: steps)
+    var pts = Curves
+        .CubicBezier2d(
+        start: self.pos,
+        ctrl1: cp1,
+        ctrl2: cp2,
+        end: end,
+        steps: steps
+    )
     var n = Size(of: pts)
     for i [1:<n] {
         self.pos = pts[i]
@@ -143,7 +143,6 @@ fn Turtle2d.Sweep(cross Sketch) Solid {
 # =========================================================================
 # Turtle3d — full 3D turtle with yaw, pitch, roll
 # =========================================================================
-
 type Turtle3d {
     pos Vec3
     yaw Angle
@@ -155,12 +154,12 @@ type Turtle3d {
 # Creates a new 3D turtle at the origin, facing +X (yaw=0, pitch=0), pen down.
 fn Turtle3d() Turtle3d {
     var start = Vec3{x: 0 mm, y: 0 mm, z: 0 mm}
-    return Turtle3d {
+    return Turtle3d{
         pos: start,
         yaw: 0 deg,
         pitch: 0 deg,
         pen: true,
-        path: []Vec3[start,]
+        path: []Vec3[start]
     }
 }
 
@@ -215,7 +214,14 @@ fn Turtle3d.Heading() Vec3 {
 # @param end    End point of the curve
 # @param steps  Number of line segments to approximate the curve
 fn Turtle3d.BezierTo(cp1, cp2, end Vec3, steps Number) {
-    var pts = Curves.CubicBezier3d(start: self.pos, ctrl1: cp1, ctrl2: cp2, end: end, steps: steps)
+    var pts = Curves
+        .CubicBezier3d(
+        start: self.pos,
+        ctrl1: cp1,
+        ctrl2: cp2,
+        end: end,
+        steps: steps
+    )
     var n = Size(of: pts)
     for i [1:<n] {
         self.pos = pts[i]
@@ -227,7 +233,11 @@ fn Turtle3d.BezierTo(cp1, cp2, end Vec3, steps Number) {
     var dx = end.x - cp2.x
     var dy = end.y - cp2.y
     var dz = end.z - cp2.z
-    var xyLen = Sqrt(n: Number(from: dx) * Number(from: dx) + Number(from: dy) * Number(from: dy))
+    var xyLen = Sqrt(
+        n: Number(from: dx) * Number(from: dx) + Number(from: dy) * Number(
+            from: dy
+        )
+    )
     self.yaw = Atan2(y: Number(from: dy), x: Number(from: dx))
     self.pitch = Atan2(y: Number(from: dz), x: xyLen)
 }

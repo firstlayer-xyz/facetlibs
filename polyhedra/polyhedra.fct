@@ -1,37 +1,49 @@
 # Polyhedra & Surfaces Library
-#
+# 
 # Platonic solid constructors using PolyMesh. Each returns a PolyMesh with
 # unit circumradius. Call .ScaleToRadius(radius: r) to set the desired size, and
 # use Conway operators (.Dual(), .Ambo(), .Kis(), .Truncate(), .Expand(),
 # .Snub()) to derive Archimedean and other solids.
-#
+# 
 # Also includes Archimedean solids, Catalan solids, parametric prisms
 # and antiprisms, and a Torus constructor.
-
 # ---------------------------------------------------------------------------
 # Platonic Solids (5)
 # ---------------------------------------------------------------------------
-
 # Creates a regular tetrahedron with unit circumradius.
 fn Tetrahedron() PolyMesh {
     var s = 1 mm / Sqrt(n: 3)
-    return PolyMesh {
-        vertices: []Vec3[{x: s, y: s, z: s}, {x: s, y: -s, z: -s}, {x: -s, y: s, z: -s}, {x: -s, y: -s, z: s}],
+    return PolyMesh{
+        vertices: []Vec3[
+            {x: s, y: s, z: s},
+            {x: s, y: -s, z: -s},
+            {x: -s, y: s, z: -s},
+            {x: -s, y: -s, z: s}
+        ],
         faces: []Number[[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]]
     }
 }
 
 # Creates a regular octahedron with unit circumradius.
 fn Octahedron() PolyMesh {
-    return PolyMesh {
+    return PolyMesh{
         vertices: []Vec3[
-            {x: 1 mm, y: 0 mm, z: 0 mm}, {x: -1 mm, y: 0 mm, z: 0 mm},
-            {x: 0 mm, y: 1 mm, z: 0 mm}, {x: 0 mm, y: -1 mm, z: 0 mm},
-            {x: 0 mm, y: 0 mm, z: 1 mm}, {x: 0 mm, y: 0 mm, z: -1 mm},
+            {x: 1 mm, y: 0 mm, z: 0 mm},
+            {x: -1 mm, y: 0 mm, z: 0 mm},
+            {x: 0 mm, y: 1 mm, z: 0 mm},
+            {x: 0 mm, y: -1 mm, z: 0 mm},
+            {x: 0 mm, y: 0 mm, z: 1 mm},
+            {x: 0 mm, y: 0 mm, z: -1 mm}
         ],
         faces: []Number[
-            [0, 2, 4], [2, 1, 4], [1, 3, 4], [3, 0, 4],
-            [0, 3, 5], [3, 1, 5], [1, 2, 5], [2, 0, 5],
+            [0, 2, 4],
+            [2, 1, 4],
+            [1, 3, 4],
+            [3, 0, 4],
+            [0, 3, 5],
+            [3, 1, 5],
+            [1, 2, 5],
+            [2, 0, 5]
         ]
     }
 }
@@ -39,10 +51,16 @@ fn Octahedron() PolyMesh {
 # Creates a regular cube (hexahedron) with unit circumradius.
 fn PlatoCube() PolyMesh {
     var s = 1 mm / Sqrt(n: 3)
-    return PolyMesh {
+    return PolyMesh{
         vertices: []Vec3[
-            {x: -s, y: -s, z: -s}, {x: s, y: -s, z: -s}, {x: s, y: s, z: -s}, {x: -s, y: s, z: -s},
-            {x: -s, y: -s, z: s}, {x: s, y: -s, z: s}, {x: s, y: s, z: s}, {x: -s, y: s, z: s},
+            {x: -s, y: -s, z: -s},
+            {x: s, y: -s, z: -s},
+            {x: s, y: s, z: -s},
+            {x: -s, y: s, z: -s},
+            {x: -s, y: -s, z: s},
+            {x: s, y: -s, z: s},
+            {x: s, y: s, z: s},
+            {x: -s, y: s, z: s}
         ],
         faces: []Number[
             [0, 3, 2, 1],
@@ -50,7 +68,7 @@ fn PlatoCube() PolyMesh {
             [0, 1, 5, 4],
             [2, 3, 7, 6],
             [0, 4, 7, 3],
-            [1, 2, 6, 5],
+            [1, 2, 6, 5]
         ]
     }
 }
@@ -61,20 +79,42 @@ fn Icosahedron() PolyMesh {
     var r = Sqrt(n: 1 + phi * phi)
     var a = 1 mm / r
     var b = phi * 1 mm / r
-    return PolyMesh {
+    return PolyMesh{
         vertices: []Vec3[
-            {x: -a, y: b, z: 0 mm}, {x: a, y: b, z: 0 mm},
-            {x: -a, y: -b, z: 0 mm}, {x: a, y: -b, z: 0 mm},
-            {x: 0 mm, y: -a, z: b}, {x: 0 mm, y: a, z: b},
-            {x: 0 mm, y: -a, z: -b}, {x: 0 mm, y: a, z: -b},
-            {x: b, y: 0 mm, z: -a}, {x: b, y: 0 mm, z: a},
-            {x: -b, y: 0 mm, z: -a}, {x: -b, y: 0 mm, z: a},
+            {x: -a, y: b, z: 0 mm},
+            {x: a, y: b, z: 0 mm},
+            {x: -a, y: -b, z: 0 mm},
+            {x: a, y: -b, z: 0 mm},
+            {x: 0 mm, y: -a, z: b},
+            {x: 0 mm, y: a, z: b},
+            {x: 0 mm, y: -a, z: -b},
+            {x: 0 mm, y: a, z: -b},
+            {x: b, y: 0 mm, z: -a},
+            {x: b, y: 0 mm, z: a},
+            {x: -b, y: 0 mm, z: -a},
+            {x: -b, y: 0 mm, z: a}
         ],
         faces: []Number[
-            [0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11],
-            [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
-            [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9],
-            [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1],
+            [0, 11, 5],
+            [0, 5, 1],
+            [0, 1, 7],
+            [0, 7, 10],
+            [0, 10, 11],
+            [1, 5, 9],
+            [5, 11, 4],
+            [11, 10, 2],
+            [10, 7, 6],
+            [7, 1, 8],
+            [3, 9, 4],
+            [3, 4, 2],
+            [3, 2, 6],
+            [3, 6, 8],
+            [3, 8, 9],
+            [4, 9, 5],
+            [2, 4, 11],
+            [6, 2, 10],
+            [8, 6, 7],
+            [9, 8, 1]
         ]
     }
 }
@@ -86,12 +126,11 @@ fn Dodecahedron() PolyMesh {
 
 # ---------------------------------------------------------------------------
 # Archimedean Solids (13)
-#
+# 
 # Semi-regular convex polyhedra with vertex-transitive symmetry.
 # Derived from Platonic solids via Conway operators.
 # All returned at unit circumradius.
 # ---------------------------------------------------------------------------
-
 # Truncated tetrahedron — 4 hexagons + 4 triangles.
 fn TruncatedTetrahedron() PolyMesh {
     return Tetrahedron().Truncate().ScaleToRadius(radius: 1 mm)
@@ -161,10 +200,9 @@ fn TruncatedIcosidodecahedron() PolyMesh {
 
 # ---------------------------------------------------------------------------
 # Catalan Solids (select duals of Archimedean solids)
-#
+# 
 # Face-transitive polyhedra with congruent but irregular faces.
 # ---------------------------------------------------------------------------
-
 # Triakis tetrahedron — dual of truncated tetrahedron. 12 triangles.
 fn TriakisTetrahedron() PolyMesh {
     return Tetrahedron().Kis().ScaleToRadius(radius: 1 mm)
@@ -208,18 +246,24 @@ fn PentakisDodecahedron() PolyMesh {
 # ---------------------------------------------------------------------------
 # Prisms & Antiprisms
 # ---------------------------------------------------------------------------
-
 # Creates a regular n-gon prism with unit circumradius.
 # @param sides  Number of sides (must be >= 3)
 fn Prism(sides Number) PolyMesh {
-    var verts = for i [0:<sides*2] {
+    var verts = for i [0:<sides * 2] {
         var a = i % sides * (360 deg / sides)
-        var z = -0.5 mm; if i < sides { z = 0.5 mm; }
+        var z = -0.5 mm
+        if i < sides {
+            z = 0.5 mm
+        }
         yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: z}
     }
-    var top = for i [0:<sides] { yield i; }
-    var bot = for i [0:<sides] { yield sides + (sides - 1 - i); }
-    var faces = for i [0:<(sides + 2)] {
+    var top = for i [0:<sides] {
+        yield i
+    }
+    var bot = for i [0:<sides] {
+        yield sides + (sides - 1 - i)
+    }
+    var faces = for i [0:<sides + 2] {
         if i == 0 {
             yield top
         } else if i == 1 {
@@ -230,25 +274,32 @@ fn Prism(sides Number) PolyMesh {
             yield []Number[j, k, sides + k, sides + j]
         }
     }
-    return PolyMesh {
-        vertices: verts,
-        faces: faces
-    }.ScaleToRadius(radius: 1 mm)
+    return PolyMesh{vertices: verts, faces: faces}.ScaleToRadius(radius: 1 mm)
 }
 
 # Creates a regular n-gon antiprism with unit circumradius.
 # @param sides  Number of sides (must be >= 3)
 fn Antiprism(sides Number) PolyMesh {
     var half_twist = 180 deg / sides
-    var verts = for i [0:<sides*2] {
-        var ring = 1; if i < sides { ring = 0; }
+    var verts = for i [0:<sides * 2] {
+        var ring = 1
+        if i < sides {
+            ring = 0
+        }
         var a = i % sides * (360 deg / sides) + ring * half_twist
-        var z = -0.5 mm; if ring == 0 { z = 0.5 mm; }
+        var z = -0.5 mm
+        if ring == 0 {
+            z = 0.5 mm
+        }
         yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: z}
     }
-    var top = for i [0:<sides] { yield i; }
-    var bot = for i [0:<sides] { yield sides + (sides - 1 - i); }
-    var faces = for i [0:<(2 * sides + 2)] {
+    var top = for i [0:<sides] {
+        yield i
+    }
+    var bot = for i [0:<sides] {
+        yield sides + (sides - 1 - i)
+    }
+    var faces = for i [0:<2 * sides + 2] {
         if i == 0 {
             yield top
         } else if i == 1 {
@@ -263,16 +314,13 @@ fn Antiprism(sides Number) PolyMesh {
             yield []Number[sides + j, k, sides + k]
         }
     }
-    return PolyMesh {
-        vertices: verts,
-        faces: faces
-    }.ScaleToRadius(radius: 1 mm)
+    return PolyMesh{vertices: verts, faces: faces}.ScaleToRadius(radius: 1 mm)
 }
 
 # Creates a regular n-gon pyramid with unit circumradius.
 # @param sides  Number of base sides (must be >= 3)
 fn Pyramid(sides Number) PolyMesh {
-    var verts = for i [0:<(sides + 1)] {
+    var verts = for i [0:<sides + 1] {
         if i < sides {
             var a = i * (360 deg / sides)
             yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: 0 mm}
@@ -280,8 +328,10 @@ fn Pyramid(sides Number) PolyMesh {
             yield Vec3{x: 0 mm, y: 0 mm, z: 1 mm}
         }
     }
-    var base = for i [0:<sides] { yield sides - 1 - i; }
-    var faces = for i [0:<(sides + 1)] {
+    var base = for i [0:<sides] {
+        yield sides - 1 - i
+    }
+    var faces = for i [0:<sides + 1] {
         if i == 0 {
             yield base
         } else {
@@ -290,16 +340,13 @@ fn Pyramid(sides Number) PolyMesh {
             yield []Number[j, k, sides]
         }
     }
-    return PolyMesh {
-        vertices: verts,
-        faces: faces
-    }.ScaleToRadius(radius: 1 mm)
+    return PolyMesh{vertices: verts, faces: faces}.ScaleToRadius(radius: 1 mm)
 }
 
 # Creates a regular n-gon bipyramid (two pyramids base-to-base) with unit circumradius.
 # @param sides  Number of equatorial sides (must be >= 3)
 fn Bipyramid(sides Number) PolyMesh {
-    var verts = for i [0:<(sides + 2)] {
+    var verts = for i [0:<sides + 2] {
         if i < sides {
             var a = i * (360 deg / sides)
             yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: 0 mm}
@@ -309,7 +356,7 @@ fn Bipyramid(sides Number) PolyMesh {
             yield Vec3{x: 0 mm, y: 0 mm, z: -1 mm}
         }
     }
-    var faces = for i [0:<(2 * sides)] {
+    var faces = for i [0:<2 * sides] {
         var j = i % sides
         var k = (j + 1) % sides
         if i < sides {
@@ -318,21 +365,18 @@ fn Bipyramid(sides Number) PolyMesh {
             yield []Number[k, j, sides + 1]
         }
     }
-    return PolyMesh {
-        vertices: verts,
-        faces: faces
-    }.ScaleToRadius(radius: 1 mm)
+    return PolyMesh{vertices: verts, faces: faces}.ScaleToRadius(radius: 1 mm)
 }
 
 # ---------------------------------------------------------------------------
 # Torus
 # ---------------------------------------------------------------------------
-
 # Creates a torus (donut) as a Solid.
 # @param major_radius  Distance from center of torus to center of tube
 # @param minor_radius  Radius of the tube
 fn Torus(major_radius, minor_radius Length) Solid {
-    return Circle(radius: minor_radius).Translate(v: Vec2{x: major_radius, y: 0 mm}).Revolve()
+    return Circle(radius: minor_radius)
+        .Translate(v: Vec2{x: major_radius, y: 0 mm}).Revolve()
 }
 
 # Creates a torus with custom tube segment count.
@@ -340,7 +384,8 @@ fn Torus(major_radius, minor_radius Length) Solid {
 # @param minor_radius    Radius of the tube
 # @param tube_segments   Number of segments around the tube cross-section
 fn Torus(major_radius, minor_radius Length, tube_segments Number) Solid {
-    return Circle(radius: minor_radius, segments: tube_segments).Translate(v: Vec2{x: major_radius, y: 0 mm}).Revolve()
+    return Circle(radius: minor_radius, segments: tube_segments)
+        .Translate(v: Vec2{x: major_radius, y: 0 mm}).Revolve()
 }
 
 # Creates a partial torus (arc).
@@ -348,22 +393,26 @@ fn Torus(major_radius, minor_radius Length, tube_segments Number) Solid {
 # @param minor_radius  Radius of the tube
 # @param sweep         Arc angle of revolution
 fn Torus(major_radius, minor_radius Length, sweep Angle) Solid {
-    return Circle(radius: minor_radius).Translate(v: Vec2{x: major_radius, y: 0 mm}).Revolve(degrees: sweep)
+    return Circle(radius: minor_radius)
+        .Translate(v: Vec2{x: major_radius, y: 0 mm}).Revolve(degrees: sweep)
 }
 
 # ---------------------------------------------------------------------------
 # Showcase
 # ---------------------------------------------------------------------------
-
 # Renders all five Platonic solids side by side.
 fn ShowcasePlatonics(radius Length) []Solid {
     var sp = radius * 3
     return []Solid[
         Tetrahedron().ScaleToRadius(radius: radius).Solid(),
-        Octahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
-        PlatoCube().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),
-        Icosahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 3, y: 0 mm, z: 0 mm}),
-        Dodecahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 4, y: 0 mm, z: 0 mm}),
+        Octahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
+        PlatoCube().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),
+        Icosahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 3, y: 0 mm, z: 0 mm}),
+        Dodecahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 4, y: 0 mm, z: 0 mm})
     ]
 }
 
@@ -372,18 +421,30 @@ fn ShowcaseArchimedean(radius Length) []Solid {
     var sp = radius * 3
     return []Solid[
         TruncatedTetrahedron().ScaleToRadius(radius: radius).Solid(),
-        Cuboctahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
-        TruncatedCube().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),
-        TruncatedOctahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 3, y: 0 mm, z: 0 mm}),
-        Rhombicuboctahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 4, y: 0 mm, z: 0 mm}),
-        SnubCube().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 5, y: 0 mm, z: 0 mm}),
-        Icosidodecahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: 0 mm, y: sp, z: 0 mm}),
-        TruncatedIcosahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp, y: sp, z: 0 mm}),
-        TruncatedDodecahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 2, y: sp, z: 0 mm}),
-        Rhombicosidodecahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 3, y: sp, z: 0 mm}),
-        SnubDodecahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 4, y: sp, z: 0 mm}),
-        TruncatedCuboctahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 5, y: sp, z: 0 mm}),
-        TruncatedIcosidodecahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: 0 mm, y: sp * 2, z: 0 mm}),
+        Cuboctahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
+        TruncatedCube().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),
+        TruncatedOctahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 3, y: 0 mm, z: 0 mm}),
+        Rhombicuboctahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 4, y: 0 mm, z: 0 mm}),
+        SnubCube().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 5, y: 0 mm, z: 0 mm}),
+        Icosidodecahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: 0 mm, y: sp, z: 0 mm}),
+        TruncatedIcosahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp, y: sp, z: 0 mm}),
+        TruncatedDodecahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 2, y: sp, z: 0 mm}),
+        Rhombicosidodecahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 3, y: sp, z: 0 mm}),
+        SnubDodecahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 4, y: sp, z: 0 mm}),
+        TruncatedCuboctahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 5, y: sp, z: 0 mm}),
+        TruncatedIcosidodecahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: 0 mm, y: sp * 2, z: 0 mm})
     ]
 }
 
@@ -392,13 +453,20 @@ fn ShowcaseCatalans(radius Length) []Solid {
     var sp = radius * 3
     return []Solid[
         TriakisTetrahedron().ScaleToRadius(radius: radius).Solid(),
-        RhombicDodecahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
-        TriakisOctahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),
-        TetrakisHexahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 3, y: 0 mm, z: 0 mm}),
-        DeltoidalIcositetrahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: 0 mm, y: sp, z: 0 mm}),
-        PentagonalIcositetrahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp, y: sp, z: 0 mm}),
-        RhombicTriacontahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 2, y: sp, z: 0 mm}),
-        PentakisDodecahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp * 3, y: sp, z: 0 mm}),
+        RhombicDodecahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
+        TriakisOctahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 2, y: 0 mm, z: 0 mm}),
+        TetrakisHexahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 3, y: 0 mm, z: 0 mm}),
+        DeltoidalIcositetrahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: 0 mm, y: sp, z: 0 mm}),
+        PentagonalIcositetrahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp, y: sp, z: 0 mm}),
+        RhombicTriacontahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 2, y: sp, z: 0 mm}),
+        PentakisDodecahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp * 3, y: sp, z: 0 mm})
     ]
 }
 
@@ -409,16 +477,19 @@ fn ShowcaseCatalans(radius Length) []Solid {
 fn ShowcaseCanonicalDuals(radius Length) []Solid {
     var sp = radius * 3
     return []Solid[
-        # Tetrahedron is self-dual
         Tetrahedron().ScaleToRadius(radius: radius).Solid(),
-        Tetrahedron().Dual().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
-
-        # Cube ↔ Octahedron
-        PlatoCube().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: 0 mm, y: sp, z: 0 mm}),
-        PlatoCube().Dual().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp, y: sp, z: 0 mm}),
-
-        # Icosahedron ↔ Dodecahedron
-        Icosahedron().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: 0 mm, y: sp * 2, z: 0 mm}),
-        Icosahedron().Dual().ScaleToRadius(radius: radius).Solid().Translate(v: Vec3{x: sp, y: sp * 2, z: 0 mm}),
+        Tetrahedron().Dual().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp, y: 0 mm, z: 0 mm}),
+        PlatoCube().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: 0 mm, y: sp, z: 0 mm}),
+        PlatoCube().Dual().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp, y: sp, z: 0 mm}),
+        Icosahedron().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: 0 mm, y: sp * 2, z: 0 mm}),
+        Icosahedron().Dual().ScaleToRadius(radius: radius).Solid()
+            .Translate(v: Vec3{x: sp, y: sp * 2, z: 0 mm})
     ]
 }
+# Tetrahedron is self-dual
+# Cube ↔ Octahedron
+# Icosahedron ↔ Dodecahedron
