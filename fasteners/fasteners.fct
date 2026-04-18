@@ -12,8 +12,8 @@
 #   var F = lib "github.com/firstlayer-xyz/facetlibs/fasteners@main"
 #   return F.HexBolt("m8", 30 mm).Solid()
 #   return F.HexBolt("1/4-20", 1 in).Solid()
-var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main"
-var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main"
+var T = lib "../threads"
+var K = lib "../knurling"
 
 # Hex polygon from across-flats measurement.
 # Origin-corner: bbox min at (0,0), axis at (r, r).
