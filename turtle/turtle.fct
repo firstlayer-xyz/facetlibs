@@ -1,0 +1,239 @@
+# Turtle graphics library for Facet.
+# 
+# Two turtle types:
+# - Turtle2d: moves in the XY plane, produces Sketch or extruded Solid
+# - Turtle3d: moves in 3D space with yaw/pitch/roll, produces Solid via Sweep
+# 
+# Example — 2D square:
+# ```
+# var T = lib "facet/turtle"
+# var t = T.Turtle2d()
+# t.Forward(20 mm)
+# t.Turn(-90 deg)
+# t.Forward(20 mm)
+# t.Turn(-90 deg)
+# t.Forward(20 mm)
+# t.Turn(-90 deg)
+# t.Forward(20 mm)
+# fn Main() { return t.Extrude(5 mm); }
+# ```
+# 
+# Example — 3D helix:
+# ```
+# var T = lib "facet/turtle"
+# var t = T.Turtle3d()
+# for i [0:<36] {
+#     t.Forward(5 mm)
+#     t.Turn(-10 deg, 5 deg)
+# }
+# fn Main() { return t.Sweep(Circle(1 mm)); }
+# ```
+var Curves = lib "github.com/firstlayer-xyz/facetlibs/curves@main"
+
+# =========================================================================
+# Turtle2d — 2D turtle in the XY plane
+# =========================================================================
+type Turtle2d {
+    pos     Vec2
+    heading Angle
+    pen     Bool
+    path    []Vec2
+}
+
+# Creates a new 2D turtle at the origin, heading up (90 deg), pen down.
+fn Turtle2d() Turtle2d {
+    var start = Vec2{x: 0 mm}
+    return Turtle2d{pos: start, heading: 90 deg, pen: true, path: [start]}
+}
+
+# Moves forward by `by` in the current heading direction.
+fn Turtle2d.Forward(by Length) {
+    var nx = self.pos.x + Cos(a: self.heading) * by
+    var ny = self.pos.y + Sin(a: self.heading) * by
+    var np = Vec2{x: nx, y: ny}
+    self.pos = np
+    if self.pen { self.path = self.path + np }
+}
+
+# Moves backward by `by`.
+fn Turtle2d.Back(by Length) {
+    self.Forward(by: -by)
+}
+
+# Turns `by` the given angle. Positive = counterclockwise, negative = clockwise.
+fn Turtle2d.Turn(by Angle) {
+    self.heading = self.heading + by
+}
+
+# Jumps to absolute position (x, y). Appends to path if pen is down.
+fn Turtle2d.GoTo(x, y Length) {
+    self.GoTo(pos: Vec2{x: x, y: y})
+}
+
+fn Turtle2d.GoTo(pos Vec2) {
+    self.pos = pos
+    if self.pen { self.path = self.path + pos }
+}
+
+# Draws a cubic bezier curve from the current position to `end`.
+# Control points `cp1` and `cp2` shape the curve.
+# @param cp1    First control point (tangent direction from current position)
+# @param cp2    Second control point (tangent direction arriving at end)
+# @param end    End point of the curve
+# @param steps  Number of line segments to approximate the curve
+fn Turtle2d.BezierTo(cp1, cp2, end Vec2, steps Number) {
+    var pts = Curves.CubicBezier2d(
+        start: self.pos,
+        ctrl1: cp1,
+        ctrl2: cp2,
+        end: end,
+        steps: steps
+    )
+    var n = Size(of: pts)
+    for i [1:<n] {
+        self.pos = pts[i]
+        if self.pen { self.path = self.path + pts[i] }
+    }
+    # Update heading to match the curve's exit tangent
+    var dx = end.x - cp2.x
+    var dy = end.y - cp2.y
+    self.heading = Atan2(y: Number(from: dy), x: Number(from: dx))
+}
+
+# Lifts the pen — movement will not add to the path.
+fn Turtle2d.PenUp() {
+    self.pen = false
+}
+
+# Puts the pen down — movement resumes adding to the path.
+fn Turtle2d.PenDown() {
+    self.pen = true
+    self.path = self.path + self.pos
+}
+
+# Returns the path as a closed polygon sketch.
+fn Turtle2d.ToSketch() Sketch {
+    return Polygon(points: self.path)
+}
+
+# Extrudes the path into a solid with the given height.
+fn Turtle2d.Extrude(h Length) Solid {
+    return Polygon(points: self.path).Extrude(z: h)
+}
+
+# Sweeps a cross-section `profile` along the 2D path using the native sweep builtin.
+fn Turtle2d.Sweep(profile Sketch) Solid {
+    var pts = self.path
+    var n = Size(of: pts)
+    assert n >= 2, "Turtle2d.Sweep requires at least 2 path points"
+    # Lift 2D path to 3D (Z = 0)
+    var path3d = for i [0:<n] { yield Vec3{x: pts[i].x, y: pts[i].y} }
+    return profile.Sweep(path: path3d)
+}
+
+# =========================================================================
+# Turtle3d — full 3D turtle with yaw, pitch, roll
+# =========================================================================
+type Turtle3d {
+    pos   Vec3
+    yaw   Angle
+    pitch Angle
+    pen   Bool
+    path  []Vec3
+}
+
+# Creates a new 3D turtle at the origin, facing +X (yaw=0, pitch=0), pen down.
+fn Turtle3d() Turtle3d {
+    var start = Vec3{x: 0 mm}
+    return Turtle3d{pos: start, yaw: 0 deg, pitch: 0 deg, pen: true,
+        path: [start]}
+}
+
+# Moves forward by `by` in the current yaw/pitch direction.
+fn Turtle3d.Forward(by Length) {
+    var nx = self.pos.x + Cos(a: self.pitch) * Cos(a: self.yaw) * by
+    var ny = self.pos.y + Cos(a: self.pitch) * Sin(a: self.yaw) * by
+    var nz = self.pos.z + Sin(a: self.pitch) * by
+    var np = Vec3{x: nx, y: ny, z: nz}
+    self.pos = np
+    if self.pen { self.path = self.path + np }
+}
+
+# Moves backward by `by`.
+fn Turtle3d.Back(by Length) {
+    self.Forward(by: -by)
+}
+
+# Turns by yaw and pitch. Positive yaw = left, negative = right.
+# Positive pitch = up, negative = down.
+fn Turtle3d.Turn(yaw, pitch Angle) {
+    self.yaw = self.yaw + yaw
+    self.pitch = self.pitch + pitch
+}
+
+# Jumps to absolute position (x, y, z). Appends to path if pen is down.
+fn Turtle3d.GoTo(x, y, z Length) {
+    self.GoTo(pos: Vec3{x: x, y: y, z: z})
+}
+
+fn Turtle3d.GoTo(pos Vec3) {
+    self.pos = pos
+    if self.pen { self.path = self.path + pos }
+}
+
+# Returns the forward direction as a unit-length Vec3.
+fn Turtle3d.Heading() Vec3 {
+    return Vec3{x: Cos(a: self.pitch) * Cos(a: self.yaw) * 1 mm,
+        y: Cos(a: self.pitch) * Sin(a: self.yaw) * 1 mm,
+        z: Sin(a: self.pitch) * 1 mm}
+}
+
+# Draws a cubic bezier curve from the current position to `end`.
+# @param cp1    First control point
+# @param cp2    Second control point
+# @param end    End point of the curve
+# @param steps  Number of line segments to approximate the curve
+fn Turtle3d.BezierTo(cp1, cp2, end Vec3, steps Number) {
+    var pts = Curves.CubicBezier3d(
+        start: self.pos,
+        ctrl1: cp1,
+        ctrl2: cp2,
+        end: end,
+        steps: steps
+    )
+    var n = Size(of: pts)
+    for i [1:<n] {
+        self.pos = pts[i]
+        if self.pen { self.path = self.path + pts[i] }
+    }
+    # Update yaw/pitch to match the curve's exit tangent
+    var dx = end.x - cp2.x
+    var dy = end.y - cp2.y
+    var dz = end.z - cp2.z
+    var xyLen = Sqrt(
+        n: Number(from: dx) * Number(from: dx) + Number(from: dy) * Number(
+            from: dy
+        )
+    )
+    self.yaw = Atan2(y: Number(from: dy), x: Number(from: dx))
+    self.pitch = Atan2(y: Number(from: dz), x: xyLen)
+}
+
+# Lifts the pen.
+fn Turtle3d.PenUp() {
+    self.pen = false
+}
+
+# Puts the pen down.
+fn Turtle3d.PenDown() {
+    self.pen = true
+    self.path = self.path + self.pos
+}
+
+# Sweeps a cross-section `profile` along the 3D path using the native sweep builtin.
+fn Turtle3d.Sweep(profile Sketch) Solid {
+    var pts = self.path
+    var n = Size(of: pts)
+    assert n >= 2, "Turtle3d.Sweep requires at least 2 path points"
+    return profile.Sweep(path: pts)
+}

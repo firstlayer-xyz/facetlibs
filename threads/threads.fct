@@ -1,0 +1,329 @@
+# Thread specification for ISO metric, UTS/SAE, and NPT pipe threads.
+# 
+# All standards use the same 60° V-profile. The `taper` field controls
+# diameter growth per unit length (`0` for straight, `1/16` for NPT).
+# The `tolerance` field is a radial clearance applied to both inside and
+# outside threads — 0.2 mm by default, suitable for FDM 3D printing.
+type Thread {
+    pitch          Length
+    major_diameter Length
+    taper          Number
+    tolerance      Length
+    size           String
+}
+
+# ISO metric default pitch table.
+# Coarse-pitch sizes use their ISO 261 coarse pitch.
+# Fine-pitch-only sizes (M25, M26, M28, etc.) use their most common fine pitch.
+const METRIC_DEFAULT = []Thread[
+    {major_diameter: 2 mm, pitch: 0.4 mm},
+    {major_diameter: 2.5 mm, pitch: 0.45 mm},
+    {major_diameter: 3 mm, pitch: 0.5 mm},
+    {major_diameter: 3.5 mm, pitch: 0.6 mm},
+    {major_diameter: 4 mm, pitch: 0.7 mm}, {major_diameter: 5 mm, pitch: 0.8 mm},
+    {major_diameter: 6 mm, pitch: 1.0 mm},
+    {major_diameter: 8 mm, pitch: 1.25 mm},
+    {major_diameter: 10 mm, pitch: 1.5 mm},
+    {major_diameter: 12 mm, pitch: 1.75 mm},
+    {major_diameter: 14 mm, pitch: 2.0 mm},
+    {major_diameter: 16 mm, pitch: 2.0 mm},
+    {major_diameter: 18 mm, pitch: 2.5 mm},
+    {major_diameter: 20 mm, pitch: 2.5 mm},
+    {major_diameter: 22 mm, pitch: 2.5 mm},
+    {major_diameter: 24 mm, pitch: 3.0 mm},
+    {major_diameter: 25 mm, pitch: 2.0 mm},
+    {major_diameter: 26 mm, pitch: 1.5 mm},
+    {major_diameter: 27 mm, pitch: 3.0 mm},
+    {major_diameter: 28 mm, pitch: 2.0 mm},
+    {major_diameter: 30 mm, pitch: 3.5 mm},
+    {major_diameter: 32 mm, pitch: 2.0 mm},
+    {major_diameter: 33 mm, pitch: 3.5 mm},
+    {major_diameter: 35 mm, pitch: 1.5 mm},
+    {major_diameter: 36 mm, pitch: 4.0 mm},
+    {major_diameter: 38 mm, pitch: 1.5 mm},
+    {major_diameter: 39 mm, pitch: 4.0 mm},
+    {major_diameter: 40 mm, pitch: 1.5 mm},
+    {major_diameter: 42 mm, pitch: 4.5 mm},
+    {major_diameter: 45 mm, pitch: 4.5 mm},
+    {major_diameter: 48 mm, pitch: 5.0 mm},
+    {major_diameter: 50 mm, pitch: 1.5 mm},
+    {major_diameter: 52 mm, pitch: 5.0 mm},
+    {major_diameter: 55 mm, pitch: 1.5 mm},
+    {major_diameter: 56 mm, pitch: 5.5 mm},
+    {major_diameter: 58 mm, pitch: 1.5 mm},
+    {major_diameter: 60 mm, pitch: 5.5 mm},
+    {major_diameter: 62 mm, pitch: 1.5 mm},
+    {major_diameter: 64 mm, pitch: 6.0 mm},
+    {major_diameter: 65 mm, pitch: 1.5 mm},
+    {major_diameter: 68 mm, pitch: 6.0 mm}
+]
+
+# Returns the default pitch for a given metric diameter.
+# For standard coarse sizes this is the ISO 261 coarse pitch.
+# For fine-pitch-only sizes this is the most common fine pitch.
+fn MetricDefaultPitch(dia Length) Length {
+    var matches = for i [0:<Size(of: METRIC_DEFAULT)] {
+        if METRIC_DEFAULT[i].major_diameter == dia {
+            yield METRIC_DEFAULT[i].pitch
+        }
+    }
+    assert Size(of: matches) > 0, "unsupported metric diameter"
+    return matches[0]
+}
+
+# Imperial thread table
+const IMPERIAL = []Thread[
+    {size: "#4-40", pitch: 1/40 in, major_diameter: 0.112 in, tolerance: 0.1 mm},
+    {size: "#6-32", pitch: 1/32 in, major_diameter: 0.138 in, tolerance: 0.1 mm},
+    {size: "#8-32", pitch: 1/32 in, major_diameter: 0.164 in, tolerance: 0.1 mm},
+    {size: "#10-24", pitch: 1/24 in, major_diameter: 0.190 in, tolerance: 0.1 mm},
+    {size: "1/4-20", pitch: 1/20 in, major_diameter: 1/4 in, tolerance: 0.1 mm},
+    {size: "5/16-18", pitch: 1/18 in, major_diameter: 5/16 in, tolerance: 0.1 mm},
+    {size: "3/8-16", pitch: 1/16 in, major_diameter: 3/8 in, tolerance: 0.1 mm},
+    {size: "7/16-14", pitch: 1/14 in, major_diameter: 7/16 in, tolerance: 0.1 mm},
+    {size: "1/2-13", pitch: 1/13 in, major_diameter: 1/2 in, tolerance: 0.1 mm},
+    {size: "5/8-11", pitch: 1/11 in, major_diameter: 5/8 in, tolerance: 0.1 mm},
+    {size: "3/4-10", pitch: 1/10 in, major_diameter: 3/4 in, tolerance: 0.1 mm},
+    {size: "#4-48", pitch: 1/48 in, major_diameter: 0.112 in, tolerance: 0.1 mm},
+    {size: "#6-40", pitch: 1/40 in, major_diameter: 0.138 in, tolerance: 0.1 mm},
+    {size: "#8-36", pitch: 1/36 in, major_diameter: 0.164 in, tolerance: 0.1 mm},
+    {size: "#10-32", pitch: 1/32 in, major_diameter: 0.190 in, tolerance: 0.1 mm},
+    {size: "1/4-28", pitch: 1/28 in, major_diameter: 1/4 in, tolerance: 0.1 mm},
+    {size: "5/16-24", pitch: 1/24 in, major_diameter: 5/16 in, tolerance: 0.1 mm},
+    {size: "3/8-24", pitch: 1/24 in, major_diameter: 3/8 in, tolerance: 0.1 mm},
+    {size: "7/16-20", pitch: 1/20 in, major_diameter: 7/16 in, tolerance: 0.1 mm},
+    {size: "1/2-20", pitch: 1/20 in, major_diameter: 1/2 in, tolerance: 0.1 mm},
+    {size: "5/8-18", pitch: 1/18 in, major_diameter: 5/8 in, tolerance: 0.1 mm},
+    {size: "3/4-16", pitch: 1/16 in, major_diameter: 3/4 in, tolerance: 0.1 mm},
+    {size: "1/8-npt", pitch: 1/27 in, major_diameter: 0.405 in, taper: 1/16,
+        tolerance: 0.1 mm},
+    {size: "1/4-npt", pitch: 1/18 in, major_diameter: 0.540 in, taper: 1/16,
+        tolerance: 0.1 mm},
+    {size: "3/8-npt", pitch: 1/18 in, major_diameter: 0.675 in, taper: 1/16,
+        tolerance: 0.1 mm},
+    {size: "1/2-npt", pitch: 1/14 in, major_diameter: 0.840 in, taper: 1/16,
+        tolerance: 0.1 mm},
+    {size: "3/4-npt", pitch: 1/14 in, major_diameter: 1.050 in, taper: 1/16,
+        tolerance: 0.1 mm},
+    {size: "1-npt", pitch: 2/23 in, major_diameter: 1.315 in, taper: 1/16,
+        tolerance: 0.1 mm}
+]
+
+# SAE UNC (coarse)
+# SAE UNF (fine)
+# NPT (diameter is pipe OD, not nominal pipe size)
+# Looks up an imperial thread by size string.
+fn ImperialThread(size String) Thread {
+    var matches = for i [0:<Size(of: IMPERIAL)] {
+        if IMPERIAL[i].size == size { yield IMPERIAL[i] }
+    }
+    assert Size(of: matches) > 0, "unsupported thread size"
+    return matches[0]
+}
+
+# Creates a `Thread` from a standard size name.
+# 
+# **Metric (ISO):** `"m2"` through `"m68"` — all standard ISO diameters
+# including fine-pitch-only sizes (M25, M26, M28, M32, M35, M38, M40,
+# M50, M55, M58, M62, M65). Uses coarse pitch for standard sizes,
+# most common fine pitch for fine-pitch-only sizes.
+# 
+# **Metric fine (ISO):** `"m<d>x<p>"` — any diameter and pitch,
+# e.g. `"m8x1"`, `"m3x0.35"`, `"m30x2"`.
+# 
+# **SAE UNC (coarse):** `"#4-40"`, `"#6-32"`, `"#8-32"`, `"#10-24"`,
+# `"1/4-20"`, `"5/16-18"`, `"3/8-16"`, `"7/16-14"`, `"1/2-13"`, `"5/8-11"`, `"3/4-10"`
+# 
+# **SAE UNF (fine):** `"#4-48"`, `"#6-40"`, `"#8-36"`, `"#10-32"`,
+# `"1/4-28"`, `"5/16-24"`, `"3/8-24"`, `"7/16-20"`, `"1/2-20"`, `"5/8-18"`, `"3/4-16"`
+# 
+# **NPT:** `"1/8-npt"`, `"1/4-npt"`, `"3/8-npt"`, `"1/2-npt"`, `"3/4-npt"`, `"1-npt"`
+fn Thread(size String) Thread {
+    # --- Metric fine: m<diameter>x<pitch> ---
+    var mfine = size.Match(pattern: "m(\\d+\\.?\\d*)x([\\d.]+)")
+    if Size(of: mfine) > 0 {
+        var d = Number(from: mfine[1]) * 1 mm
+        var p = Number(from: mfine[2]) * 1 mm
+        return Thread{pitch: p, major_diameter: d, taper: 0, tolerance: 0.1 mm}
+    }
+    # --- Metric: m<diameter> (coarse or default fine pitch) ---
+    var mcoarse = size.Match(pattern: "m(\\d+\\.?\\d*)$")
+    if Size(of: mcoarse) > 0 {
+        var d = Number(from: mcoarse[1]) * 1 mm
+        return Thread{pitch: MetricDefaultPitch(dia: d), major_diameter: d,
+            taper: 0, tolerance: 0.1 mm}
+    }
+    # --- Imperial: SAE UNC, UNF, NPT ---
+    return ImperialThread(size: size)
+}
+
+# Generates an external (outside) thread `Solid`.
+# 
+# Uses a 60° V-profile with H/8 crest truncation and H/4 root truncation.
+# When `taper > 0` (NPT), the polygon is built at the small-end radius and
+# the extrusion scales to the large-end radius.
+# 
+# Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
+fn Thread.Outside(length Length) Solid {
+    var pitch = self.pitch
+    var major_d = self.major_diameter
+    var taper = self.taper
+    var tol = self.tolerance
+    var turns = length / pitch
+    # Taper: diameter changes by length * taper over the full length
+    var taper_d = length * taper
+    var d_small = major_d - taper_d / 2
+    var d_large = major_d + taper_d / 2
+    var taper_scale = 1
+    if taper > 0 { taper_scale = d_large / d_small }
+    var H = pitch * Sqrt(n: 3) / 2
+    # Shrink outside thread by tolerance so printed bolt fits
+    var r_maj = d_small / 2 - tol
+    var r_min = r_maj - H * 0.625
+    # ISO angular half-widths (constant for all 60-deg threads):
+    #   crest: (P/16) * 2π/P = π/8 = 22.5 deg
+    #   root:  (3P/8) * 2π/P = 3π/4 = 135 deg
+    var crest_half = 22.5 deg
+    var root_half = 135 deg
+    var gap = 360 deg - 2 * root_half
+    # Sample counts per polygon segment
+    var n_flank = 10
+    var n_crest = 4
+    var n_root = 8
+    var n_total = n_flank * 2 + n_crest + n_root
+    # Build tooth polygon in polar coordinates: (r*cos(theta), r*sin(theta))
+    # Segments: leading flank, crest arc, trailing flank, root arc
+    var points = for i [0:<n_total] {
+        if i < n_flank {
+            # Leading flank: (r_min, -root_half) to (r_maj, -crest_half)
+            var t = i / (n_flank - 1)
+            var r = r_min + (r_maj - r_min) * t
+            var theta = 0 deg - root_half + (root_half - crest_half) * t
+            yield Vec2{x: r * Cos(a: theta), y: r * Sin(a: theta)}
+        } else if i < n_flank + n_crest {
+            # Crest arc at r_maj: from -crest_half to +crest_half
+            var j = i - n_flank
+            var t = j / (n_crest - 1)
+            var theta = 0 deg - crest_half + 2 * crest_half * t
+            yield Vec2{x: r_maj * Cos(a: theta), y: r_maj * Sin(a: theta)}
+        } else if i < n_flank * 2 + n_crest {
+            # Trailing flank: (r_maj, +crest_half) to (r_min, +root_half)
+            var j = i - n_flank - n_crest
+            var t = j / (n_flank - 1)
+            var r = r_maj + (r_min - r_maj) * t
+            var theta = crest_half + (root_half - crest_half) * t
+            yield Vec2{x: r * Cos(a: theta), y: r * Sin(a: theta)}
+        } else {
+            # Root arc at r_min: from +root_half through 180 deg to -root_half (90 deg span)
+            var j = i - n_flank * 2 - n_crest
+            var t = j / (n_root - 1)
+            var theta = root_half + gap * t
+            yield Vec2{x: r_min * Cos(a: theta), y: r_min * Sin(a: theta)}
+        }
+    }
+    var tooth = Polygon(points: points)
+    return tooth.Extrude(
+        z: length,
+        slices: turns * 80,
+        twist: turns * 360 deg,
+        taperX: taper_scale,
+        taperY: taper_scale
+    )
+}
+
+# Returns how many degrees the thread rotates per millimetre of axial travel.
+# One full turn (360°) advances exactly one pitch, so this is 360 / pitch_mm.
+# 
+# Example:
+# ```
+# var t = Thread("m8")
+# var rot = depth_mm * t.DegPerMM()
+# ```
+fn Thread.DegPerMM() Angle {
+    return 360 deg / Number(from: self.pitch)
+}
+
+# Returns how many degrees the thread rotates per inch of axial travel.
+# Equivalent to DegPerMM() × 25.4.
+# 
+# Example:
+# ```
+# var t = Thread("1/4-20")
+# var rot = depth_in * t.DegPerInch()
+# ```
+fn Thread.DegPerInch() Angle {
+    return self.DegPerMM() * 25.4
+}
+
+# Generates an internal (inside) thread `Solid`.
+# 
+# Adds clearance tolerance and uses a sharp V-profile. The radii are shifted
+# outward so a bolt fits with clearance. When `taper > 0` (NPT), applies
+# taper scaling during extrusion.
+# 
+# Returns a `Solid` aligned along the Z axis from Z=0 to Z=`length`.
+# Subtract this from a nut body to create internal threads.
+fn Thread.Inside(length Length) Solid {
+    var pitch = self.pitch
+    var major_d = self.major_diameter
+    var taper = self.taper
+    var turns = length / pitch
+    # Taper: diameter changes by length * taper over the full length
+    var taper_d = length * taper
+    var d_small = major_d - taper_d / 2
+    var d_large = major_d + taper_d / 2
+    var taper_scale = 1
+    if taper > 0 { taper_scale = d_large / d_small }
+    var H = pitch * Sqrt(n: 3) / 2
+    # Expand inside thread by tolerance so printed nut fits
+    var tol = self.tolerance
+    var r_maj = d_small / 2 + tol
+    var r_min = d_small / 2 - H * 0.625 + tol
+    # Sharp V-profile: minimal crest/root flats
+    var crest_half = 5 deg
+    var root_half = 170 deg
+    var gap = 360 deg - 2 * root_half
+    # Sample counts per polygon segment
+    var n_flank = 10
+    var n_crest = 2
+    var n_root = 2
+    var n_total = n_flank * 2 + n_crest + n_root
+    # Build tooth polygon in polar coordinates
+    # Segments: leading flank, crest arc, trailing flank, root arc
+    var points = for i [0:<n_total] {
+        if i < n_flank {
+            # Leading flank: (r_min, -root_half) to (r_maj, -crest_half)
+            var t = i / (n_flank - 1)
+            var r = r_min + (r_maj - r_min) * t
+            var theta = 0 deg - root_half + (root_half - crest_half) * t
+            yield Vec2{x: r * Cos(a: theta), y: r * Sin(a: theta)}
+        } else if i < n_flank + n_crest {
+            # Crest at r_maj: from -crest_half to +crest_half
+            var j = i - n_flank
+            var t = j / (n_crest - 1)
+            var theta = 0 deg - crest_half + 2 * crest_half * t
+            yield Vec2{x: r_maj * Cos(a: theta), y: r_maj * Sin(a: theta)}
+        } else if i < n_flank * 2 + n_crest {
+            # Trailing flank: (r_maj, +crest_half) to (r_min, +root_half)
+            var j = i - n_flank - n_crest
+            var t = j / (n_flank - 1)
+            var r = r_maj + (r_min - r_maj) * t
+            var theta = crest_half + (root_half - crest_half) * t
+            yield Vec2{x: r * Cos(a: theta), y: r * Sin(a: theta)}
+        } else {
+            # Root at r_min: from +root_half to -root_half
+            var j = i - n_flank * 2 - n_crest
+            var t = j / (n_root - 1)
+            var theta = root_half + gap * t
+            yield Vec2{x: r_min * Cos(a: theta), y: r_min * Sin(a: theta)}
+        }
+    }
+    var tooth = Polygon(points: points)
+    return tooth.Extrude(
+        z: length,
+        slices: turns * 80,
+        twist: turns * 360 deg,
+        taperX: taper_scale,
+        taperY: taper_scale
+    )
+}

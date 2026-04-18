@@ -1,0 +1,97 @@
+# shapes — common 2D & 3D shape primitives
+# 2D Shapes (→ Sketch)
+fn RoundedRect(w, h, r Length) Sketch {
+    return Square(x: w, y: h).Fillet(r: r)
+}
+
+fn Pill(l, w Length) Sketch {
+    return Square(x: l, y: w).Fillet(r: w / 2)
+}
+
+fn Oval(w, h Length) Sketch {
+    return Circle(r: w / 2).Scale(x: 1, y: h / w, around: Vec2{x: 0 mm})
+}
+
+fn Oval(w, h Length, segments Number) Sketch {
+    return Circle(r: w / 2, segments: segments)
+        .Scale(x: 1, y: h / w, around: Vec2{x: 0 mm})
+}
+
+fn RegularPolygon(r Length, sides Number) Sketch {
+    return Circle(r: r, segments: sides)
+}
+
+fn Ring(outer, inner Length) Sketch {
+    return Circle(r: outer) - Circle(r: inner)
+        .Move(x: outer - inner, y: outer - inner)
+}
+
+fn Trapezoid(top, bottom, h Length) Sketch {
+    var tx = (bottom - top) / 2
+    return Polygon(
+        points: []Vec2[{x: 0 mm, y: 0 mm}, {x: bottom, y: 0 mm},
+            {x: tx + top, y: h}, {x: tx, y: h}]
+    )
+}
+
+fn Star(outer, inner Length, points Number) Sketch {
+    var n = points * 2
+    var verts = for i [0:<n] {
+        var a = 360 deg * i / n - 90 deg
+        var r = inner
+        if i % 2 == 0 { r = outer }
+        yield Vec2{x: r * Cos(a: a), y: r * Sin(a: a)}
+    }
+    return Polygon(points: verts)
+}
+
+fn Semicircle(r Length) Sketch {
+    return Circle(r: r) & Square(x: r * 2, y: r)
+}
+
+# 3D Shapes (→ Solid)
+fn RoundedCube(x, y, z, r Length) Solid {
+    var s = Sphere(r: r)
+    return Hull(
+        arr: for cx [r, x - r], cy [r, y - r], cz [r, z - r] {
+            yield s.AlignCenter(pos: Vec3{x: cx, y: cy, z: cz})
+        }
+    )
+}
+
+fn RoundedCube(s Vec3, r Length) Solid {
+    return RoundedCube(x: s.x, y: s.y, z: s.z, r: r)
+}
+
+fn Capsule(r, h Length) Solid {
+    var s = Sphere(r: r)
+    return Hull(
+        arr: [s.AlignCenter(pos: Vec3{x: r, y: r, z: r}),
+            s.AlignCenter(pos: Vec3{x: r, y: r, z: h - r})]
+    )
+}
+
+fn Pill3d(l, w, h Length) Solid {
+    return RoundedCube(x: l, y: w, z: h, r: w / 2)
+}
+
+fn Pill3d(s Vec3) Solid {
+    return RoundedCube(x: s.x, y: s.y, z: s.z, r: s.y / 2)
+}
+
+fn Torus(major, minor Length) Solid {
+    return Circle(r: minor).Move(x: major - minor, y: -minor).Revolve()
+}
+
+fn Tube(outer, inner, h Length) Solid {
+    return Cylinder(r: outer, h: h) - Cylinder(r: inner, h: h)
+        .Move(v: Vec3{x: outer - inner, y: outer - inner})
+}
+
+fn Cone(r, h Length) Solid {
+    return Cylinder(r1: r, r2: 0 mm, h: h)
+}
+
+fn Dome(r Length) Solid {
+    return Sphere(r: r) & Cube(s: Vec3{x: r * 2, y: r * 2, z: r}).Move(z: r)
+}

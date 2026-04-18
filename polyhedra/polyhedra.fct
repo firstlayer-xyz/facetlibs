@@ -1,0 +1,400 @@
+# Polyhedra & Surfaces Library
+# 
+# Platonic solid constructors using PolyMesh. Each returns a PolyMesh with
+# unit circumradius. Call .ScaleToRadius(r: r) to set the desired size, and
+# use Conway operators (.Dual(), .Ambo(), .Kis(), .Truncate(), .Expand(),
+# .Snub()) to derive Archimedean and other solids.
+# 
+# Also includes Archimedean solids, Catalan solids, parametric prisms
+# and antiprisms, and a Torus constructor.
+# ---------------------------------------------------------------------------
+# Platonic Solids (5)
+# ---------------------------------------------------------------------------
+# Creates a regular tetrahedron with unit circumradius.
+fn Tetrahedron() PolyMesh {
+    var s = 1 mm / Sqrt(n: 3)
+    return PolyMesh{vertices: []Vec3[
+            {x: s, y: s, z: s}, {x: s, y: -s, z: -s}, {x: -s, y: s, z: -s},
+            {x: -s, y: -s, z: s}
+        ], faces: [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]]}
+}
+
+# Creates a regular octahedron with unit circumradius.
+fn Octahedron() PolyMesh {
+    return PolyMesh{vertices: []Vec3[
+            {x: 1 mm, y: 0 mm, z: 0 mm}, {x: -1 mm, y: 0 mm, z: 0 mm},
+            {x: 0 mm, y: 1 mm, z: 0 mm}, {x: 0 mm, y: -1 mm, z: 0 mm},
+            {x: 0 mm, y: 0 mm, z: 1 mm}, {x: 0 mm, y: 0 mm, z: -1 mm}
+        ],
+        faces: [
+            [0, 2, 4], [2, 1, 4], [1, 3, 4], [3, 0, 4], [0, 3, 5], [3, 1, 5],
+            [1, 2, 5], [2, 0, 5]
+        ]}
+}
+
+# Creates a regular cube (hexahedron) with unit circumradius.
+fn PlatoCube() PolyMesh {
+    var s = 1 mm / Sqrt(n: 3)
+    return PolyMesh{vertices: []Vec3[
+            {x: -s, y: -s, z: -s}, {x: s, y: -s, z: -s}, {x: s, y: s, z: -s},
+            {x: -s, y: s, z: -s}, {x: -s, y: -s, z: s}, {x: s, y: -s, z: s},
+            {x: s, y: s, z: s}, {x: -s, y: s, z: s}
+        ],
+        faces: [
+            [0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4], [2, 3, 7, 6], [0, 4, 7, 3],
+            [1, 2, 6, 5]
+        ]}
+}
+
+# Creates a regular icosahedron with unit circumradius.
+fn Icosahedron() PolyMesh {
+    var phi = (1 + Sqrt(n: 5)) / 2
+    var r = Sqrt(n: 1 + phi * phi)
+    var a = 1 mm / r
+    var b = phi * 1 mm / r
+    return PolyMesh{vertices: []Vec3[
+            {x: -a, y: b, z: 0 mm}, {x: a, y: b, z: 0 mm},
+            {x: -a, y: -b, z: 0 mm}, {x: a, y: -b, z: 0 mm},
+            {x: 0 mm, y: -a, z: b}, {x: 0 mm, y: a, z: b},
+            {x: 0 mm, y: -a, z: -b}, {x: 0 mm, y: a, z: -b},
+            {x: b, y: 0 mm, z: -a}, {x: b, y: 0 mm, z: a},
+            {x: -b, y: 0 mm, z: -a}, {x: -b, y: 0 mm, z: a}
+        ],
+        faces: [
+            [0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11], [1, 5, 9],
+            [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8], [3, 9, 4], [3, 4, 2],
+            [3, 2, 6], [3, 6, 8], [3, 8, 9], [4, 9, 5], [2, 4, 11], [6, 2, 10],
+            [8, 6, 7], [9, 8, 1]
+        ]}
+}
+
+# Creates a regular dodecahedron with unit circumradius (dual of icosahedron).
+fn Dodecahedron() PolyMesh {
+    return Icosahedron().Dual().ScaleToRadius(r: 1 mm)
+}
+
+# ---------------------------------------------------------------------------
+# Archimedean Solids (13)
+# 
+# Semi-regular convex polyhedra with vertex-transitive symmetry.
+# Derived from Platonic solids via Conway operators.
+# All returned at unit circumradius.
+# ---------------------------------------------------------------------------
+# Truncated tetrahedron — 4 hexagons + 4 triangles.
+fn TruncatedTetrahedron() PolyMesh {
+    return Tetrahedron().Truncate().ScaleToRadius(r: 1 mm)
+}
+
+# Cuboctahedron — 8 triangles + 6 squares.
+fn Cuboctahedron() PolyMesh {
+    return PlatoCube().Ambo().ScaleToRadius(r: 1 mm)
+}
+
+# Truncated cube — 8 triangles + 6 octagons.
+fn TruncatedCube() PolyMesh {
+    return PlatoCube().Truncate().ScaleToRadius(r: 1 mm)
+}
+
+# Truncated octahedron — 6 squares + 8 hexagons. Space-filling.
+fn TruncatedOctahedron() PolyMesh {
+    return Octahedron().Truncate().ScaleToRadius(r: 1 mm)
+}
+
+# Rhombicuboctahedron — 8 triangles + 18 squares.
+fn Rhombicuboctahedron() PolyMesh {
+    return PlatoCube().Expand().ScaleToRadius(r: 1 mm)
+}
+
+# Snub cube — 32 triangles + 6 squares. Chiral.
+fn SnubCube() PolyMesh {
+    return PlatoCube().Snub().ScaleToRadius(r: 1 mm)
+}
+
+# Icosidodecahedron — 20 triangles + 12 pentagons.
+fn Icosidodecahedron() PolyMesh {
+    return Icosahedron().Ambo().ScaleToRadius(r: 1 mm)
+}
+
+# Truncated icosahedron — 12 pentagons + 20 hexagons. Soccer ball / C60.
+fn TruncatedIcosahedron() PolyMesh {
+    return Icosahedron().Truncate().ScaleToRadius(r: 1 mm)
+}
+
+# Truncated dodecahedron — 20 triangles + 12 decagons.
+fn TruncatedDodecahedron() PolyMesh {
+    return Dodecahedron().Truncate().ScaleToRadius(r: 1 mm)
+}
+
+# Rhombicosidodecahedron — 20 triangles + 30 squares + 12 pentagons.
+fn Rhombicosidodecahedron() PolyMesh {
+    return Icosahedron().Expand().ScaleToRadius(r: 1 mm)
+}
+
+# Snub dodecahedron — 80 triangles + 12 pentagons. Chiral.
+fn SnubDodecahedron() PolyMesh {
+    return Icosahedron().Snub().ScaleToRadius(r: 1 mm)
+}
+
+# Truncated cuboctahedron (great rhombicuboctahedron) —
+# 12 squares + 8 hexagons + 6 octagons.
+fn TruncatedCuboctahedron() PolyMesh {
+    return PlatoCube().Ambo().Truncate().ScaleToRadius(r: 1 mm)
+}
+
+# Truncated icosidodecahedron (great rhombicosidodecahedron) —
+# 30 squares + 20 hexagons + 12 decagons.
+fn TruncatedIcosidodecahedron() PolyMesh {
+    return Icosahedron().Ambo().Truncate().ScaleToRadius(r: 1 mm)
+}
+
+# ---------------------------------------------------------------------------
+# Catalan Solids (select duals of Archimedean solids)
+# 
+# Face-transitive polyhedra with congruent but irregular faces.
+# ---------------------------------------------------------------------------
+# Triakis tetrahedron — dual of truncated tetrahedron. 12 triangles.
+fn TriakisTetrahedron() PolyMesh {
+    return Tetrahedron().Kis().ScaleToRadius(r: 1 mm)
+}
+
+# Rhombic dodecahedron — dual of cuboctahedron. 12 rhombic faces. Space-filling.
+fn RhombicDodecahedron() PolyMesh {
+    return PlatoCube().Ambo().Dual().ScaleToRadius(r: 1 mm)
+}
+
+# Triakis octahedron — dual of truncated cube. 24 triangles.
+fn TriakisOctahedron() PolyMesh {
+    return PlatoCube().Truncate().Dual().ScaleToRadius(r: 1 mm)
+}
+
+# Tetrakis hexahedron — dual of truncated octahedron. 24 triangles.
+fn TetrakisHexahedron() PolyMesh {
+    return Octahedron().Truncate().Dual().ScaleToRadius(r: 1 mm)
+}
+
+# Deltoidal icositetrahedron — dual of rhombicuboctahedron. 24 kite faces.
+fn DeltoidalIcositetrahedron() PolyMesh {
+    return PlatoCube().Expand().Dual().ScaleToRadius(r: 1 mm)
+}
+
+# Pentagonal icositetrahedron — dual of snub cube. 24 irregular pentagons. Chiral.
+fn PentagonalIcositetrahedron() PolyMesh {
+    return PlatoCube().Snub().Dual().ScaleToRadius(r: 1 mm)
+}
+
+# Rhombic triacontahedron — dual of icosidodecahedron. 30 rhombic faces.
+fn RhombicTriacontahedron() PolyMesh {
+    return Icosahedron().Ambo().Dual().ScaleToRadius(r: 1 mm)
+}
+
+# Pentakis dodecahedron — dual of truncated icosahedron. 60 triangles.
+fn PentakisDodecahedron() PolyMesh {
+    return Icosahedron().Truncate().Dual().ScaleToRadius(r: 1 mm)
+}
+
+# ---------------------------------------------------------------------------
+# Prisms & Antiprisms
+# ---------------------------------------------------------------------------
+# Creates a regular n-gon prism with unit circumradius.
+# @param sides  Number of sides (must be >= 3)
+fn Prism(sides Number) PolyMesh {
+    var verts = for i [0:<sides * 2] {
+        var a = i % sides * (360 deg / sides)
+        var z = -0.5 mm
+        if i < sides { z = 0.5 mm }
+        yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: z}
+    }
+    var top = for i [0:<sides] { yield i }
+    var bot = for i [0:<sides] { yield sides + (sides - 1 - i) }
+    var faces = for i [0:<sides + 2] {
+        if i == 0 {
+            yield top
+        } else if i == 1 {
+            yield bot
+        } else {
+            var j = i - 2
+            var k = (j + 1) % sides
+            yield [j, k, sides + k, sides + j]
+        }
+    }
+    return PolyMesh{vertices: verts, faces: faces}.ScaleToRadius(r: 1 mm)
+}
+
+# Creates a regular n-gon antiprism with unit circumradius.
+# @param sides  Number of sides (must be >= 3)
+fn Antiprism(sides Number) PolyMesh {
+    var half_twist = 180 deg / sides
+    var verts = for i [0:<sides * 2] {
+        var ring = 1
+        if i < sides { ring = 0 }
+        var a = i % sides * (360 deg / sides) + ring * half_twist
+        var z = -0.5 mm
+        if ring == 0 { z = 0.5 mm }
+        yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: z}
+    }
+    var top = for i [0:<sides] { yield i }
+    var bot = for i [0:<sides] { yield sides + (sides - 1 - i) }
+    var faces = for i [0:<2 * sides + 2] {
+        if i == 0 {
+            yield top
+        } else if i == 1 {
+            yield bot
+        } else if i < sides + 2 {
+            var j = i - 2
+            var k = (j + 1) % sides
+            yield [j, k, sides + j]
+        } else {
+            var j = i - sides - 2
+            var k = (j + 1) % sides
+            yield [sides + j, k, sides + k]
+        }
+    }
+    return PolyMesh{vertices: verts, faces: faces}.ScaleToRadius(r: 1 mm)
+}
+
+# Creates a regular n-gon pyramid with unit circumradius.
+# @param sides  Number of base sides (must be >= 3)
+fn Pyramid(sides Number) PolyMesh {
+    var verts = for i [0:<sides + 1] {
+        if i < sides {
+            var a = i * (360 deg / sides)
+            yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: 0 mm}
+        } else {
+            yield Vec3{z: 1 mm}
+        }
+    }
+    var base = for i [0:<sides] { yield sides - 1 - i }
+    var faces = for i [0:<sides + 1] {
+        if i == 0 {
+            yield base
+        } else {
+            var j = i - 1
+            var k = (j + 1) % sides
+            yield [j, k, sides]
+        }
+    }
+    return PolyMesh{vertices: verts, faces: faces}.ScaleToRadius(r: 1 mm)
+}
+
+# Creates a regular n-gon bipyramid (two pyramids base-to-base) with unit circumradius.
+# @param sides  Number of equatorial sides (must be >= 3)
+fn Bipyramid(sides Number) PolyMesh {
+    var verts = for i [0:<sides + 2] {
+        if i < sides {
+            var a = i * (360 deg / sides)
+            yield Vec3{x: Cos(a: a) * 1 mm, y: Sin(a: a) * 1 mm, z: 0 mm}
+        } else if i == sides {
+            yield Vec3{z: 1 mm}
+        } else {
+            yield Vec3{z: -1 mm}
+        }
+    }
+    var faces = for i [0:<2 * sides] {
+        var j = i % sides
+        var k = (j + 1) % sides
+        if i < sides {
+            yield [j, k, sides]
+        } else {
+            yield [k, j, sides + 1]
+        }
+    }
+    return PolyMesh{vertices: verts, faces: faces}.ScaleToRadius(r: 1 mm)
+}
+
+# ---------------------------------------------------------------------------
+# Torus
+# ---------------------------------------------------------------------------
+# Creates a torus (donut) as a Solid.
+# @param major  Distance from center of torus to center of tube
+# @param minor  Radius of the tube
+fn Torus(major, minor Length) Solid {
+    return Circle(r: minor)
+        .Move(x: major - minor, y: -minor).Revolve()
+}
+
+# Creates a torus with custom tube segment count.
+# @param major    Distance from center of torus to center of tube
+# @param minor    Radius of the tube
+# @param tube_segments   Number of segments around the tube cross-section
+fn Torus(major, minor Length, tube_segments Number) Solid {
+    return Circle(r: minor, segments: tube_segments)
+        .Move(x: major - minor, y: -minor).Revolve()
+}
+
+# Creates a partial torus (arc).
+# @param major  Distance from center of torus to center of tube
+# @param minor  Radius of the tube
+# @param sweep         Arc angle of revolution
+fn Torus(major, minor Length, sweep Angle) Solid {
+    return Circle(r: minor)
+        .Move(x: major - minor, y: -minor)
+        .Revolve(a: sweep)
+}
+
+# ---------------------------------------------------------------------------
+# Showcase
+# ---------------------------------------------------------------------------
+# Renders all five Platonic solids side by side.
+fn ShowcasePlatonics(r Length) []Solid {
+    return Layout(
+        solids: [
+            Tetrahedron().ScaleToRadius(r: r).Solid(),
+            Octahedron().ScaleToRadius(r: r).Solid(),
+            PlatoCube().ScaleToRadius(r: r).Solid(),
+            Icosahedron().ScaleToRadius(r: r).Solid(),
+            Dodecahedron().ScaleToRadius(r: r).Solid()
+        ]
+    )
+}
+
+# Renders all thirteen Archimedean solids.
+fn ShowcaseArchimedean(r Length) []Solid {
+    return Layout(
+        solids: [
+            TruncatedTetrahedron().ScaleToRadius(r: r).Solid(),
+            Cuboctahedron().ScaleToRadius(r: r).Solid(),
+            TruncatedCube().ScaleToRadius(r: r).Solid(),
+            TruncatedOctahedron().ScaleToRadius(r: r).Solid(),
+            Rhombicuboctahedron().ScaleToRadius(r: r).Solid(),
+            SnubCube().ScaleToRadius(r: r).Solid(),
+            Icosidodecahedron().ScaleToRadius(r: r).Solid(),
+            TruncatedIcosahedron().ScaleToRadius(r: r).Solid(),
+            TruncatedDodecahedron().ScaleToRadius(r: r).Solid(),
+            Rhombicosidodecahedron().ScaleToRadius(r: r).Solid(),
+            SnubDodecahedron().ScaleToRadius(r: r).Solid(),
+            TruncatedCuboctahedron().ScaleToRadius(r: r).Solid(),
+            TruncatedIcosidodecahedron().ScaleToRadius(r: r).Solid()
+        ]
+    )
+}
+
+# Renders all eight Catalan solids (duals of Archimedean).
+fn ShowcaseCatalans(r Length) []Solid {
+    return Layout(
+        solids: [
+            TriakisTetrahedron().ScaleToRadius(r: r).Solid(),
+            RhombicDodecahedron().ScaleToRadius(r: r).Solid(),
+            TriakisOctahedron().ScaleToRadius(r: r).Solid(),
+            TetrakisHexahedron().ScaleToRadius(r: r).Solid(),
+            DeltoidalIcositetrahedron().ScaleToRadius(r: r).Solid(),
+            PentagonalIcositetrahedron().ScaleToRadius(r: r).Solid(),
+            RhombicTriacontahedron().ScaleToRadius(r: r).Solid(),
+            PentakisDodecahedron().ScaleToRadius(r: r).Solid()
+        ]
+    )
+}
+
+# Renders each Platonic solid next to its canonical dual.
+# Tetrahedron is self-dual; Cube ↔ Octahedron; Icosahedron ↔ Dodecahedron.
+fn ShowcaseCanonicalDuals(r Length) []Solid {
+    return Layout(
+        solids: [
+            Tetrahedron().ScaleToRadius(r: r).Solid(),
+            Tetrahedron().Dual().ScaleToRadius(r: r).Solid(),
+            PlatoCube().ScaleToRadius(r: r).Solid(),
+            PlatoCube().Dual().ScaleToRadius(r: r).Solid(),
+            Icosahedron().ScaleToRadius(r: r).Solid(),
+            Icosahedron().Dual().ScaleToRadius(r: r).Solid()
+        ]
+    )
+}

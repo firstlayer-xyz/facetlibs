@@ -1,0 +1,178 @@
+# Curves Library
+# 
+# Bezier and spline functions that return arrays of points.
+# Use with Polygon() for 2D profiles, or with Turtle.Sweep() for swept solids.
+# 
+# Example — cubic bezier profile:
+# ```
+# var C = lib "github.com/firstlayer-xyz/facetlibs/curves@main"
+# var pts = C.CubicBezier2d(
+#     Vec2{0 mm, 0 mm},
+#     Vec2{10 mm, 30 mm},
+#     Vec2{30 mm, 30 mm},
+#     Vec2{40 mm, 0 mm},
+#     20
+# )
+# ```
+# 
+# Example — smooth curve through points:
+# ```
+# var pts = C.CatmullRom2d([
+#     Vec2{0 mm, 0 mm},
+#     Vec2{10 mm, 20 mm},
+#     Vec2{30 mm, 15 mm},
+#     Vec2{40 mm, 0 mm},
+# ], 16)
+# ```
+# =========================================================================
+# 2D Bezier Curves
+# =========================================================================
+# Quadratic bezier curve (3 control points).
+# @param start  Start point
+# @param ctrl   Control point
+# @param end    End point
+# @param steps  Number of line segments
+# @return       Array of Vec2 along the curve
+fn QuadBezier2d(start, ctrl, end Vec2, steps Number) []Vec2 {
+    return for i [0:steps] {
+        var t = i / steps
+        var u = 1 - t
+        yield Vec2{x: u * u * start.x + 2 * u * t * ctrl.x + t * t * end.x,
+            y: u * u * start.y + 2 * u * t * ctrl.y + t * t * end.y}
+    }
+}
+
+# Cubic bezier curve (4 control points).
+# @param start  Start point
+# @param ctrl1  First control point (tangent at start)
+# @param ctrl2  Second control point (tangent at end)
+# @param end    End point
+# @param steps  Number of line segments
+# @return       Array of Vec2 along the curve
+fn CubicBezier2d(start, ctrl1, ctrl2, end Vec2, steps Number) []Vec2 {
+    return for i [0:steps] {
+        var t = i / steps
+        var u = 1 - t
+        var u2 = u * u
+        var t2 = t * t
+        yield Vec2{x: u2 * u * start.x + 3 * u2 * t * ctrl1.x + 3 * u * t2 * ctrl2.x + t2 * t * end.x,
+            y: u2 * u * start.y + 3 * u2 * t * ctrl1.y + 3 * u * t2 * ctrl2.y + t2 * t * end.y}
+    }
+}
+
+# =========================================================================
+# 3D Bezier Curves
+# =========================================================================
+# Quadratic bezier curve in 3D.
+# @param start  Start point
+# @param ctrl   Control point
+# @param end    End point
+# @param steps  Number of line segments
+# @return       Array of Vec3 along the curve
+fn QuadBezier3d(start, ctrl, end Vec3, steps Number) []Vec3 {
+    return for i [0:steps] {
+        var t = i / steps
+        var u = 1 - t
+        yield Vec3{x: u * u * start.x + 2 * u * t * ctrl.x + t * t * end.x,
+            y: u * u * start.y + 2 * u * t * ctrl.y + t * t * end.y,
+            z: u * u * start.z + 2 * u * t * ctrl.z + t * t * end.z}
+    }
+}
+
+# Cubic bezier curve in 3D.
+# @param start  Start point
+# @param ctrl1  First control point
+# @param ctrl2  Second control point
+# @param end    End point
+# @param steps  Number of line segments
+# @return       Array of Vec3 along the curve
+fn CubicBezier3d(start, ctrl1, ctrl2, end Vec3, steps Number) []Vec3 {
+    return for i [0:steps] {
+        var t = i / steps
+        var u = 1 - t
+        var u2 = u * u
+        var t2 = t * t
+        yield Vec3{x: u2 * u * start.x + 3 * u2 * t * ctrl1.x + 3 * u * t2 * ctrl2.x + t2 * t * end.x,
+            y: u2 * u * start.y + 3 * u2 * t * ctrl1.y + 3 * u * t2 * ctrl2.y + t2 * t * end.y,
+            z: u2 * u * start.z + 3 * u2 * t * ctrl1.z + 3 * u * t2 * ctrl2.z + t2 * t * end.z}
+    }
+}
+
+# =========================================================================
+# Catmull-Rom Splines
+# 
+# Smooth curves that pass through every control point.
+# Uses centripetal parameterization (alpha=0.5) for minimal cusps.
+# =========================================================================
+# Catmull-Rom spline through 2D points.
+# Automatically extends start/end tangents by reflecting the first/last segment.
+# @param points     Array of Vec2 to interpolate (>= 2)
+# @param segments   Number of line segments between each pair of points
+# @return           Array of Vec2 along the smooth curve
+fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
+    var n = Size(of: points)
+    assert n >= 2, "CatmullRom2d requires at least 2 points"
+    # Mirror first and last points to create virtual endpoints
+    var p_first = Vec2{x: 2 * points[0].x - points[1].x,
+        y: 2 * points[0].y - points[1].y}
+    var p_last = Vec2{x: 2 * points[n - 1].x - points[n - 2].x,
+        y: 2 * points[n - 1].y - points[n - 2].y}
+    return for seg [0:<n - 1] {
+        var p0 = p_first
+        if seg > 0 { p0 = points[seg - 1] }
+        var p1 = points[seg]
+        var p2 = points[seg + 1]
+        var p3 = p_last
+        if seg < n - 2 { p3 = points[seg + 2] }
+        for j [0:<segments] {
+            var t = j / segments
+            var t2 = t * t
+            var t3 = t2 * t
+            # Catmull-Rom basis matrix coefficients
+            var c0 = -0.5 * t3 + t2 - 0.5 * t
+            var c1 = 1.5 * t3 - 2.5 * t2 + 1
+            var c2 = -1.5 * t3 + 2 * t2 + 0.5 * t
+            var c3 = 0.5 * t3 - 0.5 * t2
+            yield Vec2{x: c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
+                y: c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y}
+        }
+        # Include the final point of the last segment
+        if seg == n - 2 { yield points[n - 1] }
+    }
+}
+
+# Catmull-Rom spline through 3D points.
+# Automatically extends start/end tangents by reflecting the first/last segment.
+# @param points     Array of Vec3 to interpolate (>= 2)
+# @param segments   Number of line segments between each pair of points
+# @return           Array of Vec3 along the smooth curve
+fn CatmullRom3d(points []Vec3, segments Number) []Vec3 {
+    var n = Size(of: points)
+    assert n >= 2, "CatmullRom3d requires at least 2 points"
+    var p_first = Vec3{x: 2 * points[0].x - points[1].x,
+        y: 2 * points[0].y - points[1].y, z: 2 * points[0].z - points[1].z}
+    var p_last = Vec3{x: 2 * points[n - 1].x - points[n - 2].x,
+        y: 2 * points[n - 1].y - points[n - 2].y,
+        z: 2 * points[n - 1].z - points[n - 2].z}
+    return for seg [0:<n - 1] {
+        var p0 = p_first
+        if seg > 0 { p0 = points[seg - 1] }
+        var p1 = points[seg]
+        var p2 = points[seg + 1]
+        var p3 = p_last
+        if seg < n - 2 { p3 = points[seg + 2] }
+        for j [0:<segments] {
+            var t = j / segments
+            var t2 = t * t
+            var t3 = t2 * t
+            var c0 = -0.5 * t3 + t2 - 0.5 * t
+            var c1 = 1.5 * t3 - 2.5 * t2 + 1
+            var c2 = -1.5 * t3 + 2 * t2 + 0.5 * t
+            var c3 = 0.5 * t3 - 0.5 * t2
+            yield Vec3{x: c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
+                y: c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y,
+                z: c0 * p0.z + c1 * p1.z + c2 * p2.z + c3 * p3.z}
+        }
+        if seg == n - 2 { yield points[n - 1] }
+    }
+}
