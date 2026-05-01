@@ -89,7 +89,7 @@ fn Tube(outer, inner, h Length) Solid {
 }
 
 fn Cone(r, h Length) Solid {
-    return Cylinder(r1: r, r2: 0 mm, h: h)
+    return Frustum(r1: r, r2: 0 mm, h: h)
 }
 
 fn Dome(r Length) Solid {

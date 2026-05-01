@@ -556,7 +556,7 @@ fn CountersunkScrew(size String, length Length) CountersunkScrew {
 
 # Renders the countersunk screw as a solid.
 fn CountersunkScrew.Solid() Solid {
-    var head = Cylinder(
+    var head = Frustum(
         r1: self.head_d / 2,
         r2: self.major_d / 2,
         h: self.head_h
