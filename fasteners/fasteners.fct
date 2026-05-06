@@ -276,7 +276,7 @@ fn HexNut(size String) HexNut {
 fn HexNut.Solid() Solid {
     var hex = HexSketch(flat: self.hex_af).Extrude(z: self.nut_h)
     var internal = self.thread.Inside(length: self.nut_h)
-        .AlignBottom(with: hex, centerX: true, centerY: true)
+        .AlignBottom(with: hex, center: CenterXY)
     return hex - internal
 }
 
@@ -304,6 +304,7 @@ fn CapNut(size String) CapNut {
 # Renders the cap nut as a solid.
 fn CapNut.Solid() Solid {
     var hex = HexSketch(flat: self.hex_af).Extrude(z: self.base_h)
+
     # Dome: sphere section clipped above the hex base.
     # Use the flat-to-flat radius (hex_af/2), not the corner radius,
     # so the dome sits flush with the hex flats.
@@ -314,14 +315,14 @@ fn CapNut.Solid() Solid {
     var R_num = (fr_num * fr_num + dh_num * dh_num) / (2 * dh_num)
     var R = R_num * 1 mm
     var clip = Cylinder(r: flat_r, h: dh)
-        .AlignCenter(with: hex, z: false).StackOnTop(of: hex)
-    var sphere = Sphere(r: R)
-        .AlignCenter(with: hex, z: false)
+        .AlignCenter(with: hex, center: CenterXY).StackOnTop(of: hex)
+    var sphere = Sphere(r: R).AlignCenter(with: hex, center: CenterXY)
         .Move(z: self.base_h + dh - 2 * R)
     var dome = sphere & clip
+
     # Internal thread — blind hole through hex base only.
     var internal = self.thread.Inside(length: self.base_h)
-        .AlignBottom(with: hex, centerX: true, centerY: true)
+        .AlignBottom(with: hex, center: CenterXY)
     return hex + dome - internal
 }
 
@@ -355,6 +356,7 @@ fn WingNut(size String) WingNut {
 # Renders the wing nut as a solid.
 fn WingNut.Solid() Solid {
     var hr = self.hub_d / 2
+
     # Build axis-at-origin so the wing_l = wing_r.Rotate(z: 180 deg) mirror is
     # correct; translate to origin-corner at the end.
     var hub = Cylinder(r: hr, h: self.hub_h).Move(x: -hr, y: -hr)
@@ -365,6 +367,7 @@ fn WingNut.Solid() Solid {
     var overlap = hr * 0.3
     var cap_w = ws + overlap
     var body_h = wh - cap_w / 2
+
     # Right wing (+X): V-shaped profile, narrow at bottom, wide at top,
     # extends slightly over the hub at the top.
     # Profile in XY (X = radial from hub surface, Y = height),
@@ -375,6 +378,7 @@ fn WingNut.Solid() Solid {
             {x: -overlap, y: body_h}
         ]
     ).Extrude(z: wt).Move(z: -wt / 2).Rotate(x: 90 deg).Move(x: hr)
+
     # Rounded cap on top of wing
     var cap_cx = hr - overlap + cap_w / 2
     var cap = Cylinder(r: cap_w / 2, h: wt)
@@ -383,11 +387,14 @@ fn WingNut.Solid() Solid {
     var clip = Cube(s: Vec3{x: cap_w + 1 mm, y: wt + 1 mm, z: cap_w / 2}).Move(
         v: Vec3{x: cap_cx - (cap_w + 1 mm) / 2, y: -(wt + 1 mm) / 2, z: body_h}
     )
+
     var wing_r = wing_body + (cap & clip)
+
     # Left wing (-X): mirror of right wing around Z axis at origin
     var wing_l = wing_r.Rotate(z: 180 deg)
     var internal = self.thread.Inside(length: self.hub_h)
-        .AlignBottom(with: hub, centerX: true, centerY: true)
+        .AlignBottom(with: hub, center: CenterXY)
+
     # Shift so bbox min is at origin, matching the rest of the library.
     var result = hub + wing_r + wing_l - internal
     return result.AlignLeft(pos: 0 mm).AlignFront(pos: 0 mm)
@@ -415,7 +422,7 @@ fn Washer(size String) Washer {
 fn Washer.Solid() Solid {
     var outer = Cylinder(r: self.outer_d / 2, h: self.thickness)
     var bore = Cylinder(r: self.bore_d / 2, h: self.thickness + 1 mm)
-        .AlignCenter(with: outer, z: false).AlignBottom(pos: -0.5 mm)
+        .AlignCenter(with: outer, center: CenterXY).AlignBottom(pos: -0.5 mm)
     return outer - bore
 }
 
@@ -476,7 +483,7 @@ fn SocketHeadCapScrew.Solid() Solid {
     var head = Cylinder(r: self.head_d / 2, h: hh)
     var sock_depth = hh * 0.8
     var socket = HexSketch(flat: self.socket).Extrude(z: sock_depth + 1 mm)
-        .AlignBottom(with: head, nudge: 1 mm, centerX: true, centerY: true)
+        .AlignBottom(with: head, nudge: 1 mm, center: CenterXY)
     var shaft = self.thread.Outside(length: self.length).StackOnTop(of: head)
     return head - socket + shaft
 }
@@ -518,13 +525,12 @@ fn ButtonHeadCapScrew.Solid() Solid {
     var R = R_num * 1 mm
     var c = c_num * 1 mm
     var clip = Cylinder(r: d / 2, h: h)
-    var sphere = Sphere(r: R)
-        .AlignCenter(with: clip, z: false)
+    var sphere = Sphere(r: R).AlignCenter(with: clip, center: CenterXY)
         .Move(z: c - R)
     var dome = sphere & clip
     var sock_depth = h * 0.7
     var socket = HexSketch(flat: self.socket).Extrude(z: sock_depth + 1 mm)
-        .AlignBottom(with: dome, nudge: 1 mm, centerX: true, centerY: true)
+        .AlignBottom(with: dome, nudge: 1 mm, center: CenterXY)
     var shaft = self.thread.Outside(length: self.length).StackOnTop(of: dome)
     return dome - socket + shaft
 }
@@ -561,9 +567,10 @@ fn CountersunkScrew.Solid() Solid {
         r2: self.major_d / 2,
         h: self.head_h
     )
+
     var sock_depth = self.head_h * 0.7
     var socket = HexSketch(flat: self.socket).Extrude(z: sock_depth + 1 mm)
-        .AlignBottom(with: head, nudge: 1 mm, centerX: true, centerY: true)
+        .AlignBottom(with: head, nudge: 1 mm, center: CenterXY)
     var shaft = self.thread.Outside(length: self.length).StackOnTop(of: head)
     return head - socket + shaft
 }
@@ -595,7 +602,7 @@ fn SetScrew.Solid() Solid {
     var body = self.thread.Outside(length: self.length)
     var sock_depth = self.major_d * 0.6
     var socket = HexSketch(flat: self.socket).Extrude(z: sock_depth + 1 mm)
-        .AlignBottom(with: body, nudge: 1 mm, centerX: true, centerY: true)
+        .AlignBottom(with: body, nudge: 1 mm, center: CenterXY)
     return body - socket
 }
 
@@ -618,8 +625,11 @@ fn Thumbscrew(size String, length Length) Thumbscrew {
     var d = t.major_diameter
     return Thumbscrew{thread: t, length: length, head_h: d * 0.8,
         head_r: d * 1.2,
-        knurl: K.Knurl(count: Number(from: d) * 6, depth: 0.3 mm,
-            angle: 30 deg)}
+        knurl: K.Knurl(
+            count: Number(from: d) * 6,
+            depth: 0.3 mm,
+            angle: 30 deg
+        )}
 }
 
 # Creates a thumbscrew with custom head dimensions and knurling.
@@ -633,6 +643,7 @@ fn Thumbscrew.Solid() Solid {
     var head = self.knurl.ApplyZ(
         to: Cylinder(r: self.head_r, h: self.head_h)
     )
+
     var shaft = self.thread.Outside(length: self.length).StackOnTop(of: head)
     return head + shaft
 }
@@ -667,7 +678,7 @@ fn FlatHeadScrew.Solid() Solid {
     var head = Cylinder(r: hd / 2, h: hh)
     var slot_depth = hh * 0.8
     var slot = Cube(s: Vec3{x: hd + 1 mm, y: self.slot_w, z: slot_depth + 1 mm})
-        .AlignCenter(with: head, z: false).AlignBottom(pos: -1 mm)
+        .AlignCenter(with: head, center: CenterXY).AlignBottom(pos: -1 mm)
     var shaft = self.thread.Outside(length: self.length).StackOnTop(of: head)
     return head - slot + shaft
 }
@@ -705,9 +716,9 @@ fn PhillipsScrew.Solid() Solid {
     var arm_len = pw * 1.2
     var arm_w = pw * 0.25
     var slot_a = Cube(s: Vec3{x: arm_len, y: arm_w, z: recess_depth + 1 mm})
-        .AlignCenter(with: head, z: false).AlignBottom(pos: -1 mm)
+        .AlignCenter(with: head, center: CenterXY).AlignBottom(pos: -1 mm)
     var slot_b = Cube(s: Vec3{x: arm_w, y: arm_len, z: recess_depth + 1 mm})
-        .AlignCenter(with: head, z: false).AlignBottom(pos: -1 mm)
+        .AlignCenter(with: head, center: CenterXY).AlignBottom(pos: -1 mm)
     var recess = slot_a + slot_b
     var shaft = self.thread.Outside(length: self.length).StackOnTop(of: head)
     return head - recess + shaft
