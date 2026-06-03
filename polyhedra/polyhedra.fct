@@ -305,30 +305,18 @@ fn Bipyramid(sides Number) PolyMesh {
 # Torus
 # ---------------------------------------------------------------------------
 # Creates a torus (donut) as a Solid.
-# @param major  Distance from center of torus to center of tube
-# @param minor  Radius of the tube
-fn Torus(major, minor Length) Solid {
-    return Circle(r: minor)
-        .Move(x: major - minor, y: -minor).Revolve()
-}
-
-# Creates a torus with custom tube segment count.
-# @param major    Distance from center of torus to center of tube
-# @param minor    Radius of the tube
-# @param tube_segments   Number of segments around the tube cross-section
-fn Torus(major, minor Length, tube_segments Number) Solid {
-    return Circle(r: minor, segments: tube_segments)
-        .Move(x: major - minor, y: -minor).Revolve()
-}
-
-# Creates a partial torus (arc).
-# @param major  Distance from center of torus to center of tube
-# @param minor  Radius of the tube
-# @param sweep         Arc angle of revolution
-fn Torus(major, minor Length, sweep Angle) Solid {
-    return Circle(r: minor)
+# @param major          Distance from center of torus to center of tube
+# @param minor          Radius of the tube
+# @param tube_segments  Segments around the tube cross-section; nil = automatic
+# @param sweep          Arc angle of revolution; nil = full 360°
+fn Torus(
+    major, minor Length,
+    tube_segments Number?,
+    sweep Angle?,
+) Solid {
+    return Circle(r: minor, segments: tube_segments ?? 0)
         .Move(x: major - minor, y: -minor)
-        .Revolve(a: sweep)
+        .Revolve(a: sweep ?? 360 deg)
 }
 
 # ---------------------------------------------------------------------------

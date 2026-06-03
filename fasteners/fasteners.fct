@@ -612,20 +612,22 @@ type Thumbscrew {
     knurl  K.Knurl
 }
 
-# Creates a thumbscrew with default head dimensions and knurling.
-fn Thumbscrew(size String, length Length) Thumbscrew {
+# Creates a thumbscrew. Head dimensions and knurling default from the thread
+# diameter when omitted; pass any of `head_h`, `head_r`, `knurl` to override.
+fn Thumbscrew(
+    size String,
+    length Length,
+    head_h Length?,
+    head_r Length?,
+    knurl K.Knurl?,
+) Thumbscrew {
     var t = T.Thread(size: size)
     var d = t.major_diameter
-    return Thumbscrew{thread: t, length: length, head_h: d * 0.8,
-        head_r: d * 1.2,
-        knurl: K.Knurl(count: Number(from: d) * 6, depth: 0.3 mm,
+    return Thumbscrew{thread: t, length: length,
+        head_h: head_h ?? d * 0.8,
+        head_r: head_r ?? d * 1.2,
+        knurl: knurl ?? K.Knurl(count: Number(from: d) * 6, depth: 0.3 mm,
             angle: 30 deg)}
-}
-
-# Creates a thumbscrew with custom head dimensions and knurling.
-fn Thumbscrew(size String, length, head_h, head_r Length, knurl K.Knurl) Thumbscrew {
-    return Thumbscrew{thread: T.Thread(size: size), length: length,
-        head_h: head_h, head_r: head_r, knurl: knurl}
 }
 
 # Renders the thumbscrew as a solid.

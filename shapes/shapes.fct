@@ -8,12 +8,10 @@ fn Pill(l, w Length) Sketch {
     return Square(x: l, y: w).Fillet(r: w / 2)
 }
 
-fn Oval(w, h Length) Sketch {
-    return Circle(r: w / 2).Scale(x: 1, y: h / w, around: Vec2{x: 0 mm})
-}
-
-fn Oval(w, h Length, segments Number) Sketch {
-    return Circle(r: w / 2, segments: segments)
+# `segments` controls the ellipse's smoothness; `nil` (the default) uses the
+# automatic resolution.
+fn Oval(w, h Length, segments Number?) Sketch {
+    return Circle(r: w / 2, segments: segments ?? 0)
         .Scale(x: 1, y: h / w, around: Vec2{x: 0 mm})
 }
 
