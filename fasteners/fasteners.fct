@@ -741,8 +741,9 @@ fn Standoff.Solid() Solid {
     var body = HexSketch(flat: self.hex_af).Extrude(z: self.length)
     var thread_depth = Min(a: self.major_d, b: self.length / 2)
     var top_thread = self.thread.Inside(length: thread_depth)
-        .Move(z: self.length - thread_depth)
+        .AlignTop(with: body, centerX: true, centerY: true)
     var bot_thread = self.thread.Inside(length: thread_depth)
+        .AlignBottom(with: body, centerX: true, centerY: true)
     return body - top_thread - bot_thread
 }
 
@@ -773,6 +774,7 @@ fn MaleStandoff.Solid() Solid {
     var body = HexSketch(flat: self.hex_af).Extrude(z: self.length)
     var thread_depth = Min(a: self.major_d, b: self.length / 2)
     var bot_thread = self.thread.Inside(length: thread_depth)
+        .AlignBottom(with: body, centerX: true, centerY: true)
     var male_thread = self.thread.Outside(length: self.thread_len)
         .StackOnTop(of: body)
     return body - bot_thread + male_thread
