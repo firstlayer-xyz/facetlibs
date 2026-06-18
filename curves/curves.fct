@@ -117,14 +117,16 @@ fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
         y: 2 * points[0].y - points[1].y}
     var p_last = Vec2{x: 2 * points[n - 1].x - points[n - 2].x,
         y: 2 * points[n - 1].y - points[n - 2].y}
-    return for seg [0:<n - 1] {
+    # One point array per segment (for/yield bodies are isolated, so they are
+    # concatenated with fold below rather than yielded into one comprehension).
+    var segs = for seg [0:<n - 1] {
         var p0 = p_first
         if seg > 0 { p0 = points[seg - 1] }
         var p1 = points[seg]
         var p2 = points[seg + 1]
         var p3 = p_last
         if seg < n - 2 { p3 = points[seg + 2] }
-        for j [0:<segments] {
+        yield for j [0:<segments] {
             var t = j / segments
             var t2 = t * t
             var t3 = t2 * t
@@ -136,9 +138,9 @@ fn CatmullRom2d(points []Vec2, segments Number) []Vec2 {
             yield Vec2{x: c0 * p0.x + c1 * p1.x + c2 * p2.x + c3 * p3.x,
                 y: c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y}
         }
-        # Include the final point of the last segment
-        if seg == n - 2 { yield points[n - 1] }
     }
+    var flat = fold acc, s segs { yield acc + s }
+    return flat + [points[n - 1]]
 }
 
 # Catmull-Rom spline through 3D points.
@@ -154,14 +156,16 @@ fn CatmullRom3d(points []Vec3, segments Number) []Vec3 {
     var p_last = Vec3{x: 2 * points[n - 1].x - points[n - 2].x,
         y: 2 * points[n - 1].y - points[n - 2].y,
         z: 2 * points[n - 1].z - points[n - 2].z}
-    return for seg [0:<n - 1] {
+    # One point array per segment (for/yield bodies are isolated, so they are
+    # concatenated with fold below rather than yielded into one comprehension).
+    var segs = for seg [0:<n - 1] {
         var p0 = p_first
         if seg > 0 { p0 = points[seg - 1] }
         var p1 = points[seg]
         var p2 = points[seg + 1]
         var p3 = p_last
         if seg < n - 2 { p3 = points[seg + 2] }
-        for j [0:<segments] {
+        yield for j [0:<segments] {
             var t = j / segments
             var t2 = t * t
             var t3 = t2 * t
@@ -173,6 +177,7 @@ fn CatmullRom3d(points []Vec3, segments Number) []Vec3 {
                 y: c0 * p0.y + c1 * p1.y + c2 * p2.y + c3 * p3.y,
                 z: c0 * p0.z + c1 * p1.z + c2 * p2.z + c3 * p3.z}
         }
-        if seg == n - 2 { yield points[n - 1] }
     }
+    var flat = fold acc, s segs { yield acc + s }
+    return flat + [points[n - 1]]
 }
