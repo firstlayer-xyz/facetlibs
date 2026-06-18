@@ -9,9 +9,9 @@ Shared libraries for [Facet](https://github.com/firstlayer-xyz/facet), a code-ba
 ISO metric, UTS/SAE, and NPT pipe thread generation.
 
 ```
-var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main";
-var t = T.Thread("m8");
-return t.Outside(20 mm);
+var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main"
+var t = T.Thread(size: "m8")
+return t.Outside(length: 20 mm)
 ```
 
 ### knurling
@@ -19,9 +19,9 @@ return t.Outside(20 mm);
 Diamond crosshatch grip texture for cylindrical solids.
 
 ```
-var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main";
-var knurl = K.Knurl(40, 0.5 mm, 30 deg);
-return knurl.Apply(cylinder);
+var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main"
+var knurl = K.Knurl(count: 40, depth: 0.5 mm, angle: 30 deg)
+return knurl.Apply(to: cylinder)
 ```
 
 ### fasteners
@@ -29,9 +29,8 @@ return knurl.Apply(cylinder);
 ISO metric fasteners: hex nuts, hex bolts, socket head cap screws, button head cap screws, countersunk screws, set screws, thumbscrews, flat head (slotted) screws, Phillips screws, and standoffs.
 
 ```
-var F = lib "github.com/firstlayer-xyz/facetlibs/fasteners@main";
-var f = F.Fastener("m8");
-return f.HexBolt(30 mm);
+var F = lib "github.com/firstlayer-xyz/facetlibs/fasteners@main"
+return F.HexBolt(size: "m8", length: 30 mm).Solid()
 ```
 
 ## Usage

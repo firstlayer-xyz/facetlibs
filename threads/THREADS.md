@@ -2,8 +2,8 @@
 
 ## Function Signature
 
-```chisel
-var T = lib "chisel/threads";
+```
+var T = lib "facet/threads";
 var thread = T.Thread("m10");                 # Metric
 var thread = T.Thread("1/4-20");              # SAE UNC
 var thread = T.Thread("1/4-npt");             # NPT
@@ -11,11 +11,13 @@ var thread = T.Thread("1/4-npt");             # NPT
 
 ## Thread Struct
 
-```chisel
+```
 struct Thread {
     Length pitch;            # Axial distance between adjacent thread crests
     Length major_diameter;   # Major (outside) diameter — nominal bolt/pipe OD
     Number taper;            # Diameter growth per unit length (0 = straight, 1/16 = NPT)
+    Length tolerance;        # Radial clearance applied to both inside & outside (0.1 mm default)
+    String size;             # Size string the thread was created from (e.g. "m10")
 }
 ```
 
@@ -90,7 +92,7 @@ struct Thread {
 ### NPT (National Pipe Thread)
 
 Diameter is the actual pipe OD, not the nominal pipe size.
-Use `NPTOutside()` / `NPTInside()` for tapered geometry.
+Taper is applied automatically by `Outside()` / `Inside()` when `taper > 0` (all NPT sizes).
 
 | Size | `diameter` (pipe OD) | `pitch` | TPI |
 |------|---------------------|---------|-----|
@@ -103,7 +105,7 @@ Use `NPTOutside()` / `NPTInside()` for tapered geometry.
 
 ## Thread Profile (60° V)
 
-All three standards (ISO metric, UTS/SAE, NPT) use the same 60° symmetric V-profile with flat truncations at the crest and root.
+All three standards (ISO metric, UTS/SAE, NPT) use the same 60° symmetric V-profile. `Outside()` (external threads) truncates the crest and root flats as described below; `Inside()` (internal threads) instead uses a near-sharp V (crest half-width ≈5°, root half-width ≈170°), shifted outward by the `tolerance` so a printed bolt fits.
 
 ```
         ← P →
@@ -146,11 +148,11 @@ For a thread of length `L`:
 - Large end (z=L): `d_large = major_diameter + delta_d/2`
 - Scale factor: `d_large / d_small`
 
-When `taper > 0`, `Outside()` and `Inside()` build the tooth polygon at the small-end radius and use the Extrude `scaleX`/`scaleY` parameters to grow the cross-section linearly to the large end.
+When `taper > 0`, `Outside()` and `Inside()` build the tooth polygon at the small-end radius and use the Extrude `taperX`/`taperY` parameters to grow the cross-section linearly to the large end.
 
 ## Tooth Profile (2D Cross-Section)
 
-The tooth is a trapezoid defined in polar coordinates — each vertex is placed at its true `(r, θ)` position using `(r·cos θ, r·sin θ)`.
+The tooth is a trapezoid defined in polar coordinates — each vertex is placed at its true `(r, θ)` position using `(r·cos θ, r·sin θ)`. The angular widths and point counts below describe `Outside()`; `Inside()` uses the same polar construction but a near-sharp profile (crest half-width 5°, root half-width 170°, with 2-point crest and root arcs).
 
 ### Angular Half-Widths
 
@@ -184,8 +186,8 @@ flank ╱  (10 pts each)     ╲flank
 
 ## Helical Extrusion
 
-```chisel
-tooth.Extrude(length, turns * 80, turns * 360 deg, scaleX, scaleY)
+```
+tooth.Extrude(length, turns * 80, turns * 360 deg, taperX, taperY)
 ```
 
 | Extrude Parameter | Straight | NPT | Purpose |
@@ -193,9 +195,9 @@ tooth.Extrude(length, turns * 80, turns * 360 deg, scaleX, scaleY)
 | height            | `length` | `length` | Total axial extent |
 | slices            | `turns × 80` | `turns × 80` | 80 cross-sections per revolution |
 | twist             | `turns × 360 deg` | `turns × 360 deg` | One full rotation per turn |
-| scaleX, scaleY    | `1, 1` | `taper_scale` | NPT: grows cross-section for taper |
+| taperX, taperY    | `1, 1` | `taper_scale` | NPT: grows cross-section for taper |
 
-Because the polygon wraps 270° around the origin, the extruded solid already includes the bolt core (material from 0 to `r_min`). No separate core cylinder is needed.
+Because the polygon wraps a full 360° around the origin, the extruded solid already includes the bolt core (material from 0 to `r_min`). No separate core cylinder is needed.
 
 ## References
 

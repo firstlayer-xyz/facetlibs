@@ -102,7 +102,7 @@ fn CubicBezier3d(start, ctrl1, ctrl2, end Vec3, steps Number) []Vec3 {
 # Catmull-Rom Splines
 # 
 # Smooth curves that pass through every control point.
-# Uses centripetal parameterization (alpha=0.5) for minimal cusps.
+# Uses uniform Catmull-Rom parameterization (tension tau=0.5).
 # =========================================================================
 # Catmull-Rom spline through 2D points.
 # Automatically extends start/end tangents by reflecting the first/last segment.

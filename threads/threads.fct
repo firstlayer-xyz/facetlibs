@@ -3,7 +3,7 @@
 # All standards use the same 60° V-profile. The `taper` field controls
 # diameter growth per unit length (`0` for straight, `1/16` for NPT).
 # The `tolerance` field is a radial clearance applied to both inside and
-# outside threads — 0.2 mm by default, suitable for FDM 3D printing.
+# outside threads — 0.1 mm by default, suitable for FDM 3D printing.
 type Thread {
     pitch          Length
     major_diameter Length

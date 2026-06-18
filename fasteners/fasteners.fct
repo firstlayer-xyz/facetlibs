@@ -10,8 +10,8 @@
 # 
 # Usage:
 #   var F = lib "github.com/firstlayer-xyz/facetlibs/fasteners@main"
-#   return F.HexBolt("m8", 30 mm).Solid()
-#   return F.HexBolt("1/4-20", 1 in).Solid()
+#   return F.HexBolt(size: "m8", length: 30 mm).Solid()
+#   return F.HexBolt(size: "1/4-20", length: 1 in).Solid()
 var T = lib "../threads"
 var K = lib "../knurling"
 
@@ -181,7 +181,7 @@ const METRIC = []FastenerDims[
 # Imperial Dimension Table (ASME B18.2.1, B18.2.2, B18.3, B18.6.3)
 # 
 # All dimensions use `in` suffix — Length values like the metric table.
-# Numbered sizes (#4-#10) have no hex bolts (bolt_head_h=0).
+# Numbered sizes (#4-#10) have no hex bolts (bolt_h=0).
 # 7/16-3/4 have no pan head screws.
 # ---------------------------------------------------------------------------
 const IMPERIAL = []FastenerDims[
