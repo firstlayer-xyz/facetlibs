@@ -56,7 +56,7 @@ fn Turtle2d.Forward(by Length) {
     var ny = self.pos.y + Sin(a: self.heading) * by
     var np = Vec2{x: nx, y: ny}
     self.pos = np
-    if self.pen { self.path = self.path + np }
+    if self.pen { self.path = self.path + [np] }
 }
 
 # Moves backward by `by`.
@@ -76,7 +76,7 @@ fn Turtle2d.GoTo(x, y Length) {
 
 fn Turtle2d.GoTo(pos Vec2) {
     self.pos = pos
-    if self.pen { self.path = self.path + pos }
+    if self.pen { self.path = self.path + [pos] }
 }
 
 # Draws a cubic bezier curve from the current position to `end`.
@@ -96,7 +96,7 @@ fn Turtle2d.BezierTo(cp1, cp2, end Vec2, steps Number) {
     var n = Size(of: pts)
     for i [1:<n] {
         self.pos = pts[i]
-        if self.pen { self.path = self.path + pts[i] }
+        if self.pen { self.path = self.path + [pts[i]] }
     }
     # Update heading to match the curve's exit tangent
     var dx = end.x - cp2.x
@@ -112,7 +112,7 @@ fn Turtle2d.PenUp() {
 # Puts the pen down — movement resumes adding to the path.
 fn Turtle2d.PenDown() {
     self.pen = true
-    self.path = self.path + self.pos
+    self.path = self.path + [self.pos]
 }
 
 # Returns the path as a closed polygon sketch.
@@ -160,7 +160,7 @@ fn Turtle3d.Forward(by Length) {
     var nz = self.pos.z + Sin(a: self.pitch) * by
     var np = Vec3{x: nx, y: ny, z: nz}
     self.pos = np
-    if self.pen { self.path = self.path + np }
+    if self.pen { self.path = self.path + [np] }
 }
 
 # Moves backward by `by`.
@@ -182,7 +182,7 @@ fn Turtle3d.GoTo(x, y, z Length) {
 
 fn Turtle3d.GoTo(pos Vec3) {
     self.pos = pos
-    if self.pen { self.path = self.path + pos }
+    if self.pen { self.path = self.path + [pos] }
 }
 
 # Returns the forward direction as a unit-length Vec3.
@@ -208,7 +208,7 @@ fn Turtle3d.BezierTo(cp1, cp2, end Vec3, steps Number) {
     var n = Size(of: pts)
     for i [1:<n] {
         self.pos = pts[i]
-        if self.pen { self.path = self.path + pts[i] }
+        if self.pen { self.path = self.path + [pts[i]] }
     }
     # Update yaw/pitch to match the curve's exit tangent
     var dx = end.x - cp2.x
@@ -231,7 +231,7 @@ fn Turtle3d.PenUp() {
 # Puts the pen down.
 fn Turtle3d.PenDown() {
     self.pen = true
-    self.path = self.path + self.pos
+    self.path = self.path + [self.pos]
 }
 
 # Sweeps a cross-section `profile` along the 3D path using the native sweep builtin.
