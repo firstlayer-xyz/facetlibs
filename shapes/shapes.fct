@@ -4,8 +4,12 @@ fn RoundedRect(w, h, r Length) Sketch {
     return Square(x: w, y: h).Fillet(r: r)
 }
 
+# Stadium shape: a w-tall rectangle capped with semicircles. Built as the hull
+# of the two end circles so the caps stay exact at r = w/2 (a max-radius Fillet
+# on the square collapses to an empty sketch).
 fn Pill(l, w Length) Sketch {
-    return Square(x: l, y: w).Fillet(r: w / 2)
+    var r = w / 2
+    return Hull(arr: [Circle(r: r), Circle(r: r).Move(x: l - w)])
 }
 
 # `segments` controls the ellipse's smoothness; `nil` (the default) uses the
