@@ -234,7 +234,7 @@ fn Thread.Outside(length Length) Solid {
 # 
 # Example:
 # ```
-# var t = Thread("m8")
+# var t = Thread(size: "m8")
 # var rot = depth_mm * t.DegPerMM()
 # ```
 fn Thread.DegPerMM() Angle {
@@ -246,7 +246,7 @@ fn Thread.DegPerMM() Angle {
 # 
 # Example:
 # ```
-# var t = Thread("1/4-20")
+# var t = Thread(size: "1/4-20")
 # var rot = depth_in * t.DegPerInch()
 # ```
 fn Thread.DegPerInch() Angle {

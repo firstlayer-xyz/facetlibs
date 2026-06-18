@@ -6,27 +6,31 @@
 # 
 # Example — 2D square:
 # ```
-# var T = lib "facet/turtle"
-# var t = T.Turtle2d()
-# t.Forward(20 mm)
-# t.Turn(-90 deg)
-# t.Forward(20 mm)
-# t.Turn(-90 deg)
-# t.Forward(20 mm)
-# t.Turn(-90 deg)
-# t.Forward(20 mm)
-# fn Main() { return t.Extrude(5 mm); }
+# var T = lib "github.com/firstlayer-xyz/facetlibs/turtle@main"
+# fn Main() {
+#     var t = T.Turtle2d()
+#     t.Forward(by: 20 mm)
+#     t.Turn(by: -90 deg)
+#     t.Forward(by: 20 mm)
+#     t.Turn(by: -90 deg)
+#     t.Forward(by: 20 mm)
+#     t.Turn(by: -90 deg)
+#     t.Forward(by: 20 mm)
+#     return t.Extrude(h: 5 mm)
+# }
 # ```
 # 
 # Example — 3D helix:
 # ```
-# var T = lib "facet/turtle"
-# var t = T.Turtle3d()
-# for i [0:<36] {
-#     t.Forward(5 mm)
-#     t.Turn(-10 deg, 5 deg)
+# var T = lib "github.com/firstlayer-xyz/facetlibs/turtle@main"
+# fn Main() {
+#     var t = T.Turtle3d()
+#     for i [0:<36] {
+#         t.Forward(by: 5 mm)
+#         t.Turn(yaw: -10 deg, pitch: 5 deg)
+#     }
+#     return t.Sweep(profile: Circle(r: 1 mm))
 # }
-# fn Main() { return t.Sweep(Circle(1 mm)); }
 # ```
 var Curves = lib "../curves"
 

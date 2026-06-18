@@ -3,10 +3,10 @@
 ## Function Signature
 
 ```
-var T = lib "facet/threads";
-var thread = T.Thread("m10");                 # Metric
-var thread = T.Thread("1/4-20");              # SAE UNC
-var thread = T.Thread("1/4-npt");             # NPT
+var T = lib "github.com/firstlayer-xyz/facetlibs/threads@main"
+var thread = T.Thread(size: "m10")            # Metric
+var thread = T.Thread(size: "1/4-20")         # SAE UNC
+var thread = T.Thread(size: "1/4-npt")        # NPT
 ```
 
 ## Thread Struct

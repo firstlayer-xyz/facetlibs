@@ -2,7 +2,7 @@
 # Adds crosshatch diamond grip texture to 3D solids.
 #
 # Usage:
-#   var K = lib "facet/knurling"
+#   var K = lib "github.com/firstlayer-xyz/facetlibs/knurling@main"
 #   var knurl = K.Knurl(count: 40, depth: 0.5 mm, angle: 30 deg)
 #   return knurl.Apply(to: cylinder)
 # ---------------------------------------------------------------------------
