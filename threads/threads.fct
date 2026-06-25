@@ -1,7 +1,10 @@
 # Thread specification for ISO metric, UTS/SAE, and NPT pipe threads.
 # 
 # All standards use the same 60° V-profile. The `taper` field controls
-# diameter growth per unit length (`0` for straight, `1/16` for NPT).
+# diameter growth per unit length (`0` for straight, `1/16` for NPT). For a
+# tapered thread `major_diameter` is the diameter at the start (Z=0), growing
+# toward Z=`length`; it does not depend on the thread's length, so a male and
+# female of the same size mate regardless of their individual lengths.
 # The `tolerance` field is a radial clearance applied to both inside and
 # outside threads — 0.1 mm by default, suitable for FDM 3D printing.
 type Thread {
@@ -168,10 +171,15 @@ fn Thread.Outside(length Length) Solid {
     var taper = self.taper
     var tol = self.tolerance
     var turns = length / pitch
-    # Taper: diameter changes by length * taper over the full length
+    # Taper (NPT): anchor the nominal `major_diameter` at the small end (Z=0)
+    # and grow by `taper` per unit length toward Z=`length`. Referencing a fixed
+    # plane — not mid-length — makes the cone independent of `length`, so a male
+    # and female of the same size mate at any lengths (mid-length referencing put
+    # the nominal diameter at a length-dependent plane, so unequal-length parts
+    # never lined up).
     var taper_d = length * taper
-    var d_small = major_d - taper_d / 2
-    var d_large = major_d + taper_d / 2
+    var d_small = major_d
+    var d_large = major_d + taper_d
     var taper_scale = 1
     if taper > 0 { taper_scale = d_large / d_small }
     var H = pitch * Sqrt(n: 3) / 2
@@ -266,10 +274,15 @@ fn Thread.Inside(length Length) Solid {
     var major_d = self.major_diameter
     var taper = self.taper
     var turns = length / pitch
-    # Taper: diameter changes by length * taper over the full length
+    # Taper (NPT): anchor the nominal `major_diameter` at the small end (Z=0)
+    # and grow by `taper` per unit length toward Z=`length`. Referencing a fixed
+    # plane — not mid-length — makes the cone independent of `length`, so a male
+    # and female of the same size mate at any lengths (mid-length referencing put
+    # the nominal diameter at a length-dependent plane, so unequal-length parts
+    # never lined up).
     var taper_d = length * taper
-    var d_small = major_d - taper_d / 2
-    var d_large = major_d + taper_d / 2
+    var d_small = major_d
+    var d_large = major_d + taper_d
     var taper_scale = 1
     if taper > 0 { taper_scale = d_large / d_small }
     var H = pitch * Sqrt(n: 3) / 2
